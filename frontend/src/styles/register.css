@@ -1,0 +1,188 @@
+/* General page styling */
+body {
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.register-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 400px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontally */
+    justify-content: center;
+    /* Center vertically */
+}
+
+/* Form styling */
+form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    /* Stack form elements vertically */
+    align-items: center;
+    /* Center align inputs and buttons */
+    width: 100%;
+}
+
+/* Input field container */
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    /* Full width of the container */
+    max-width: 800px;
+    /* Add a max-width for better centering */
+    /* padding-right: 85px; */
+    /* Add padding to the right for better alignment */
+}
+
+.input-container input {
+    width: 100%;
+    /* Full width within the input container */
+    padding: 12px 40px 12px 40px;
+    /* Adjust padding to account for icons */
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    outline: none;
+    box-shadow: none;
+}
+
+/* Input icons */
+.input-container .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+/* Submit button */
+.submit-btn {
+    background-color: #6b7eff;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    width: 100%;
+    /* Full width of the form */
+    max-width: 300px;
+    /* Match input max-width */
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #5a6de0;
+}
+
+/* Sign-in prompt */
+.signin-prompt {
+    margin-top: 20px;
+    color: #777;
+}
+
+.signin-prompt a {
+    color: #6b7eff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signin-prompt a:hover {
+    text-decoration: underline;
+}
+
+/* Terms and conditions modal */
+.terms-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.terms-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.terms-content h4 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.terms-content p {
+    color: #555;
+}
+
+.terms-content ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.terms-content li {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.close-btn {
+    background-color: #6b7eff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.close-btn:hover {
+    background-color: #5a6de0;
+}
+
+/* Terms link styling */
+.terms-link {
+    color: #6b7eff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.terms-link:hover {
+    color: #5a6de0;
+}
+
+/* Error message styling */
+.message.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Success message styling */
+.message.success {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
+}

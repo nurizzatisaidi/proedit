@@ -1,0 +1,258 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+/* General styles */
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: #e9f1ff;
+    padding: 5px 15px;
+    /* Reduce padding */
+    margin: 0 0 20px 0;
+    /* Ensure no unnecessary margin at the top */
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    /* Allow height to adjust based on content */
+    min-height: 50px;
+    /* Set a minimum height */
+    box-sizing: border-box;
+    /* Ensure padding doesn't add to the height */
+}
+
+
+.header-left {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-logo {
+    width: 100px;
+    /* Adjust the size as needed */
+    height: auto;
+    /* Maintain aspect ratio */
+    max-height: 100%;
+    /* Ensure it doesn't overflow the header */
+}
+
+.vertical-line {
+    width: 2px;
+    /* Thickness of the line */
+    height: 30px;
+    /* Height of the line */
+    background-color: #3a3a3a;
+    /* Line color */
+}
+
+.header-title {
+    font-size: 18px;
+    /* Adjust text size */
+    font-weight: bold;
+    color: #1d1d1d;
+    display: flex;
+    /* Ensures proper alignment within the container */
+    align-items: center;
+    margin-top: 5px;
+    margin-left: 10px;
+    /* Move text slightly down */
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropdown-icon {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.username {
+    margin-left: 10px;
+    color: #00509e;
+    font-weight: bold;
+}
+
+.profile-picture {
+    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #00509e;
+}
+
+.logout-btn {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 25px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.logout-btn:hover {
+    color: #d9534f;
+}
+
+.sidebar {
+    /* width: 250px; */
+    /* background-color: #003366; */
+    /* color: white; */
+    /* display: flex; */
+    /* flex-direction: column; */
+    padding: 20px;
+    transition: width 0.3s ease;
+    /* overflow: hidden; */
+}
+
+.sidebar.collapsed {
+    width: 120px;
+}
+
+
+
+
+.sidebar-header h2 {
+    font-size: 20px;
+    margin-left: 50px;
+}
+
+.sidebar.collapsed .sidebar-header h2 {
+    display: none;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+}
+
+.header {
+    background-color: #dbe8fd;
+    height: 80px;
+    /* Set a fixed height */
+    padding: 0 15px;
+    /* Adjust padding for centering content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 20px 0;
+}
+
+
+.username {
+    color: #00509e;
+}
+
+.overview-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+}
+
+.projects-section,
+.notifications-section,
+.chat-section {
+    margin-bottom: 20px;
+}
+
+.projects-list,
+.notifications-list,
+.chat-list {
+    list-style: none;
+    padding: 0;
+}
+
+.project-item,
+.notifications-list li,
+.chat-list li {
+    padding: 10px;
+    background-color: white;
+    margin: 5px 0;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.logout-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.cancel-btn,
+.confirm-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.cancel-btn {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.confirm-btn {
+    background-color: #d9534f;
+    color: white;
+}

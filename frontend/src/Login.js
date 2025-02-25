@@ -12,6 +12,37 @@ function Login() {
     const navigate = useNavigate(); // Initialize navigate
 
     // Existing email/password login handler
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await axios.post("http://localhost:8080/login", {
+    //             email,
+    //             password,
+    //         });
+
+    //         console.log("Login Response:", response.data); // Debugging: Check response from backend
+
+    //         if (response.data === "Admin") {
+    //             localStorage.setItem("username",email); // Store username
+    //             localStorage.setItem("userRole", "Admin"); // Store role
+    //             navigate("/admin-dashboard"); // ✅ Redirect to Admin Dashboard
+    //         } else if (response.data === "User") {
+    //             localStorage.setItem("username", email);
+    //             localStorage.setItem("userRole", "User");
+    //             navigate("/user-dashboard"); // ✅ Redirect to User Dashboard
+    //         } else if (response.data === "Editor") {
+    //             localStorage.setItem("username",email);
+    //             localStorage.setItem("userRole","Editor");
+    //             navigate("/editor-dashboard"); // ✅ Redirect to Editor Dashboard
+    //         } else {
+    //             setMessage(response.data || "Login failed."); // Display error message if role is not recognized
+    //         }
+    //     } catch (error) {
+    //         console.error("Login Error:", error.response || error.message);
+    //         setMessage(error.response?.data || "Invalid credentials.");
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -20,18 +51,26 @@ function Login() {
                 password,
             });
 
-            if (response.data === "Admin") {
+            console.log("Login Response:", response.data); // Debugging
+
+            if (response.data.role === "admin") {
+                localStorage.setItem("username", response.data.name); // ✅ Save username
                 navigate("/admin-dashboard"); // Redirect to admin dashboard
-            } else if (response.data === "User") {
+            } else if (response.data.role === "user") {
+                localStorage.setItem("username", response.data.name); // ✅ Save username
                 navigate("/user-dashboard"); // Redirect to user dashboard
+            } else if (response.data.role === "editor") {
+                localStorage.setItem("username", response.data.name); // ✅ Save username
+                navigate("/editor-dashboard"); // Redirect to editor dashboard
             } else {
-                setMessage(response.data || "Login failed.");
+                setMessage(response.data.message || "Login failed."); // Show error message
             }
         } catch (error) {
             console.error("Login Error:", error.response || error.message);
-            setMessage(error.response?.data || "Invalid credentials.");
+            setMessage(error.response?.data.error || "Invalid credentials.");
         }
     };
+
 
     const handleGoogleLogin = async () => {
         try {

@@ -2,6 +2,8 @@ package com.backend.practiceproedit.service;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,29 +20,33 @@ public class LoginService {
     @Autowired
     private FirebaseService firebaseService;
 
-    public String loginUser(String email, String password) throws Exception {
+    public Map<String, String> loginUser(String email, String password) throws Exception {
         Firestore db = firebaseService.getFirestore();
+        Map<String, String> response = new HashMap<>(); // ✅ Initialize response before using it
+
         try {
             QuerySnapshot userDoc = db.collection("users").whereEqualTo("email", email).get().get();
 
             if (userDoc.isEmpty()) {
-                return "Invalid email or password"; // User not found
+                response.put("status", "error");
+                response.put("message", "Invalid email or password");
+                return response; // ✅ Return the response properly
             }
 
             // Get user details
             String storedPassword = userDoc.getDocuments().get(0).getString("password");
             String role = userDoc.getDocuments().get(0).getString("role");
+            String name = userDoc.getDocuments().get(0).getString("name");
 
             // Check if password is correct
             if (BCrypt.checkpw(password, storedPassword)) {
-                if ("admin".equals(role)) {
-                    return "Admin"; // Admin role
-                } else if ("user".equals(role)) {
-                    return "User"; // Regular user role
-                }
-                return "Invalid role"; // For unexpected roles
+                response.put("role", role);
+                response.put("name", name); // ✅ Pass the name to the frontend
+                return response;
             } else {
-                return "Invalid email or password"; // Password mismatch
+                response.put("status", "error");
+                response.put("message", "Invalid email or password");
+                return response;
             }
         } catch (Exception e) {
             throw new Exception("Error during login: " + e.getMessage());

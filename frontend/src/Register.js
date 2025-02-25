@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import bcrypt from 'bcryptjs'; // Add bcryptjs for hashing
+
 import './styles/register.css';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
@@ -21,42 +21,35 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate checkbox
         if (!acceptTerms) {
             setMessage("You must accept the terms and conditions to register.");
             return;
         }
 
-        // Validate password match
         if (password !== confirmPassword) {
             setMessage("Passwords do not match.");
             return;
         }
 
         try {
-            // Register user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Hash the password using bcrypt
-            const hashedPassword = bcrypt.hashSync(password, 10); // Synchronous hashing for simplicity
-
-            // Store user data in Firestore
+            // Store user data in Firestore WITHOUT manually hashing the password
             await setDoc(doc(db, "users", user.uid), {
                 userId: user.uid,
                 name,
                 email,
-                password: hashedPassword, // Store the hashed password
                 role: "user", // Default role
             });
 
-            // Redirect to UserDashboard
             navigate('/user-dashboard');
         } catch (error) {
             console.error("Error registering user:", error);
             setMessage(error.message || 'Error registering user.');
         }
     };
+
 
     const redirectToLogin = () => {
         navigate('/'); // Redirect to the login page

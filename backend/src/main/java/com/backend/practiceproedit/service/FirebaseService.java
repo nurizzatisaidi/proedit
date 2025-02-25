@@ -35,15 +35,18 @@ public class FirebaseService {
     @PostConstruct
     public void initializeFirebase() {
         try {
-            FileInputStream serviceAccount = new FileInputStream("./serviceAccountKey.json");
+            FileInputStream serviceAccount = new FileInputStream("serviceAccountKey.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://your-project-id.firebaseio.com")
+                    .setDatabaseUrl("https://proedit-399a8-default-rtdb.firebaseio.com")
                     .build();
 
-            FirebaseApp.initializeApp(options);
+            if (FirebaseApp.getApps().isEmpty()) { // ✅ Prevent duplicate initialization
+                FirebaseApp.initializeApp(options);
+            }
             this.db = FirestoreClient.getFirestore();
+
             System.out.println("Firebase initialized successfully.");
         } catch (IOException e) {
             e.printStackTrace();

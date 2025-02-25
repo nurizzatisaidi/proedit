@@ -5,6 +5,7 @@ import Login from './Login';
 import Register from './Register';
 import UserDashboard from './UserDashboard';
 import AdminDashboard from "./AdminDashboard";
+import EditorDashboard from "./EditorDashboard";
 import ClientList from './ClientList';
 import EditorList from './EditorList';
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/editor-dashboard" element={<EditorDashboard />} />
         <Route path="/admin-clients-list" element={<ClientList />} />
         <Route path="/admin-editors-list" element={<EditorList />} />
 
@@ -23,5 +25,5 @@ function App() {
     </Router>
   );
 }
-//testing izzati
+
 export default App;

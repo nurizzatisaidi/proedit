@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/AdminDashboard.css";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -6,6 +6,14 @@ import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers } from
 
 function AdminDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [username, setUsername] = useState("admin");
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+    }, []);
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
@@ -21,7 +29,7 @@ function AdminDashboard() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username="Izzati" />
+                <Header username={username} />
                 <section className="overview-section">
                     <div className="card">Total Users: 10</div>
                     <div className="card">Pending Reports: 3</div>

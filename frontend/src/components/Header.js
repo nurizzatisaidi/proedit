@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSignOutAlt, FaAngleDown } from "react-icons/fa";
-import '../styles/Header.css'; // Import the shared Header styles here
+import "../styles/Header.css"; // Import the shared Header styles
 import { useNavigate } from "react-router-dom";
 
 const Header = ({ username }) => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("authToken"); // Clear auth token
-        navigate("/"); // Redirect to login page
-    };
+    // ✅ Get user details from localStorage
+    const storedUsername = localStorage.getItem("username") || "Guest";
+    const storedProfilePic = localStorage.getItem("profilePic") || "https://via.placeholder.com/40";
 
-    const handleCancelLogout = () => {
-        setShowLogoutPopup(false); // Close the popup
+    // ✅ Use the prop if available, otherwise use localStorage
+    const displayUsername = username || storedUsername;
+
+    const handleLogout = () => {
+        // ✅ Remove all stored user data
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("username");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("profilePic");
+
+        navigate("/"); // Redirect to login page
     };
 
     return (
@@ -26,9 +34,9 @@ const Header = ({ username }) => {
                 </div>
                 <div className="header-right">
                     <FaAngleDown className="dropdown-icon" />
-                    <span className="username">Hello, {username}</span>
+                    <span className="username">Hello, {displayUsername}</span>
                     <img
-                        src="https://via.placeholder.com/40" // Replace with actual profile picture URL
+                        src={storedProfilePic} // ✅ Dynamic profile picture
                         alt="Profile"
                         className="profile-picture"
                     />
@@ -46,7 +54,7 @@ const Header = ({ username }) => {
                     <div className="popup-content">
                         <h3>Are you sure you want to logout?</h3>
                         <div className="popup-actions">
-                            <button className="cancel-btn" onClick={handleCancelLogout}>
+                            <button className="cancel-btn" onClick={() => setShowLogoutPopup(false)}>
                                 Cancel
                             </button>
                             <button className="confirm-btn" onClick={handleLogout}>

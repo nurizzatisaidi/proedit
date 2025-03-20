@@ -42,6 +42,50 @@
     cursor: pointer;
 }
 
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    width: 180px;
+    z-index: 10;
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu li:hover {
+    background: #f4f4f4;
+    border-radius: 5px;
+}
+
+/* Logout Option */
+.logout-option {
+    color: red;
+    font-weight: bold;
+}
+
+/* Dropdown Arrow Cursor */
+.dropdown-icon {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
 .username {
     margin-left: 10px;
     color: #00509e;
@@ -75,6 +119,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,11 +138,14 @@
 .popup-actions {
     display: flex;
     justify-content: space-around;
+    gap: 15px;
     margin-top: 20px;
 }
 
 .cancel-btn,
 .confirm-btn {
+    flex: 1;
+    /*makes both buttons equal width*/
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -106,11 +154,20 @@
 }
 
 .cancel-btn {
-    background-color: #f4f4f4;
+    background-color: #d9534f;
     color: #333;
 }
 
+.cancel-btn:hover {
+    background-color: #8d1611;
+    /* Bootstrap danger red */
+}
+
 .confirm-btn {
-    background-color: #d9534f;
+    background-color: #f0ad4e;
     color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #ec971f;
 }

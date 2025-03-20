@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header"; // Import the reusable Header component
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus } from "react-icons/fa";
-import "./styles/ClientList.css";
+import "./styles/List.css";
 
 function ClientList() {
     const [clients, setClients] = useState([]);
@@ -64,7 +64,7 @@ function ClientList() {
         { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
         { name: "Chat", icon: <FaComments />, path: "/admin-chat" },
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
-        { name: "Editors", icon: <FaUser />, path: "/admin-editors" },
+        { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
     ];
 
@@ -73,23 +73,23 @@ function ClientList() {
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
                 <Header username="Admin" /> {/* Add the reusable Header component */}
-                <section className="client-list-section">
+                <section className="list-section">
                     <div className="top-bar">
                         <h1>User List</h1>
                         <button className="add-user-btn" onClick={() => setShowAddPopup(true)}>
                             <FaPlus /> Add User
                         </button>
                     </div>
-                    <div className="client-list">
+                    <div className="list">
                         {clients.length > 0 ? (
                             clients.map((client) => (
-                                <div className="client-card" key={client.userId}>
-                                    <div className="client-details">
+                                <div className="list-card" key={client.userId}>
+                                    <div className="list-details">
                                         <p><strong>Name:</strong> {client.name}</p>
                                         <p><strong>Email:</strong> {client.email}</p>
                                         <p><strong>Role:</strong> {client.role}</p>
                                     </div>
-                                    <div className="client-actions">
+                                    <div className="list-actions">
                                         <button className="edit-btn" onClick={() => handleEditClient(client.userId)}>Edit</button>
                                         <button className="delete-btn" onClick={() => handleDeleteClient(client.userId)}>Delete</button>
                                     </div>
@@ -138,8 +138,8 @@ function ClientList() {
                                 />
                             </div>
                             <div className="button-group">
-                                <button type="submit" className="add-btn">Create</button>
                                 <button type="button" className="cancel-btn" onClick={() => setShowAddPopup(false)}>Cancel</button>
+                                <button type="submit" className="add-btn">Create</button>
                             </div>
                         </form>
                     </div>

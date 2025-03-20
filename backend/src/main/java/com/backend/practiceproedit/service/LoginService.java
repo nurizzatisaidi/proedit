@@ -37,9 +37,13 @@ public class LoginService {
             String storedPassword = userDoc.getDocuments().get(0).getString("password");
             String role = userDoc.getDocuments().get(0).getString("role");
             String name = userDoc.getDocuments().get(0).getString("name");
+            String userId = userDoc.getDocuments().get(0).getString("userId");
+
+            System.out.println("User ID being sent to frontend: " + userId); // ✅ Debug log
 
             // Check if password is correct
             if (BCrypt.checkpw(password, storedPassword)) {
+                response.put("userId", userId);
                 response.put("role", role);
                 response.put("name", name); // ✅ Pass the name to the frontend
                 return response;

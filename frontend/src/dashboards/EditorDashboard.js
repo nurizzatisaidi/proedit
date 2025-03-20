@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import "./styles/EditorDashboard.css";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import React, { useState, useEffect } from "react";
+import "../styles/EditorDashboard.css";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { FaHome, FaFolder, FaComments, FaBell } from "react-icons/fa";
 
 function EditorDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [username, setUsername] = useState("editor");
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+    });
 
     // Define menu items for the Editor
     const menuItems = [
@@ -34,7 +42,7 @@ function EditorDashboard() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username="Editor" />
+                <Header username={username} />
 
                 <div className="task-board">
                     <h2>Tasks</h2>

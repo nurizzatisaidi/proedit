@@ -21,26 +21,6 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    // @PostMapping
-    // public ResponseEntity<String> loginUser(@RequestBody User user) {
-    // try {
-    // String result = loginService.loginUser(user.getEmail(), user.getPassword());
-
-    // if ("Admin".equals(result)) {
-    // return ResponseEntity.ok("Admin");
-    // } else if ("User".equals(result)) {
-    // return ResponseEntity.ok("User");
-    // } else if ("Editor".equals(result)) { // ✅ Add Editor response
-    // return ResponseEntity.ok("Editor");
-    // } else {
-    // return ResponseEntity.status(401).body(result); // Unauthorized response
-    // }
-    // } catch (Exception e) {
-    // return ResponseEntity.status(500).body("Error logging in: " +
-    // e.getMessage());
-    // }
-    // }
-
     @PostMapping
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
         try {

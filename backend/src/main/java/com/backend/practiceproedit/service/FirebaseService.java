@@ -77,7 +77,7 @@ public class FirebaseService {
             user.put("userId", uid);
             user.put("name", name);
             user.put("email", email);
-            user.put("password", hashedPassword); // You may remove this if not needed
+            user.put("password", hashedPassword); // ✅ Store hashed password
             user.put("role", "user");
 
             db.collection("users").document(uid).set(user);

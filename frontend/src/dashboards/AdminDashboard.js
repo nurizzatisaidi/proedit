@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./styles/AdminDashboard.css";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import "../styles/AdminDashboard.css";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers } from "react-icons/fa";
 
 function AdminDashboard() {

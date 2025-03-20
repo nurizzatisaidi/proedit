@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import "./styles/UserDashboard.css";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import React, { useState, useEffect } from "react";
+import "../styles/UserDashboard.css";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell } from "react-icons/fa";
 
 function UserDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [username, setUsername] = useState("user");
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+    })
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -22,7 +30,7 @@ function UserDashboard() {
 
             {/* Main Content */}
             <main className="main-content">
-                <Header username="Izzati" />
+                <Header username={username} />
 
                 <section className="overview-section">
                     <div className="card collaborate">

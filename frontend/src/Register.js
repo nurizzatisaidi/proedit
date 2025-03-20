@@ -32,23 +32,31 @@ function Register() {
         }
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Store user data in Firestore WITHOUT manually hashing the password
-            await setDoc(doc(db, "users", user.uid), {
-                userId: user.uid,
-                name,
-                email,
-                role: "user", // Default role
+            const response = await fetch("http://localhost:8080/users/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                }),
             });
 
-            navigate('/user-dashboard');
+            const data = await response.text();
+
+            if (response.ok) {
+                navigate('/'); // Redirect on success
+            } else {
+                setMessage(data);
+            }
         } catch (error) {
             console.error("Error registering user:", error);
-            setMessage(error.message || 'Error registering user.');
+            setMessage("Error registering user.");
         }
     };
+
 
 
     const redirectToLogin = () => {
@@ -113,7 +121,7 @@ function Register() {
                 </div>
                 <button
                     type="submit"
-                    className="submit-btn"
+                    className="submitReg-btn"
                 >
                     Register
                 </button>

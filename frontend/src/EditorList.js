@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header"; // Import the reusable Header component
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus } from "react-icons/fa";
-import "./styles/ClientList.css"; // Use the same styling as ClientList
+import "./styles/List.css";
 
 function EditorList() {
     const [editors, setEditors] = useState([]);
@@ -64,7 +64,7 @@ function EditorList() {
         { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
         { name: "Chat", icon: <FaComments />, path: "/admin-chat" },
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
-        { name: "Editors", icon: <FaUser />, path: "/admin-editors" },
+        { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
     ];
 
@@ -73,23 +73,23 @@ function EditorList() {
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
                 <Header username="Admin" /> {/* Add the reusable Header component */}
-                <section className="client-list-section">
+                <section className="list-section">
                     <div className="top-bar">
                         <h1>Editors List</h1>
                         <button className="add-user-btn" onClick={() => setShowAddPopup(true)}>
                             <FaPlus /> Add Editor
                         </button>
                     </div>
-                    <div className="client-list">
+                    <div className="list">
                         {editors.length > 0 ? (
                             editors.map((editor) => (
-                                <div className="client-card" key={editor.userId}>
-                                    <div className="client-details">
+                                <div className="list-card" key={editor.userId}>
+                                    <div className="list-details">
                                         <p><strong>Name:</strong> {editor.name}</p>
                                         <p><strong>Email:</strong> {editor.email}</p>
                                         <p><strong>Role:</strong> {editor.role}</p>
                                     </div>
-                                    <div className="client-actions">
+                                    <div className="list-actions">
                                         <button className="edit-btn" onClick={() => handleEditEditor(editor.userId)}>Edit</button>
                                         <button className="delete-btn" onClick={() => handleDeleteEditor(editor.userId)}>Delete</button>
                                     </div>
@@ -138,8 +138,8 @@ function EditorList() {
                                 />
                             </div>
                             <div className="button-group">
-                                <button type="submit" className="add-btn">Create</button>
                                 <button type="button" className="cancel-btn" onClick={() => setShowAddPopup(false)}>Cancel</button>
+                                <button type="submit" className="add-btn">Create</button>
                             </div>
                         </form>
                     </div>

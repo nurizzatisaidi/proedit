@@ -1,26 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { FaSignOutAlt, FaAngleDown } from "react-icons/fa";
-import "../styles/Header.css"; // Import the shared Header styles
+import React, { useState, useRef, useEffect } from "react";
+import { FaSignOutAlt, FaAngleDown, FaAngleUp, FaUser, FaCog, FaKey, FaQuestionCircle } from "react-icons/fa";
+import "../styles/Header.css";
 import { useNavigate } from "react-router-dom";
 
 const Header = ({ username }) => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
+    const dropdownRef = useRef(null); // Ref to detect outside clicks
 
-    // ✅ Get user details from localStorage
+    // Get user details from localStorage
     const storedUsername = localStorage.getItem("username") || "Guest";
     const storedProfilePic = localStorage.getItem("profilePic") || "https://via.placeholder.com/40";
 
-    // ✅ Use the prop if available, otherwise use localStorage
-    const displayUsername = username || storedUsername;
+    // Toggle dropdown visibility
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    };
 
+    // Close dropdown if clicked outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // Show logout confirmation popup instead of logging out immediately
+    const handleLogoutRequest = () => {
+        setShowDropdown(false);
+        setShowLogoutPopup(true);
+    };
+
+    // Logout function
     const handleLogout = () => {
-        // ✅ Remove all stored user data
         localStorage.removeItem("authToken");
         localStorage.removeItem("username");
         localStorage.removeItem("userRole");
         localStorage.removeItem("profilePic");
-
         navigate("/"); // Redirect to login page
     };
 
@@ -32,34 +54,57 @@ const Header = ({ username }) => {
                     <div className="vertical-line"></div>
                     <span className="header-title">ProEdit</span>
                 </div>
-                <div className="header-right">
-                    <FaAngleDown className="dropdown-icon" />
-                    <span className="username">Hello, {displayUsername}</span>
+                <div className="header-right" ref={dropdownRef}>
+                    <span className="username">Hello, {username || storedUsername}</span>
+
+                    {/* ✅ Profile picture stays in header only */}
                     <img
-                        src={storedProfilePic} // ✅ Dynamic profile picture
+                        src={storedProfilePic}
                         alt="Profile"
                         className="profile-picture"
                     />
-                    <button
-                        className="logout-btn"
-                        title="Logout"
-                        onClick={() => setShowLogoutPopup(true)}
-                    >
-                        <FaSignOutAlt />
-                    </button>
+
+                    {/* ✅ Toggle dropdown with arrow icon */}
+                    {showDropdown ? (
+                        <FaAngleUp className="dropdown-icon" onClick={toggleDropdown} />
+                    ) : (
+                        <FaAngleDown className="dropdown-icon" onClick={toggleDropdown} />
+                    )}
+
+                    {/* ✅ Dropdown Menu (Profile Picture Removed) */}
+                    {showDropdown && (
+                        <div className="dropdown-menu">
+                            <ul>
+                                <li onClick={() => navigate("/profile")}>
+                                    <FaUser /> My Profile
+                                </li>
+                                <li onClick={() => navigate("/settings")}>
+                                    <FaCog /> Settings
+                                </li>
+                                <li onClick={() => navigate("/change-password")}>
+                                    <FaKey /> Change Password
+                                </li>
+                                <li onClick={() => navigate("/help")}>
+                                    <FaQuestionCircle /> Help & Support
+                                </li>
+                                {/* ✅ Show logout confirmation instead of logging out directly */}
+                                <li onClick={handleLogoutRequest} className="logout-option">
+                                    <FaSignOutAlt /> Logout
+                                </li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </header>
+
+            {/* ✅ Logout Confirmation Popup */}
             {showLogoutPopup && (
                 <div className="logout-popup">
                     <div className="popup-content">
                         <h3>Are you sure you want to logout?</h3>
                         <div className="popup-actions">
-                            <button className="cancel-btn" onClick={() => setShowLogoutPopup(false)}>
-                                Cancel
-                            </button>
-                            <button className="confirm-btn" onClick={handleLogout}>
-                                Logout
-                            </button>
+                            <button className="cancel-btn" onClick={() => setShowLogoutPopup(false)}>Cancel</button>
+                            <button className="confirm-btn" onClick={handleLogout}>Logout</button>
                         </div>
                     </div>
                 </div>

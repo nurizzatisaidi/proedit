@@ -7,12 +7,17 @@ import com.google.cloud.Timestamp;
 public class Request {
     private String requestId;
     private String userId;
+    private String username;
     private String title;
     private String videoType;
     private int duration;
     private String sharedDrive;
     private String notes;
     private String status;
+    private String adminComment; // Only for Accepted requests
+    private String assignedEditor; // Only for Accepted requests
+    private String rejectionReason; // Only for Rejected requests
+    private String assignedEditorUsername; // Only for Accepted requests
 
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -22,10 +27,12 @@ public class Request {
     public Request() {
     }
 
-    public Request(String requestId, String userId, String title, String videoType, int duration, String sharedDrive,
+    public Request(String requestId, String userId, String username, String title, String videoType, int duration,
+            String sharedDrive,
             String notes, String status, Timestamp createdAt) {
         this.requestId = requestId;
         this.userId = userId;
+        this.username = username;
         this.title = title;
         this.videoType = videoType;
         this.duration = duration;
@@ -49,6 +56,14 @@ public class Request {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getTitle() {
@@ -99,12 +114,44 @@ public class Request {
         this.status = status;
     }
 
+    public String getAdminComment() {
+        return adminComment;
+    }
+
+    public void setAdminComment(String adminComment) {
+        this.adminComment = adminComment;
+    }
+
+    public String getAssignedEditor() {
+        return assignedEditor;
+    }
+
+    public void setAssignedEditor(String assignedEditor) {
+        this.assignedEditor = assignedEditor;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAssignedEditorUsername() {
+        return assignedEditorUsername;
+    }
+
+    public void setAssignedEditorUsername(String assignedEditorUsername) {
+        this.assignedEditorUsername = assignedEditorUsername;
     }
 
 }

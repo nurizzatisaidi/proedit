@@ -33,7 +33,6 @@
     flex-direction: column;
     gap: 15px;
     width: 100%;
-    /* Ensure it fills the container */
 }
 
 .list-card {
@@ -46,9 +45,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* Ensures consistency */
     min-height: 80px;
-    /* Ensures uniform height */
 }
 
 
@@ -86,7 +83,80 @@
     background-color: #c9302c;
 }
 
-/* Popup styles */
+.accept-btn,
+.reject-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Green for Accept */
+.accept-btn {
+    background-color: #5cb85c;
+}
+
+.accept-btn:hover {
+    background-color: #4cae4c;
+}
+
+/* Yellow for Reject */
+.reject-btn {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #ec971f;
+}
+
+.request-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* Add spacing between rows */
+    padding: 10px;
+    font-size: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: flex-start;
+    /* Aligns content to the left */
+    gap: 10px;
+    /* Add spacing between label and value */
+    font-size: 16px;
+}
+
+.detail-row p {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+
+.detail-row span {
+    font-weight: bold;
+    margin-right: 8px;
+    /* Adds spacing between label and value */
+    min-width: 120px;
+    /* Ensures label alignment */
+    text-align: left;
+}
+
+.request-details p {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.request-details span {
+    font-weight: bold;
+    color: #333;
+    /* Darker text for better contrast */
+}
+
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -112,7 +182,29 @@
     margin-bottom: 20px;
 }
 
-/* Form Styling - Align text and fields side by side */
+.popup-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.popup-buttons button {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.popup-buttons .cancel-btn {
+    width: 150px;
+    /* Make button smaller */
+    text-align: center;
+}
+
 .form-group {
     display: flex;
     align-items: center;
@@ -122,7 +214,6 @@
 .form-group label {
     font-weight: bold;
     width: 100px;
-    /* Set fixed width for label */
     text-align: left;
 }
 
@@ -132,11 +223,10 @@
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    /* Rounded corners */
     outline: none;
 }
 
-/* Buttons side by side */
+
 .button-group {
     display: flex;
     justify-content: space-between;
@@ -149,7 +239,6 @@
     padding: 12px;
     border: none;
     border-radius: 8px;
-    /* Rounded corners */
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
@@ -172,6 +261,13 @@
 
 .cancel-btn:hover {
     background-color: #c9302c;
+}
+
+.center-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
 }
 
 .filter-dropdown {

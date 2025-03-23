@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus } from "react-icons/fa";
-import "./styles/RequestPage.css";
-import "./styles/List.css";
+import "../styles/RequestPage.css";
+import "../styles/List.css";
 
 function RequestPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

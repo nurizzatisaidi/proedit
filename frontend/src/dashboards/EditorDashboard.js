@@ -21,7 +21,6 @@ function EditorDashboard() {
         { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
         { name: "Chat", icon: <FaComments />, path: "/editor-chat" },
         { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
-        { name: "Settings", icon: <FaHome />, path: "/editor-settings" },
     ];
 
     // Sample tasks for the Kanban board

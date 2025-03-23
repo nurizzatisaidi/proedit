@@ -1,12 +1,13 @@
 
 package com.backend.practiceproedit.service;
 
+import com.backend.practiceproedit.handler.RequestHandler;
+import com.backend.practiceproedit.handler.RequestHandlerFactory;
 import com.backend.practiceproedit.model.Request;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.api.core.ApiFuture;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -20,8 +21,13 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class RequestService {
 
-    @Autowired
-    private FirebaseService firebaseService;
+    private final Firestore db;
+    private final FirebaseService firebaseService;
+
+    public RequestService(FirebaseService firebaseService) {
+        this.db = firebaseService.getFirestore();
+        this.firebaseService = firebaseService;
+    }
 
     // Create a new request in Firebase
     public String createRequest(Request request) throws ExecutionException, InterruptedException {
@@ -30,8 +36,18 @@ public class RequestService {
         // Generating a uniwue requestId
         String requestId = UUID.randomUUID().toString();
         request.setRequestId(requestId);
-        request.setStatus("Under Review");
+        request.setStatus("Pending");
         request.setCreatedAt(Timestamp.now());
+
+        // Get the username from Firestore based on their userId
+        String username = firebaseService.getUsernameById(request.getUserId());
+        request.setUsername(username);
+
+        // Create a field for admin review
+        request.setAdminComment(null);
+        request.setAssignedEditor(null);
+        request.setAssignedEditorUsername(null);
+        request.setRejectionReason(null);
 
         // Saving the request in Firestore under 'requests' collection
         DocumentReference docRef = db.collection("requests").document(requestId);
@@ -90,4 +106,34 @@ public class RequestService {
         }
         return false;
     }
+
+    // Process the Request made by Admin
+    public void processRequest(String requestId, String status, String comment, String editorId) throws Exception {
+        DocumentReference docRef = db.collection("requests").document(requestId);
+        Request request = docRef.get().get().toObject(Request.class);
+
+        if (request != null) {
+            request.setStatus(status);
+
+            // ✅ Fetch the user's username from FirebaseService
+            String username = firebaseService.getUsernameById(request.getUserId());
+            request.setUsername(username);
+
+            if ("Accepted".equals(status)) {
+                request.setAdminComment(comment);
+                request.setAssignedEditor(editorId);
+
+                // ✅ Fetch the editor's username from FirebaseService
+                String editorUsername = firebaseService.getUsernameById(editorId);
+                request.setAssignedEditorUsername(editorUsername);
+            } else if ("Rejected".equals(status)) {
+                request.setRejectionReason(comment);
+            }
+
+            // ✅ Use Factory Method to get the correct handler
+            RequestHandler handler = RequestHandlerFactory.getHandler(status);
+            handler.handleRequest(db, request);
+        }
+    }
+
 }

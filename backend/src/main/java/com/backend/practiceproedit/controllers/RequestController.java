@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/requests")
-@CrossOrigin(origins = "http://localhost:300")
+@CrossOrigin(origins = "http://localhost:3000")
 
 public class RequestController {
 
@@ -70,6 +71,33 @@ public class RequestController {
             return ResponseEntity.status(404).body("Request not found");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error deleting request");
+        }
+    }
+
+    // Process a request (Accept or Reject)
+    @PostMapping("/process/{requestId}")
+    public ResponseEntity<String> processRequest(
+            @PathVariable String requestId,
+            @RequestBody Map<String, String> payload) {
+
+        try {
+            String status = payload.get("status");
+            String comment = payload.get("comment");
+            String editorId = payload.get("editorId"); // Might be null for rejection
+
+            // ✅ Debugging logs
+            System.out.println("Processing requestId: " + requestId);
+            System.out.println("Status: " + status);
+            System.out.println("Comment: " + comment);
+            System.out.println("EditorId: " + editorId);
+
+            // ✅ Call RequestService to handle processing
+            requestService.processRequest(requestId, status, comment, editorId);
+
+            return ResponseEntity.ok("Request updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error processing request: " + e.getMessage());
         }
     }
 }

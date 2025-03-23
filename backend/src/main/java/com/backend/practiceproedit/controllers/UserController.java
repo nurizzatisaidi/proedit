@@ -84,6 +84,21 @@ public class UserController {
         }
     }
 
+    // Get the user by their userId
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+        try {
+            User user = firebaseService.getUserById(userId);
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
     // Delete Editor
     @DeleteMapping("/editors/{userId}")
     public ResponseEntity<String> deleteEditor(@PathVariable String userId) {

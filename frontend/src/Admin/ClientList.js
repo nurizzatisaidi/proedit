@@ -1,61 +1,61 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header"; // Import the reusable Header component
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header"; // Import the reusable Header component
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus } from "react-icons/fa";
-import "./styles/List.css";
+import "../styles/List.css";
 
-function EditorList() {
-    const [editors, setEditors] = useState([]);
+function ClientList() {
+    const [clients, setClients] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
-    const [newEditor, setNewEditor] = useState({ name: "", email: "", password: "" });
+    const [newClient, setNewClient] = useState({ name: "", email: "", password: "" });
 
-    const fetchEditors = async () => {
+    const fetchClients = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/users/editors");
-            setEditors(response.data);
+            const response = await axios.get("http://localhost:8080/users?role=user");
+            setClients(response.data);
         } catch (error) {
-            console.error("Error fetching editors:", error);
+            console.error("Error fetching clients:", error);
         }
     };
 
-    const handleAddEditor = async (e) => {
+    const handleAddClient = async (e) => {
         e.preventDefault();
-        if (!newEditor.name || !newEditor.email || !newEditor.password) {
+        if (!newClient.name || !newClient.email || !newClient.password) {
             alert("Please fill in all fields!");
             return;
         }
         try {
-            await axios.post("http://localhost:8080/users/register-editor", newEditor);
-            alert("Editor added successfully!");
-            setNewEditor({ name: "", email: "", password: "" });
+            await axios.post("http://localhost:8080/users/register", newClient);
+            alert("Client added successfully!");
+            setNewClient({ name: "", email: "", password: "" });
             setShowAddPopup(false);
-            fetchEditors();
+            fetchClients();
         } catch (error) {
-            console.error("Error adding editor:", error);
-            alert("Failed to add editor.");
+            console.error("Error adding client:", error);
+            alert("Failed to add client.");
         }
     };
 
-    const handleDeleteEditor = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this editor?")) return;
+    const handleDeleteClient = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this client?")) return;
         try {
-            await axios.delete(`http://localhost:8080/users/editors/${id}`);
-            alert("Editor deleted successfully!");
-            fetchEditors();
+            await axios.delete(`http://localhost:8080/users/${id}`);
+            alert("Client deleted successfully!");
+            fetchClients();
         } catch (error) {
-            console.error("Error deleting editor:", error);
-            alert("Failed to delete editor.");
+            console.error("Error deleting client:", error);
+            alert("Failed to delete client.");
         }
     };
 
-    const handleEditEditor = (id) => {
-        alert(`Edit functionality for editor with ID ${id} will be added later.`);
+    const handleEditClient = (id) => {
+        alert(`Edit functionality for client with ID ${id} will be added later.`);
     };
 
     useEffect(() => {
-        fetchEditors();
+        fetchClients();
     }, []);
 
     const menuItems = [
@@ -75,28 +75,28 @@ function EditorList() {
                 <Header username="Admin" /> {/* Add the reusable Header component */}
                 <section className="list-section">
                     <div className="top-bar">
-                        <h1>Editors List</h1>
+                        <h1>User List</h1>
                         <button className="add-user-btn" onClick={() => setShowAddPopup(true)}>
-                            <FaPlus /> Add Editor
+                            <FaPlus /> Add User
                         </button>
                     </div>
                     <div className="list">
-                        {editors.length > 0 ? (
-                            editors.map((editor) => (
-                                <div className="list-card" key={editor.userId}>
+                        {clients.length > 0 ? (
+                            clients.map((client) => (
+                                <div className="list-card" key={client.userId}>
                                     <div className="list-details">
-                                        <p><strong>Name:</strong> {editor.name}</p>
-                                        <p><strong>Email:</strong> {editor.email}</p>
-                                        <p><strong>Role:</strong> {editor.role}</p>
+                                        <p><strong>Name:</strong> {client.name}</p>
+                                        <p><strong>Email:</strong> {client.email}</p>
+                                        <p><strong>Role:</strong> {client.role}</p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="edit-btn" onClick={() => handleEditEditor(editor.userId)}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDeleteEditor(editor.userId)}>Delete</button>
+                                        <button className="edit-btn" onClick={() => handleEditClient(client.userId)}>Edit</button>
+                                        <button className="delete-btn" onClick={() => handleDeleteClient(client.userId)}>Delete</button>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p>No editors found.</p>
+                            <p>No clients found.</p>
                         )}
                     </div>
                 </section>
@@ -105,15 +105,15 @@ function EditorList() {
             {showAddPopup && (
                 <div className="popup-overlay">
                     <div className="popup-content">
-                        <h2>Add New Editor</h2>
-                        <form onSubmit={handleAddEditor}>
+                        <h2>Add New Client</h2>
+                        <form onSubmit={handleAddClient}>
                             <div className="form-group">
                                 <label>Name:</label>
                                 <input
                                     type="text"
                                     placeholder="Enter full name"
-                                    value={newEditor.name}
-                                    onChange={(e) => setNewEditor({ ...newEditor, name: e.target.value })}
+                                    value={newClient.name}
+                                    onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
                                     required
                                 />
                             </div>
@@ -122,8 +122,8 @@ function EditorList() {
                                 <input
                                     type="email"
                                     placeholder="Enter email address"
-                                    value={newEditor.email}
-                                    onChange={(e) => setNewEditor({ ...newEditor, email: e.target.value })}
+                                    value={newClient.email}
+                                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                                     required
                                 />
                             </div>
@@ -132,8 +132,8 @@ function EditorList() {
                                 <input
                                     type="password"
                                     placeholder="Enter password"
-                                    value={newEditor.password}
-                                    onChange={(e) => setNewEditor({ ...newEditor, password: e.target.value })}
+                                    value={newClient.password}
+                                    onChange={(e) => setNewClient({ ...newClient, password: e.target.value })}
                                     required
                                 />
                             </div>
@@ -145,8 +145,10 @@ function EditorList() {
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 }
 
-export default EditorList;
+export default ClientList;

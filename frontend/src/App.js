@@ -6,10 +6,11 @@ import Register from './Register';
 import UserDashboard from './dashboards/UserDashboard';
 import AdminDashboard from "./dashboards/AdminDashboard";
 import EditorDashboard from "./dashboards/EditorDashboard";
-import ClientList from './ClientList';
-import EditorList from './EditorList';
-import RequestPage from './RequestPage';
-import AdminRequestPage from './AdminRequestPage';
+import ClientList from './Admin/ClientList';
+import EditorList from './Admin/EditorList';
+import RequestPage from './Client/RequestPage';
+import AdminRequestPage from './Admin/AdminRequestPage';
+import EditorProjectsPage from './Editor/EditorProjectsPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/admin-editors-list" element={<EditorList />} />
         <Route path="/user-requests" element={<RequestPage />} />
         <Route path="/admin-requests" element={<AdminRequestPage />} />
+        <Route path="/editor-projects" element={<EditorProjectsPage />} />
 
       </Routes>
     </Router>

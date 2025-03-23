@@ -4,6 +4,7 @@ import com.backend.practiceproedit.model.User;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -137,6 +138,15 @@ public class FirebaseService {
         }
     }
 
+    // Method to get the user By their ID
+    public User getUserById(String userId) throws ExecutionException, InterruptedException {
+        DocumentSnapshot document = db.collection("users").document(userId).get().get();
+        if (document.exists()) {
+            return document.toObject(User.class);
+        }
+        return null;
+    }
+
     // Method to delete a user by ID
     public void deleteUser(String userId) throws Exception {
         try {
@@ -184,4 +194,11 @@ public class FirebaseService {
             throw new Exception("Error creating editor in Firebase Authentication: " + e.getMessage());
         }
     }
+
+    // Get the username by UserId
+    public String getUsernameById(String userId) throws ExecutionException, InterruptedException {
+        DocumentSnapshot doc = db.collection("users").document(userId).get().get();
+        return doc.exists() ? doc.getString("name") : "Unknown User";
+    }
+
 }

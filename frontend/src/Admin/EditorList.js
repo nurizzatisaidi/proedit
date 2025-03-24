@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header"; // Import the reusable Header component
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import "../styles/List.css";
 
 function EditorList() {
     const [editors, setEditors] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [newEditor, setNewEditor] = useState({ name: "", email: "", password: "" });
 
     const fetchEditors = async () => {
@@ -54,6 +55,12 @@ function EditorList() {
         alert(`Edit functionality for editor with ID ${id} will be added later.`);
     };
 
+    const filteredEditors = editors.filter((editor) =>
+        editor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        editor.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
     useEffect(() => {
         fetchEditors();
     }, []);
@@ -80,18 +87,25 @@ function EditorList() {
                             <FaPlus /> Add Editor
                         </button>
                     </div>
+                    <input
+                        type="text"
+                        placeholder="Search by name or email"
+                        className="search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+
                     <div className="list">
                         {editors.length > 0 ? (
-                            editors.map((editor) => (
+                            filteredEditors.map((editor) => (
                                 <div className="list-card" key={editor.userId}>
                                     <div className="list-details">
                                         <p><strong>Name:</strong> {editor.name}</p>
                                         <p><strong>Email:</strong> {editor.email}</p>
-                                        <p><strong>Role:</strong> {editor.role}</p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="edit-btn" onClick={() => handleEditEditor(editor.userId)}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDeleteEditor(editor.userId)}>Delete</button>
+                                        <button className="edit-btn" onClick={() => handleEditEditor(editor.userId)}><FaEdit />Edit</button>
+                                        <button className="delete-btn" onClick={() => handleDeleteEditor(editor.userId)}><FaTrash />Delete</button>
                                     </div>
                                 </div>
                             ))

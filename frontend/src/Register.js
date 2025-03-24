@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 import './styles/register.css';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
@@ -13,6 +13,7 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [acceptTerms, setAcceptTerms] = useState(false);
     const [message, setMessage] = useState('');
+    const [showTermsPopup, setShowTermsPopup] = useState(false);
 
     const navigate = useNavigate();
     const auth = getAuth();
@@ -108,6 +109,7 @@ function Register() {
                         required
                     />
                 </div>
+
                 <div className="accept-terms">
                     <input
                         type="checkbox"
@@ -115,8 +117,8 @@ function Register() {
                         checked={acceptTerms}
                         onChange={(e) => setAcceptTerms(e.target.checked)}
                     />
-                    <label htmlFor="acceptTerms">
-                        I agree to the terms and conditions.
+                    <label htmlFor="acceptTerms" className="terms-label">
+                        I agree to the <span className="terms-link" onClick={() => setShowTermsPopup(true)}>terms and conditions</span>.
                     </label>
                 </div>
                 <button
@@ -130,8 +132,37 @@ function Register() {
             <p className="signin-prompt">
                 Already have an account? <span onClick={redirectToLogin} style={{ color: "#6b7eff", cursor: "pointer", textDecoration: "underline" }}>Sign in</span>
             </p>
+
+            {/* View Request Popup */}
+            {showTermsPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h2>Terms and Conditions</h2>
+                        <div className="terms-text">
+                            <ol>
+                                <li>By using this platform, you agree to comply with our policies and guidelines.</li>
+                                <li>All videos submitted must be appropriate and must not violate any copyright or intellectual property laws.</li>
+                                <li>You must be the rightful owner of the content or have the necessary rights to submit it for editing.</li>
+                                <li>Editors reserve the right to decline requests that are unclear, inappropriate, or do not meet quality standards.</li>
+                                <li>It is your responsibility to upload clear, high-quality raw video files to ensure optimal editing results.</li>
+                                <li>Inaccurate or incomplete submissions may be delayed or rejected.</li>
+                                <li>We are not liable for any misuse or misinterpretation of edited content after delivery.</li>
+
+
+                            </ol>
+                        </div>
+                        <div className="popup-buttons">
+                            <button className="close-btn" onClick={() => setShowTermsPopup(false)}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
+
+
     );
+
 }
 
 export default Register;

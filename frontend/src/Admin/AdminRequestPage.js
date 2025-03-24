@@ -16,6 +16,8 @@ function AdminRequestPage() {
     const [assignedEditor, setAssignedEditor] = useState("");
     const [rejectionReason, setRejectionReason] = useState("");
     const [editors, setEditors] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
 
     useEffect(() => {
         fetchRequests();
@@ -160,9 +162,12 @@ function AdminRequestPage() {
         setShowViewPopup(true);
     };
 
-    const filteredRequests = requests.filter((req) =>
-        filterStatus === "All" ? true : req.status === filterStatus
-    );
+    const filteredRequests = requests.filter((req) => {
+        const matchesStatus = filterStatus === "All" || req.status === filterStatus;
+        const matchesSearch = req.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesStatus && matchesSearch;
+    });
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
@@ -189,20 +194,31 @@ function AdminRequestPage() {
                             <option value="Rejected">Rejected</option>
                         </select>
                     </div>
+                    <input
+                        type="text"
+                        placeholder="Search by title"
+                        className="search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
 
                     <div className="list">
                         {filteredRequests.length > 0 ? (
                             filteredRequests.map((request) => (
                                 <div className="list-card" key={request.requestId}>
-                                    <div className="list-details">
-                                        <p><strong>Title:</strong> {request.title}</p>
-                                        <p><strong>User:</strong> {request.username || "Unknown"}</p>
-                                        <p><strong>Video Type:</strong> {request.videoType}</p>
-                                        <p><strong>Duration:</strong> {request.duration} mins</p>
-                                        <p><strong>Status:</strong> {request.status}</p>
+                                    <div className="list-details sleek-card-info">
+                                        <h3 className="list-title">{request.title}</h3>
+                                        <p>User: {request.username || "Unknown"}</p>
+                                        <p>Video Type: {request.videoType}</p>
+                                        <p>Duration: {request.duration} mins</p>
+                                        <p>
+                                            <span className={`status-badge ${request.status.toLowerCase()}`}>
+                                                {request.status}
+                                            </span>
+                                        </p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="edit-btn" onClick={() => handleViewRequest(request)}><FaEye /> View</button>
+                                        <button className="view-btn" onClick={() => handleViewRequest(request)}><FaEye /> View</button>
                                         <button className="accept-btn" onClick={() => { setSelectedRequest(request); setShowAcceptPopup(true); }}><FaCheck /> Accept</button>
                                         <button className="reject-btn" onClick={() => { setSelectedRequest(request); setShowRejectPopup(true); }}><FaTimes /> Reject</button>
                                         <button className="delete-btn" onClick={() => handleDelete(request.requestId)}><FaTrash /> Delete</button>

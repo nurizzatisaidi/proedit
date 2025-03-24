@@ -48,9 +48,20 @@
     min-height: 80px;
 }
 
+.list-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
 
 .list-details {
     flex: 1;
+}
+
+.list-details p {
+    margin-bottom: 2px;
 }
 
 .list-actions {
@@ -58,13 +69,36 @@
     gap: 10px;
 }
 
-.edit-btn,
-.delete-btn {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #007bff;
     color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 12px;
+    /* 👈 This adds the gap */
+}
+
+.status-badge.in-progress {
+    background-color: #f0ad4e;
+}
+
+.status-badge.completed {
+    background-color: #5cb85c;
+}
+
+.status-badge.pending {
+    background-color: #0275d8;
+}
+
+.status-badge.rejected {
+    background-color: #d9534f;
+}
+
+.status-badge.accepted {
+    background-color: #5cb85c;
 }
 
 .edit-btn {
@@ -83,16 +117,6 @@
     background-color: #c9302c;
 }
 
-.accept-btn,
-.reject-btn {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-}
-
-/* Green for Accept */
 .accept-btn {
     background-color: #5cb85c;
 }
@@ -101,7 +125,6 @@
     background-color: #4cae4c;
 }
 
-/* Yellow for Reject */
 .reject-btn {
     background-color: #f0ad4e;
     color: white;
@@ -115,7 +138,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* Add spacing between rows */
     padding: 10px;
     font-size: 16px;
 }
@@ -123,9 +145,7 @@
 .detail-row {
     display: flex;
     justify-content: flex-start;
-    /* Aligns content to the left */
     gap: 10px;
-    /* Add spacing between label and value */
     font-size: 16px;
 }
 
@@ -138,9 +158,7 @@
 .detail-row span {
     font-weight: bold;
     margin-right: 8px;
-    /* Adds spacing between label and value */
     min-width: 120px;
-    /* Ensures label alignment */
     text-align: left;
 }
 
@@ -154,7 +172,6 @@
 .request-details span {
     font-weight: bold;
     color: #333;
-    /* Darker text for better contrast */
 }
 
 .popup-overlay {
@@ -201,9 +218,45 @@
 
 .popup-buttons .cancel-btn {
     width: 150px;
-    /* Make button smaller */
     text-align: center;
 }
+
+.view-btn,
+.board-btn,
+.chat-btn {
+    padding: 10px 14px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.view-btn {
+    background-color: #0275d8;
+}
+
+.view-btn:hover {
+    background-color: #025aa5;
+}
+
+.board-btn {
+    background-color: #5cb85c;
+}
+
+.board-btn:hover {
+    background-color: #4cae4c;
+}
+
+.chat-btn {
+    background-color: #f0ad4e;
+}
+
+.chat-btn:hover {
+    background-color: #ec971f;
+}
+
 
 .form-group {
     display: flex;
@@ -226,6 +279,13 @@
     outline: none;
 }
 
+.form-note {
+    width: 500px;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.5;
+}
 
 .button-group {
     display: flex;
@@ -275,4 +335,51 @@
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+.view-btn svg,
+.accept-btn svg,
+.reject-btn svg,
+.edit-btn svg,
+.delete-btn svg,
+.board-btn svg,
+.chat-btn svg {
+    margin-right: 4px;
+    vertical-align: middle;
+    font-size: 16px;
+}
+
+.view-btn,
+.edit-btn,
+.accept-btn,
+.reject-btn,
+.delete-btn,
+.board-btn,
+.chat-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.search-input {
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
 }

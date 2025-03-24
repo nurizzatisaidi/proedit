@@ -9,6 +9,7 @@ function ClientList() {
     const [clients, setClients] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [newClient, setNewClient] = useState({ name: "", email: "", password: "" });
 
     const fetchClients = async () => {
@@ -54,6 +55,12 @@ function ClientList() {
         alert(`Edit functionality for client with ID ${id} will be added later.`);
     };
 
+    const filteredClients = clients.filter((client) =>
+        client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
     useEffect(() => {
         fetchClients();
     }, []);
@@ -80,14 +87,20 @@ function ClientList() {
                             <FaPlus /> Add User
                         </button>
                     </div>
+                    <input
+                        type="text"
+                        placeholder="Search by name or email"
+                        className="search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <div className="list">
                         {clients.length > 0 ? (
-                            clients.map((client) => (
+                            filteredClients.map((client) => (
                                 <div className="list-card" key={client.userId}>
                                     <div className="list-details">
                                         <p><strong>Name:</strong> {client.name}</p>
                                         <p><strong>Email:</strong> {client.email}</p>
-                                        <p><strong>Role:</strong> {client.role}</p>
                                     </div>
                                     <div className="list-actions">
                                         <button className="edit-btn" onClick={() => handleEditClient(client.userId)}>Edit</button>

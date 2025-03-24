@@ -29,9 +29,7 @@ form {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-    /* Stack form elements vertically */
     align-items: center;
-    /* Center align inputs and buttons */
     width: 100%;
 }
 
@@ -40,18 +38,12 @@ form {
     position: relative;
     margin-bottom: 20px;
     width: 100%;
-    /* Full width of the container */
     max-width: 800px;
-    /* Add a max-width for better centering */
-    /* padding-right: 85px; */
-    /* Add padding to the right for better alignment */
 }
 
 .input-container input {
     width: 100%;
-    /* Full width within the input container */
     padding: 12px 40px 12px 40px;
-    /* Adjust padding to account for icons */
     border-radius: 25px;
     border: 1px solid #ddd;
     font-size: 16px;
@@ -76,9 +68,7 @@ form {
     border: none;
     border-radius: 25px;
     width: 100%;
-    /* Full width of the form */
     max-width: 300px;
-    /* Match input max-width */
     font-size: 16px;
     cursor: pointer;
     margin-top: 10px;
@@ -105,46 +95,39 @@ form {
     text-decoration: underline;
 }
 
-/* Terms and conditions modal */
-.terms-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+.accept-terms {
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-
-.terms-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: left;
-}
-
-.terms-content h4 {
-    margin-bottom: 15px;
+    justify-content: flex-start;
+    font-size: 14px;
     color: #333;
+    margin: 10px -14% 20px -25%;
+    width: 100%;
+    max-width: 300px;
+
 }
 
-.terms-content p {
-    color: #555;
+.terms-label {
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
-.terms-content ol {
-    margin: 10px 0;
-    padding-left: 20px;
+.accept-terms input[type="checkbox"] {
+    margin: 0;
+    transform: scale(1.2);
+    cursor: pointer;
 }
 
-.terms-content li {
-    margin-bottom: 10px;
-    color: #555;
+.terms-link {
+    color: #6b7eff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.terms-link:hover {
+    color: #5a6de0;
 }
 
 .close-btn {
@@ -152,7 +135,6 @@ form {
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
     cursor: pointer;
     margin-top: 15px;
     font-size: 14px;
@@ -172,6 +154,54 @@ form {
 .terms-link:hover {
     color: #5a6de0;
 }
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.popup-buttons {
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.terms-text {
+    padding-left: 10px;
+    padding-right: 20px;
+    margin-top: 15px;
+}
+
+.terms-text ol {
+    padding-left: 20px;
+}
+
+.terms-text li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
 
 /* Error message styling */
 .message.error {

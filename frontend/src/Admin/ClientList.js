@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header"; // Import the reusable Header component
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import "../styles/List.css";
 
 function ClientList() {
@@ -103,8 +103,8 @@ function ClientList() {
                                         <p><strong>Email:</strong> {client.email}</p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="edit-btn" onClick={() => handleEditClient(client.userId)}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDeleteClient(client.userId)}>Delete</button>
+                                        <button className="edit-btn" onClick={() => handleEditClient(client.userId)}><FaEdit />Edit</button>
+                                        <button className="delete-btn" onClick={() => handleDeleteClient(client.userId)}><FaTrash />Delete</button>
                                     </div>
                                 </div>
                             ))

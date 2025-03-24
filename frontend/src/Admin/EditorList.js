@@ -116,6 +116,7 @@ function EditorList() {
                 </section>
             </main>
 
+            {/* Create New Editor Popup */}
             {showAddPopup && (
                 <div className="popup-overlay">
                     <div className="popup-content">

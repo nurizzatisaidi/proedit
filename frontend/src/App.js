@@ -10,7 +10,8 @@ import ClientList from './Admin/ClientList';
 import EditorList from './Admin/EditorList';
 import RequestPage from './Client/RequestPage';
 import AdminRequestPage from './Admin/AdminRequestPage';
-import EditorProjectsPage from './Editor/EditorProjectsPage';
+import EditorProjectPage from './Editor/EditorProjectPage';
+import AdminProjectPage from './Admin/AdminProjectPage';
 
 function App() {
   return (
@@ -25,7 +26,8 @@ function App() {
         <Route path="/admin-editors-list" element={<EditorList />} />
         <Route path="/user-requests" element={<RequestPage />} />
         <Route path="/admin-requests" element={<AdminRequestPage />} />
-        <Route path="/editor-projects" element={<EditorProjectsPage />} />
+        <Route path="/editor-projects" element={<EditorProjectPage />} />
+        <Route path="/admin-projects" element={<AdminProjectPage />} />
 
       </Routes>
     </Router>

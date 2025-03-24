@@ -6,6 +6,7 @@ public class Project {
     private String status;
     private String videoType;
     private int duration;
+    private String sharedDrive;
     private String notes;
     private String userId;
     private String username;
@@ -53,6 +54,14 @@ public class Project {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getSharedDrive() {
+        return sharedDrive;
+    }
+
+    public void setSharedDrive(String sharedDrive) {
+        this.sharedDrive = sharedDrive;
     }
 
     public String getUserId() {

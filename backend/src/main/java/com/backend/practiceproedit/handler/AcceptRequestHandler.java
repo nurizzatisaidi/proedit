@@ -19,6 +19,7 @@ public class AcceptRequestHandler implements RequestHandler {
         project.put("title", request.getTitle());
         project.put("videoType", request.getVideoType());
         project.put("duration", request.getDuration());
+        project.put("sharedDrive", request.getSharedDrive());
         project.put("notes", request.getNotes());
         project.put("userId", request.getUserId());
         project.put("username", request.getUsername());

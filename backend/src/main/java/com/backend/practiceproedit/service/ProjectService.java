@@ -13,11 +13,14 @@ import java.util.concurrent.ExecutionException;
 public class ProjectService {
 
     private final Firestore db;
+    private final FirebaseService firebaseService;
 
     public ProjectService(FirebaseService firebaseService) {
         this.db = firebaseService.getFirestore();
+        this.firebaseService = firebaseService;
     }
 
+    // Method to get All projects
     public List<Project> getAllProjects() throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> future = db.collection("projects").get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
@@ -31,6 +34,7 @@ public class ProjectService {
         return projects;
     }
 
+    // Method to get the Project by editor's Id
     public List<Project> getProjectsByEditorId(String editorId) throws ExecutionException, InterruptedException {
         Query query = db.collection("projects").whereEqualTo("editorId", editorId);
         ApiFuture<QuerySnapshot> future = query.get();
@@ -44,4 +48,18 @@ public class ProjectService {
         }
         return projects;
     }
+
+    // Method to delete a project by Id
+    public boolean deleteProjectById(String projectId) throws ExecutionException, InterruptedException {
+        Firestore db = firebaseService.getFirestore();
+
+        DocumentReference docRef = db.collection("projects").document(projectId);
+
+        if (docRef.get().get().exists()) {
+            docRef.delete();
+            return true;
+        }
+        return false;
+    }
+
 }

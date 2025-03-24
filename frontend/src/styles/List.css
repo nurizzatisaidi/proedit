@@ -102,11 +102,11 @@
 }
 
 .edit-btn {
-    background-color: #0275d8;
+    background-color: #9460ac;
 }
 
 .edit-btn:hover {
-    background-color: #025aa5;
+    background-color: #754a88
 }
 
 .delete-btn {
@@ -114,7 +114,7 @@
 }
 
 .delete-btn:hover {
-    background-color: #c9302c;
+    background-color: #9b231f;
 }
 
 .accept-btn {
@@ -132,6 +132,15 @@
 
 .reject-btn:hover {
     background-color: #ec971f;
+}
+
+.payment-btn {
+    background-color: #1c9bbb;
+    color: white;
+}
+
+.payment-btn:hover {
+    background-color: #147a94;
 }
 
 .request-details {
@@ -221,6 +230,7 @@
     text-align: center;
 }
 
+.payment-btn,
 .view-btn,
 .board-btn,
 .chat-btn {
@@ -337,6 +347,7 @@
     border: 1px solid #ccc;
 }
 
+.payment-btn svg,
 .view-btn svg,
 .accept-btn svg,
 .reject-btn svg,

@@ -84,6 +84,17 @@ public class UserController {
         }
     }
 
+    // Get all Clients
+    @GetMapping("/clients")
+    public ResponseEntity<List<User>> getAllClients() {
+        try {
+            List<User> editors = firebaseService.getUsersByRole("user");
+            return ResponseEntity.ok(editors);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
     // Get the user by their userId
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {

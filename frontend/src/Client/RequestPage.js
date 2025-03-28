@@ -74,6 +74,30 @@ function RequestPage() {
         setShowViewPopup(true);
     };
 
+    const handleDelete = async (request) => {
+        if (request.status === "Accepted") {
+            alert("You cannot delete an accepted request.");
+            return;
+        }
+
+        if (!window.confirm("Are you sure you want to delete this request?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/requests/delete/${request.requestId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                alert("Request deleted successfully.");
+                fetchRequests();
+            } else {
+                alert("Failed to delete request.");
+            }
+        } catch (error) {
+            console.error("Error deleting request: ", error);
+        }
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -162,7 +186,7 @@ function RequestPage() {
                                         <button className="view-btn" onClick={() => handleViewRequest(request)}>
                                             <FaEye /> View
                                         </button>
-                                        <button className="delete-btn">
+                                        <button className="delete-btn" onClick={() => handleDelete(request)}>
                                             <FaTrash /> Delete
                                         </button>
                                     </div>
@@ -223,7 +247,7 @@ function RequestPage() {
                                         <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Additional instructions or special requests..."></textarea>
                                     </div>
 
-                                    <div className="button-group">
+                                    <div className="popup-buttons">
                                         <button type="button" className="cancel-btn" onClick={() => setShowRequestPopup(false)}>Cancel</button>
                                         <button type="submit" className="submit-btn">Submit Request</button>
                                     </div>
@@ -270,7 +294,7 @@ function RequestPage() {
                             </div>
                         </div>
 
-                        <div className="popup-buttons">
+                        <div className="button-group">
                             <button className="cancel-btn" onClick={() => setShowViewPopup(false)}>Close</button>
                         </div>
                     </div>

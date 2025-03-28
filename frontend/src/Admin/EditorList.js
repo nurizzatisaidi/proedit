@@ -7,10 +7,17 @@ import "../styles/List.css";
 
 function EditorList() {
     const [editors, setEditors] = useState([]);
+    const [username, setUsername] = useState("Admin");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [newEditor, setNewEditor] = useState({ name: "", email: "", password: "" });
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchEditors();
+    }, []);
 
     const fetchEditors = async () => {
         try {
@@ -60,11 +67,6 @@ function EditorList() {
         editor.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-
-    useEffect(() => {
-        fetchEditors();
-    }, []);
-
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
@@ -79,7 +81,7 @@ function EditorList() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username="Admin" /> {/* Add the reusable Header component */}
+                <Header username={username} /> {/* Add the reusable Header component */}
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>Editors List</h1>

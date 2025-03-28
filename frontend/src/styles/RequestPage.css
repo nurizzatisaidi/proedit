@@ -2,13 +2,6 @@
     padding: 20px;
 }
 
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-}
-
 .create-request-btn {
     background-color: #2a6cff;
     color: white;
@@ -57,11 +50,33 @@
 }
 
 
-.form-group {
+.form-group-edit input,
+.form-group-edit textarea,
+.form-group-edit select {
+    width: 440px;
+    box-sizing: border-box;
+    /* prevents padding from affecting total width */
+}
+
+.form-group-edit {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.form-group-edit label {
+    font-weight: bold;
+    width: 100px;
+    text-align: left;
+}
+
+
+.form-nonedit span {
+    font-weight: bold;
+    margin-right: 10px;
+    width: 90px;
+    display: inline-block;
 }
 
 .form-label {
@@ -85,55 +100,4 @@ textarea {
     height: 80px;
     resize: vertical;
 
-}
-
-.button-group {
-    display: flex;
-    justify-content: center;
-    /* Centers the buttons horizontally */
-    align-items: center;
-    /* Ensures vertical alignment */
-    gap: 20px;
-    /* Adds space between the buttons */
-    margin-top: 20px;
-}
-
-.cancel-btn,
-.submit-btn {
-    display: flex;
-    align-items: center;
-    /* Ensures text stays vertically aligned */
-    justify-content: center;
-    /* Centers text horizontally */
-    padding: 10px 15px;
-    font-size: 14px;
-    width: 160px;
-    /* Ensures both buttons have the same width */
-    height: 45px;
-    /* Ensures both buttons have the same height */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cancel-btn {
-    background-color: #d9534f;
-    color: white;
-    margin: 0;
-    /* ✅ Fix any inherited margin that could cause misalignment */
-}
-
-.submit-btn {
-    background-color: #5cb85c;
-    color: white;
-    margin: 0;
-    /* ✅ Fix any inherited margin */
-}
-
-.cancel-btn:hover {
-    background-color: #c9302c;
-}
-
-.submit-btn:hover {
-    background-color: #4cae4c;
 }

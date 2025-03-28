@@ -13,6 +13,8 @@ import AdminRequestPage from './Admin/AdminRequestPage';
 import EditorProjectPage from './Editor/EditorProjectPage';
 import AdminProjectPage from './Admin/AdminProjectPage';
 import ClientProjectPage from './Client/ClientProjectPage';
+import ClientChatList from './Client/ClientChatList';
+// import ClientChatPage from './Client/ClientChatPage';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
         <Route path="/editor-projects" element={<EditorProjectPage />} />
         <Route path="/admin-projects" element={<AdminProjectPage />} />
         <Route path="/user-projects" element={<ClientProjectPage />} />
+        <Route path="/user-chat-list" element={<ClientChatList />} />
+        {/* <Route path="/user-chat" element={<ClientChatPage />} /> */}
 
       </Routes>
     </Router>

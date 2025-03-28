@@ -18,6 +18,7 @@ public class Request {
     private String assignedEditor; // Only for Accepted requests
     private String rejectionReason; // Only for Rejected requests
     private String assignedEditorUsername; // Only for Accepted requests
+    private String adminUserId;
 
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -152,6 +153,14 @@ public class Request {
 
     public void setAssignedEditorUsername(String assignedEditorUsername) {
         this.assignedEditorUsername = assignedEditorUsername;
+    }
+
+    public String getAdminUserId() {
+        return adminUserId;
+    }
+
+    public void setAdminUserId(String adminUserId) {
+        this.adminUserId = adminUserId;
     }
 
 }

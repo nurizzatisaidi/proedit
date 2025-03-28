@@ -108,29 +108,26 @@ public class RequestService {
     }
 
     // Process the Request made by Admin
-    public void processRequest(String requestId, String status, String comment, String editorId) throws Exception {
+    public void processRequest(String requestId, String status, String comment, String editorId, String adminUserId)
+            throws Exception {
         DocumentReference docRef = db.collection("requests").document(requestId);
         Request request = docRef.get().get().toObject(Request.class);
 
         if (request != null) {
             request.setStatus(status);
-
-            // ✅ Fetch the user's username from FirebaseService
-            String username = firebaseService.getUsernameById(request.getUserId());
-            request.setUsername(username);
+            request.setAdminComment(comment);
 
             if ("Accepted".equals(status)) {
-                request.setAdminComment(comment);
+                String username = firebaseService.getUsernameById(request.getUserId());
+                request.setUsername(username);
                 request.setAssignedEditor(editorId);
-
-                // ✅ Fetch the editor's username from FirebaseService
                 String editorUsername = firebaseService.getUsernameById(editorId);
                 request.setAssignedEditorUsername(editorUsername);
+                request.setAdminUserId(adminUserId); // Set adminUserId in the Request object
             } else if ("Rejected".equals(status)) {
                 request.setRejectionReason(comment);
             }
 
-            // ✅ Use Factory Method to get the correct handler
             RequestHandler handler = RequestHandlerFactory.getHandler(status);
             handler.handleRequest(db, request);
         }

@@ -1,0 +1,8 @@
+.chat-participants {
+    font-size: 16px;
+    /* Smaller than normal paragraph text */
+    color: #555;
+    /* Optional: a softer gray tone */
+    margin-top: 4px;
+    /* Add some spacing from the title */
+}

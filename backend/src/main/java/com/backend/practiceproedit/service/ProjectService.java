@@ -151,4 +151,15 @@ public class ProjectService {
         }
         return projects;
     }
+
+    // Method to create chat when project is assigned
+    public String createChat(String projectId, String adminId, String editorId, String clientId) {
+        DocumentReference chatRef = db.collection("chats").document();
+        Map<String, Object> chat = new HashMap<>();
+        chat.put("chatId", chatRef.getId());
+        chat.put("participants", Arrays.asList(adminId, editorId, clientId));
+        chat.put("createdDate", new Timestamp(new Date()));
+        chatRef.set(chat);
+        return chatRef.getId();
+    }
 }

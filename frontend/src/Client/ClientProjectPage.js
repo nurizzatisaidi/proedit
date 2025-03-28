@@ -7,6 +7,7 @@ import "../styles/List.css";
 
 function ClientProjectPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [showViewPopup, setShowViewPopup] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const [projects, setProjects] = useState([]);
@@ -26,6 +27,7 @@ function ClientProjectPage() {
     }, []);
 
     const fetchProjects = async () => {
+        setIsLoading(true);
         const userId = localStorage.getItem("userId");
         if (!userId) {
             alert("User ID not found. Please log in again.");
@@ -49,6 +51,8 @@ function ClientProjectPage() {
             }
         } catch (error) {
             console.error("Error fetching projects: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -91,7 +95,12 @@ function ClientProjectPage() {
                     />
 
                     <div className="list">
-                        {filteredProjects.length > 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : filteredProjects.length > 0 ? (
                             filteredProjects.map((project) => (
                                 <div className="list-card" key={project.projectId}>
                                     <div className="list-details sleek-card-info">

@@ -7,6 +7,7 @@ import "../styles/List.css";
 
 function RequestPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [showRequestPopup, setShowRequestPopup] = useState(false);
     const [showViewPopup, setShowViewPopup] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -35,6 +36,7 @@ function RequestPage() {
     }, []);
 
     const fetchRequests = async () => {
+        setIsLoading(true);
         const userId = localStorage.getItem("userId");
         if (!userId) {
             alert("User ID not found. Please log in again.");
@@ -58,6 +60,8 @@ function RequestPage() {
             }
         } catch (error) {
             console.error("Error fetching requests: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -170,7 +174,12 @@ function RequestPage() {
                     />
 
                     <div className="list">
-                        {filteredRequests.length > 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : filteredRequests.length > 0 ? (
                             filteredRequests.map((request) => (
                                 <div className="list-card" key={request.requestId}>
                                     <div className="list-details sleek-card-info">

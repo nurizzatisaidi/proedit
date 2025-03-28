@@ -12,6 +12,16 @@
     margin-bottom: 20px;
 }
 
+.top-bar h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.project-page-header {
+    margin-left: 21px;
+}
+
 .add-user-btn {
     background-color: #5cb85c;
     color: white;
@@ -280,6 +290,18 @@
     text-align: left;
 }
 
+.form-group select {
+    color: black;
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-group option {
+    color: black;
+}
+
 .form-group input {
     flex: 1;
     padding: 12px;
@@ -301,9 +323,11 @@
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    gap: 12px;
 }
 
 .add-btn,
+.submit-btn,
 .cancel-btn {
     flex: 1;
     padding: 12px;
@@ -321,6 +345,16 @@
 }
 
 .add-btn:hover {
+    background-color: #4cae4c;
+}
+
+.submit-btn {
+    background-color: #5cb85c;
+    color: white;
+    margin-right: 10px;
+}
+
+.submit-btn:hover {
     background-color: #4cae4c;
 }
 
@@ -345,6 +379,7 @@
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    margin-left: 21px;
 }
 
 .payment-btn svg,

@@ -12,6 +12,7 @@ public class Project {
     private String username;
     private String editorId;
     private String editorUsername;
+    private String privateDrive;
 
     public Project() {
     }
@@ -103,4 +104,13 @@ public class Project {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public String getPrivateDrive() {
+        return privateDrive;
+    }
+
+    public void setPrivateDrive(String privateDrive) {
+        this.privateDrive = privateDrive;
+    }
+
 }

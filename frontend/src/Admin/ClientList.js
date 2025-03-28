@@ -7,10 +7,17 @@ import "../styles/List.css";
 
 function ClientList() {
     const [clients, setClients] = useState([]);
+    const [username, setUsername] = useState("Admin");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [newClient, setNewClient] = useState({ name: "", email: "", password: "" });
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchClients();
+    }, []);
 
     const fetchClients = async () => {
         try {
@@ -60,11 +67,6 @@ function ClientList() {
         client.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-
-    useEffect(() => {
-        fetchClients();
-    }, []);
-
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
@@ -79,7 +81,7 @@ function ClientList() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username="Admin" /> {/* Add the reusable Header component */}
+                <Header username={username} /> {/* Add the reusable Header component */}
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>User List</h1>

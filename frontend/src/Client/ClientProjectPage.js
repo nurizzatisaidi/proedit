@@ -66,7 +66,7 @@ function ClientProjectPage() {
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/user-chat" },
+        { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 

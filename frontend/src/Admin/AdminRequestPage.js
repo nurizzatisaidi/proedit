@@ -88,6 +88,8 @@ function AdminRequestPage() {
             alert("Please provide a comment and select an editor.");
             return;
         }
+        const adminUserId = localStorage.getItem("userId"); // Get admin user ID from localStorage
+
 
         try {
             const response = await fetch(`http://localhost:8080/api/requests/process/${selectedRequest.requestId}`, {
@@ -96,7 +98,8 @@ function AdminRequestPage() {
                 body: JSON.stringify({
                     status: "Accepted",
                     comment: adminComment,
-                    editorId: assignedEditor
+                    editorId: assignedEditor,
+                    adminUserId: adminUserId
                 })
             });
 

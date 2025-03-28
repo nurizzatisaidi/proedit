@@ -12,6 +12,7 @@ import RequestPage from './Client/RequestPage';
 import AdminRequestPage from './Admin/AdminRequestPage';
 import EditorProjectPage from './Editor/EditorProjectPage';
 import AdminProjectPage from './Admin/AdminProjectPage';
+import ClientProjectPage from './Client/ClientProjectPage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin-requests" element={<AdminRequestPage />} />
         <Route path="/editor-projects" element={<EditorProjectPage />} />
         <Route path="/admin-projects" element={<AdminProjectPage />} />
+        <Route path="/user-projects" element={<ClientProjectPage />} />
 
       </Routes>
     </Router>

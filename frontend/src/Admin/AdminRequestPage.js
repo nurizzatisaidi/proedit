@@ -7,6 +7,7 @@ import "../styles/List.css";
 function AdminRequestPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [requests, setRequests] = useState([]);
+    const [username, setUsername] = useState("Admin");
     const [filterStatus, setFilterStatus] = useState("All");
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [showViewPopup, setShowViewPopup] = useState(false);
@@ -19,7 +20,10 @@ function AdminRequestPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
 
+
     useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
         fetchRequests();
         fetchEditors();
     }, []);
@@ -139,10 +143,16 @@ function AdminRequestPage() {
 
 
 
-    const handleDelete = async (requestId) => {
+    const handleDelete = async (request) => {
+        if (request.status === "Accepted") {
+            alert("You cannot delete an accepted request.");
+            return;
+        }
+
         if (!window.confirm("Are you sure you want to delete this request?")) return;
+
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/delete/${selectedRequest.requestId}`, {
+            const response = await fetch(`http://localhost:8080/api/requests/delete/${request.requestId}`, {
                 method: "DELETE",
             });
 
@@ -156,6 +166,7 @@ function AdminRequestPage() {
             console.error("Error deleting request: ", error);
         }
     };
+
 
     const handleViewRequest = (request) => {
         setSelectedRequest(request);
@@ -183,7 +194,7 @@ function AdminRequestPage() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username="Admin" />
+                <Header username={username} />
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>All User Requests</h1>
@@ -221,7 +232,7 @@ function AdminRequestPage() {
                                         <button className="view-btn" onClick={() => handleViewRequest(request)}><FaEye /> View</button>
                                         <button className="accept-btn" onClick={() => { setSelectedRequest(request); setShowAcceptPopup(true); }}><FaCheck /> Accept</button>
                                         <button className="reject-btn" onClick={() => { setSelectedRequest(request); setShowRejectPopup(true); }}><FaTimes /> Reject</button>
-                                        <button className="delete-btn" onClick={() => handleDelete(request.requestId)}><FaTrash /> Delete</button>
+                                        <button className="delete-btn" onClick={() => handleDelete(request)}><FaTrash /> Delete</button>
                                     </div>
                                 </div>
                             ))
@@ -296,8 +307,8 @@ function AdminRequestPage() {
                         </div>
 
                         <div className="popup-buttons">
-                            <button className="accept-btn" onClick={handleAcceptRequest}>Submit</button>
                             <button className="cancel-btn" onClick={() => setShowAcceptPopup(false)}>Cancel</button>
+                            <button className="accept-btn" onClick={handleAcceptRequest}>Submit</button>
                         </div>
                     </div>
                 </div>
@@ -313,8 +324,8 @@ function AdminRequestPage() {
                             <textarea value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
                         </div>
                         <div className="popup-buttons">
-                            <button className="accept-btn" onClick={handleRejectRequest}>Submit</button>
                             <button className="cancel-btn" onClick={() => setShowRejectPopup(false)}>Cancel</button>
+                            <button className="accept-btn" onClick={handleRejectRequest}>Submit</button>
                         </div>
                     </div>
                 </div>

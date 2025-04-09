@@ -86,4 +86,48 @@ public class ChatController {
         }
     }
 
+    // Get all the chats for Admin
+    @GetMapping("/all")
+    public ResponseEntity<List<Map<String, Object>>> getAllChats() {
+        try {
+            List<Chat> chats = chatService.getAllChats();
+            List<Map<String, Object>> enrichedChats = new ArrayList<>();
+
+            // Collect all unique user IDs and project IDs
+            Set<String> userIds = new HashSet<>();
+            Set<String> projectIds = new HashSet<>();
+
+            for (Chat chat : chats) {
+                userIds.addAll(chat.getParticipantIds());
+                projectIds.add(chat.getProjectId());
+            }
+
+            // Batch fetch usernames and the project titles
+            Map<String, String> usernamesMap = firebaseService.getUsernamesByIds(userIds);
+            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(projectIds);
+
+            for (Chat chat : chats) {
+                Map<String, Object> chatMap = new HashMap<>();
+                chatMap.put("chatId", chat.getChatId());
+                chatMap.put("projectId", chat.getProjectId());
+                chatMap.put("participantIds", chat.getParticipantIds());
+
+                List<String> usernames = new ArrayList<>();
+                for (String id : chat.getParticipantIds()) {
+                    usernames.add(usernamesMap.getOrDefault(id, "Unknown"));
+                }
+
+                chatMap.put("participantUsernames", usernames);
+                chatMap.put("projectTitle", projectTitlesMap.getOrDefault(chat.getProjectId(), "Untitled Project"));
+
+                enrichedChats.add(chatMap);
+            }
+
+            return ResponseEntity.ok(enrichedChats);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

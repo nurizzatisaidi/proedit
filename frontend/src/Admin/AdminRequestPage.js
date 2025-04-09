@@ -6,6 +6,7 @@ import "../styles/List.css";
 
 function AdminRequestPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [requests, setRequests] = useState([]);
     const [username, setUsername] = useState("Admin");
     const [filterStatus, setFilterStatus] = useState("All");
@@ -29,6 +30,7 @@ function AdminRequestPage() {
     }, []);
 
     const fetchRequests = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch("http://localhost:8080/api/requests/all");
             if (response.ok) {
@@ -54,6 +56,8 @@ function AdminRequestPage() {
             }
         } catch (error) {
             console.error("Error fetching requests: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -217,7 +221,12 @@ function AdminRequestPage() {
                     />
 
                     <div className="list">
-                        {filteredRequests.length > 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : filteredRequests.length > 0 ? (
                             filteredRequests.map((request) => (
                                 <div className="list-card" key={request.requestId}>
                                     <div className="list-details sleek-card-info">

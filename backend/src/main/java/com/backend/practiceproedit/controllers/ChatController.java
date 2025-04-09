@@ -29,38 +29,61 @@ public class ChatController {
             List<Chat> chats = chatService.getChatsByUserId(userId);
             List<Map<String, Object>> enrichedChats = new ArrayList<>();
 
+            // Collect all unique user IDs and project IDs
+            Set<String> userIds = new HashSet<>();
+            Set<String> projectIds = new HashSet<>();
+
+            for (Chat chat : chats) {
+                userIds.addAll(chat.getParticipantIds());
+                projectIds.add(chat.getProjectId());
+            }
+
+            // Batch fetch users
+            Map<String, String> usernamesMap = firebaseService.getUsernamesByIds(userIds);
+
+            // Batch fetch projects
+            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(projectIds);
+
             for (Chat chat : chats) {
                 Map<String, Object> chatMap = new HashMap<>();
                 chatMap.put("chatId", chat.getChatId());
                 chatMap.put("projectId", chat.getProjectId());
                 chatMap.put("participantIds", chat.getParticipantIds());
 
-                // Convert participant IDs to usernames
                 List<String> usernames = new ArrayList<>();
                 for (String id : chat.getParticipantIds()) {
-                    String name = firebaseService.getUsernameById(id); // assumes this method exists
-                    usernames.add(name != null ? name : "Unknown");
+                    usernames.add(usernamesMap.getOrDefault(id, "Unknown"));
                 }
 
                 chatMap.put("participantUsernames", usernames);
-
-                // Fetch project title
-                DocumentSnapshot projectDoc = firebaseService.getFirestore()
-                        .collection("projects").document(chat.getProjectId()).get().get();
-
-                if (projectDoc.exists()) {
-                    String projectTitle = projectDoc.getString("title");
-                    chatMap.put("projectTitle", projectTitle != null ? projectTitle : "Untitled Project");
-                } else {
-                    chatMap.put("projectTitle", "Untitled Project");
-                }
+                chatMap.put("projectTitle", projectTitlesMap.getOrDefault(chat.getProjectId(), "Untitled Project"));
 
                 enrichedChats.add(chatMap);
             }
 
             return ResponseEntity.ok(enrichedChats);
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    // Lightweight endpoint to fetch only the project title by chatId
+    @GetMapping("/chat-title/{chatId}")
+    public ResponseEntity<String> getChatTitle(@PathVariable String chatId) {
+        try {
+            DocumentSnapshot chat = firebaseService.getFirestore().collection("chats").document(chatId).get().get();
+            if (chat.exists()) {
+                String projectId = chat.getString("projectId");
+                String title = firebaseService.getProjectTitleById(projectId);
+                return ResponseEntity.ok(title != null ? title : "Untitled Project");
+            } else {
+                return ResponseEntity.ok("Chat");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error");
+        }
+    }
+
 }

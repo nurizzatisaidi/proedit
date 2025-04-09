@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Date;
+
+import com.google.cloud.Timestamp;
 
 @Service
 public class ProjectService {
@@ -158,7 +164,7 @@ public class ProjectService {
         Map<String, Object> chat = new HashMap<>();
         chat.put("chatId", chatRef.getId());
         chat.put("participants", Arrays.asList(adminId, editorId, clientId));
-        chat.put("createdDate", new Timestamp(new Date()));
+        chat.put("createdDate", Timestamp.now());
         chatRef.set(chat);
         return chatRef.getId();
     }

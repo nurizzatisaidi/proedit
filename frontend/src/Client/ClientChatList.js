@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell } from 'react-icons/fa';
@@ -35,8 +37,10 @@ function ClientChatList() {
         }
     };
 
+    const navigate = useNavigate();
+
     const handleChat = (chatId) => {
-        window.location.href = `/user-chat/${chatId}`;
+        navigate(`/user-chat/${chatId}`);
     };
 
     const menuItems = [

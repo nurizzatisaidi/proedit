@@ -38,4 +38,20 @@ public class ChatService {
 
         return chats;
     }
+
+    // Get all the chats from Firestore for Admin
+    public List<Chat> getAllChats() throws ExecutionException, InterruptedException {
+        CollectionReference chatsRef = db.collection("chats");
+        ApiFuture<QuerySnapshot> future = chatsRef.get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        List<Chat> chats = new ArrayList<>();
+        for (DocumentSnapshot doc : documents) {
+            Chat chat = doc.toObject(Chat.class);
+            chat.setChatId(doc.getId());
+            chats.add(chat);
+        }
+        return chats;
+    }
+
 }

@@ -7,6 +7,7 @@ import "../styles/List.css";
 
 function EditorList() {
     const [editors, setEditors] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [username, setUsername] = useState("Admin");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
@@ -20,11 +21,14 @@ function EditorList() {
     }, []);
 
     const fetchEditors = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get("http://localhost:8080/users/editors");
             setEditors(response.data);
         } catch (error) {
             console.error("Error fetching editors:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -98,7 +102,12 @@ function EditorList() {
                     />
 
                     <div className="list">
-                        {editors.length > 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : editors.length > 0 ? (
                             filteredEditors.map((editor) => (
                                 <div className="list-card" key={editor.userId}>
                                     <div className="list-details">

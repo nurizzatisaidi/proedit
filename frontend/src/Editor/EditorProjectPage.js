@@ -6,6 +6,7 @@ import "../styles/List.css";
 
 function EditorProjectsPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState([]);
     const [username, setUsername] = useState("editor");
     const [showViewPopup, setShowViewPopup] = useState(false);
@@ -22,6 +23,7 @@ function EditorProjectsPage() {
     }, []);
 
     const fetchProjects = async (editorId) => {
+        setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/projects/editor/${editorId}`);
             if (!response.ok) throw new Error("Failed to fetch projects");
@@ -29,6 +31,8 @@ function EditorProjectsPage() {
             setProjects(data);
         } catch (error) {
             console.error("Error fetching projects: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -74,7 +78,12 @@ function EditorProjectsPage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <div className="list">
-                        {projects.filter((project) => {
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : projects.filter((project) => {
                             const lowerQuery = searchQuery.toLowerCase();
                             return (
                                 project.title?.toLowerCase().includes(lowerQuery) ||

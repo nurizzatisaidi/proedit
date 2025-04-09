@@ -15,7 +15,8 @@ import AdminProjectPage from './Admin/AdminProjectPage';
 import ClientProjectPage from './Client/ClientProjectPage';
 import ClientChatList from './Client/ClientChatList';
 import ClientChatPage from './Client/ClientChatPage';
-// import ClientChatPage from './Client/ClientChatPage';
+import EditorChatList from './Editor/EditorChatList';
+import AdminChatList from './Admin/AdminChatList';
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
         <Route path="/user-projects" element={<ClientProjectPage />} />
         <Route path="/user-chat-list" element={<ClientChatList />} />
         <Route path="/user-chat/:chatId" element={<ClientChatPage />} />
+        <Route path="/editor-chat-list" element={<EditorChatList />} />
+        <Route path="/admin-chat-list" element={<AdminChatList />} />
 
       </Routes>
     </Router>

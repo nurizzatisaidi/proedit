@@ -179,7 +179,7 @@ function AdminProjectPage() {
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/admin-chat" },
+        { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },

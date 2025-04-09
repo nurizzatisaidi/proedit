@@ -53,7 +53,7 @@ function EditorProjectsPage() {
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
         { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/editor-chat" },
+        { name: "Chat", icon: <FaComments />, path: "/editor-chat-list" },
         { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
     ];
 
@@ -63,8 +63,6 @@ function EditorProjectsPage() {
             <main className="main-content">
                 <Header username={username} />
                 <div className="top-bar">
-                    <h1>Your Assigned Projects</h1>
-
                 </div>
                 <section className="list-section">
                     <div className="top-bar">

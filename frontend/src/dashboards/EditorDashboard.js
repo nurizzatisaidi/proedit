@@ -19,7 +19,7 @@ function EditorDashboard() {
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
         { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/editor-chat" },
+        { name: "Chat", icon: <FaComments />, path: "/editor-chat-list" },
         { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
     ];
 

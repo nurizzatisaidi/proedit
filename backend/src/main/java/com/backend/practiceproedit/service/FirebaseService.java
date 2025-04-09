@@ -26,12 +26,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirebaseService {
 
     private Firestore db;
+    private final Map<String, String> usernameCache = new HashMap<>();
+    private final Map<String, String> projectTitleCache = new HashMap<>();
 
     @PostConstruct
     public void initializeFirebase() {
@@ -196,9 +199,56 @@ public class FirebaseService {
     }
 
     // Get the username by UserId
+    // only need one username, good for one-time use
     public String getUsernameById(String userId) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = db.collection("users").document(userId).get().get();
         return doc.exists() ? doc.getString("name") : "Unknown User";
+    }
+
+    public String getProjectTitleById(String projectId) throws ExecutionException, InterruptedException {
+        DocumentSnapshot snapshot = db.collection("projects").document(projectId).get().get();
+        return snapshot.exists() ? snapshot.getString("title") : "Untitled Project";
+    }
+
+    // Get many username at one for rendering a chat list (Batch Fetching)
+    public Map<String, String> getUsernamesByIds(Set<String> userIds) throws ExecutionException, InterruptedException {
+        Map<String, String> usernames = new HashMap<>();
+        List<ApiFuture<DocumentSnapshot>> futures = new ArrayList<>();
+
+        for (String userId : userIds) {
+            futures.add(db.collection("users").document(userId).get());
+        }
+
+        for (int i = 0; i < futures.size(); i++) {
+            DocumentSnapshot snapshot = futures.get(i).get();
+            if (snapshot.exists()) {
+                String name = snapshot.getString("name");
+                usernames.put(snapshot.getId(), name);
+            }
+        }
+
+        return usernames;
+    }
+
+    // Get many project title all at once (Batch Fetching)
+    public Map<String, String> getProjectTitlesByIds(Set<String> projectIds)
+            throws ExecutionException, InterruptedException {
+        Map<String, String> titles = new HashMap<>();
+        List<ApiFuture<DocumentSnapshot>> futures = new ArrayList<>();
+
+        for (String projectId : projectIds) {
+            futures.add(db.collection("projects").document(projectId).get());
+        }
+
+        for (int i = 0; i < futures.size(); i++) {
+            DocumentSnapshot snapshot = futures.get(i).get();
+            if (snapshot.exists()) {
+                String title = snapshot.getString("title");
+                titles.put(snapshot.getId(), title);
+            }
+        }
+
+        return titles;
     }
 
 }

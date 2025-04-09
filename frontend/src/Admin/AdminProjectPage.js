@@ -8,6 +8,7 @@ import "../styles/ProjectPage.css";
 
 function AdminProjectPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState([]);
     const [username, setUsername] = useState("Admin");
     const [filterStatus, setFilterStatus] = useState("All");
@@ -37,6 +38,7 @@ function AdminProjectPage() {
     }, []);
 
     const fetchAllProjects = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch("http://localhost:8080/api/projects/all");
             if (!response.ok) throw new Error("Failed to fetch projects");
@@ -44,6 +46,8 @@ function AdminProjectPage() {
             setProjects(data);
         } catch (error) {
             console.error("Error fetching projects: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -212,7 +216,12 @@ function AdminProjectPage() {
                     />
 
                     <div className="list">
-                        {filteredProjects.map((project) => (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : filteredProjects.map((project) => (
                             <div className="list-card" key={project.projectId}>
                                 <div className="list-details sleek-card-info">
                                     <h3 className="list-title">{project.title}</h3>

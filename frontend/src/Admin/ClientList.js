@@ -7,6 +7,7 @@ import "../styles/List.css";
 
 function ClientList() {
     const [clients, setClients] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [username, setUsername] = useState("Admin");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
@@ -20,11 +21,14 @@ function ClientList() {
     }, []);
 
     const fetchClients = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get("http://localhost:8080/users?role=user");
             setClients(response.data);
         } catch (error) {
             console.error("Error fetching clients:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -97,7 +101,12 @@ function ClientList() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <div className="list">
-                        {clients.length > 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading requests...</p>
+                            </div>
+                        ) : clients.length > 0 ? (
                             filteredClients.map((client) => (
                                 <div className="list-card" key={client.userId}>
                                     <div className="list-details">

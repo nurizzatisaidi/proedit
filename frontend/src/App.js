@@ -14,9 +14,10 @@ import EditorProjectPage from './Editor/EditorProjectPage';
 import AdminProjectPage from './Admin/AdminProjectPage';
 import ClientProjectPage from './Client/ClientProjectPage';
 import ClientChatList from './Client/ClientChatList';
-import ClientChatPage from './Client/ClientChatPage';
+import ClientMessagePage from './Client/ClientMessagePage';
 import EditorChatList from './Editor/EditorChatList';
 import AdminChatList from './Admin/AdminChatList';
+import EditorMessagePage from './Editor/EditorMessagePage';
 
 function App() {
   return (
@@ -35,9 +36,10 @@ function App() {
         <Route path="/admin-projects" element={<AdminProjectPage />} />
         <Route path="/user-projects" element={<ClientProjectPage />} />
         <Route path="/user-chat-list" element={<ClientChatList />} />
-        <Route path="/user-chat/:chatId" element={<ClientChatPage />} />
+        <Route path="/user-chat/:chatId" element={<ClientMessagePage />} />
         <Route path="/editor-chat-list" element={<EditorChatList />} />
         <Route path="/admin-chat-list" element={<AdminChatList />} />
+        <Route path="/editor-chat/:chatId" element={<EditorMessagePage />} />
 
       </Routes>
     </Router>

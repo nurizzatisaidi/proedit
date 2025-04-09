@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell } from 'react-icons/fa';
-import "../styles/ChatPage.css"; // make sure spinner CSS is added here or imported
+import { FaHome, FaFolder, FaComments, FaBell } from 'react-icons/fa';
+import "../styles/ChatPage.css"; // Make sure spinner CSS is here or globally included
 
-function ClientChatPage() {
+function EditorMessagePage() {
     const { chatId } = useParams();
     const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ function ClientChatPage() {
     const [chatList, setChatList] = useState([]);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
-    const [isChatListLoading, setIsChatListLoading] = useState(true); // 🔄 loading flag
+    const [isChatListLoading, setIsChatListLoading] = useState(true);
     const [isMessageLoading, setIsMessageLoading] = useState(true);
 
     const messagesEndRef = useRef(null);
@@ -94,11 +94,10 @@ function ClientChatPage() {
     }, [messages]);
 
     const menuItems = [
-        { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
-        { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
-        { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
+        { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
+        { name: "Chat", icon: <FaComments />, path: "/editor-chat" },
+        { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
     ];
 
     const activeChat = useMemo(
@@ -123,7 +122,7 @@ function ClientChatPage() {
                                 <div
                                     key={chat.chatId}
                                     className={`chat-list-item ${chat.chatId === chatId ? 'active' : ''}`}
-                                    onClick={() => navigate(`/user-chat/${chat.chatId}`)}
+                                    onClick={() => navigate(`/editor-chat/${chat.chatId}`)}
                                 >
                                     <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
                                     <div className="chat-user-info">
@@ -186,4 +185,4 @@ function ClientChatPage() {
     );
 }
 
-export default ClientChatPage;
+export default EditorMessagePage;

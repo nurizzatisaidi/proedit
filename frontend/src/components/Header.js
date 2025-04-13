@@ -7,7 +7,7 @@ const Header = ({ username }) => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
-    const dropdownRef = useRef(null); // Ref to detect outside clicks
+    const dropdownRef = useRef(null);
 
     // Get user details from localStorage
     const storedUsername = localStorage.getItem("username") || "Guest";
@@ -43,7 +43,7 @@ const Header = ({ username }) => {
         localStorage.removeItem("username");
         localStorage.removeItem("userRole");
         localStorage.removeItem("profilePic");
-        navigate("/"); // Redirect to login page
+        navigate("/");
     };
 
     return (
@@ -57,27 +57,32 @@ const Header = ({ username }) => {
                 <div className="header-right" ref={dropdownRef}>
                     <span className="username">Hello, {username || storedUsername}</span>
 
-                    {/* ✅ Profile picture stays in header only */}
                     <img
                         src={storedProfilePic}
                         alt="Profile"
                         className="profile-picture"
                     />
 
-                    {/* ✅ Toggle dropdown with arrow icon */}
                     {showDropdown ? (
                         <FaAngleUp className="dropdown-icon" onClick={toggleDropdown} />
                     ) : (
                         <FaAngleDown className="dropdown-icon" onClick={toggleDropdown} />
                     )}
 
-                    {/* ✅ Dropdown Menu (Profile Picture Removed) */}
                     {showDropdown && (
                         <div className="dropdown-menu">
                             <ul>
-                                <li onClick={() => navigate("/profile")}>
+                                <li
+                                    onClick={() => {
+                                        const role = localStorage.getItem("userRole");
+                                        if (role === "admin") navigate("/admin-myprofile");
+                                        else if (role === "editor") navigate("/editor-myprofile");
+                                        else navigate("/client-myprofile");
+                                    }}
+                                >
                                     <FaUser /> My Profile
                                 </li>
+
                                 <li onClick={() => navigate("/settings")}>
                                     <FaCog /> Settings
                                 </li>
@@ -87,7 +92,6 @@ const Header = ({ username }) => {
                                 <li onClick={() => navigate("/help")}>
                                     <FaQuestionCircle /> Help & Support
                                 </li>
-                                {/* ✅ Show logout confirmation instead of logging out directly */}
                                 <li onClick={handleLogoutRequest} className="logout-option">
                                     <FaSignOutAlt /> Logout
                                 </li>
@@ -97,7 +101,7 @@ const Header = ({ username }) => {
                 </div>
             </header>
 
-            {/* ✅ Logout Confirmation Popup */}
+            {/* Logout Confirmation Popup */}
             {showLogoutPopup && (
                 <div className="logout-popup">
                     <div className="popup-content">

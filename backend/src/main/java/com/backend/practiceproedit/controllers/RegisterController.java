@@ -36,32 +36,37 @@ public class RegisterController {
         }
     }
 
-    @PostMapping("/google-login")
-    public ResponseEntity<String> handleGoogleLogin(@RequestBody Map<String, String> payload) {
-        try {
-            String idToken = payload.get("token"); // Get the token from the request payload
+    // @PostMapping("/google-login")
+    // public ResponseEntity<String> handleGoogleLogin(@RequestBody Map<String,
+    // String> payload) {
+    // try {
+    // String idToken = payload.get("token"); // Get the token from the request
+    // payload
 
-            // Verify the Firebase ID token
-            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+    // // Verify the Firebase ID token
+    // FirebaseToken decodedToken =
+    // FirebaseAuth.getInstance().verifyIdToken(idToken);
 
-            // Extract user information
-            String uid = decodedToken.getUid();
-            String displayName = decodedToken.getName();
-            String email = decodedToken.getEmail();
-            String photoUrl = decodedToken.getPicture();
+    // // Extract user information
+    // String uid = decodedToken.getUid();
+    // String displayName = decodedToken.getName();
+    // String email = decodedToken.getEmail();
+    // String photoUrl = decodedToken.getPicture();
 
-            // Register the user in Firestore if not already registered
-            String result = registerService.registerGoogleUser(uid, displayName, email, photoUrl);
+    // // Register the user in Firestore if not already registered
+    // String result = registerService.registerGoogleUser(uid, displayName, email,
+    // photoUrl);
 
-            // Return a success response
-            return ResponseEntity.ok("User logged in successfully!");
-        } catch (FirebaseAuthException e) {
-            // Handle invalid token
-            return ResponseEntity.status(401).body("Invalid Firebase token");
-        } catch (Exception e) {
-            // Handle general errors
-            return ResponseEntity.status(500).body("Error during Google login: " + e.getMessage());
-        }
-    }
+    // // Return a success response
+    // return ResponseEntity.ok("User logged in successfully!");
+    // } catch (FirebaseAuthException e) {
+    // // Handle invalid token
+    // return ResponseEntity.status(401).body("Invalid Firebase token");
+    // } catch (Exception e) {
+    // // Handle general errors
+    // return ResponseEntity.status(500).body("Error during Google login: " +
+    // e.getMessage());
+    // }
+    // }
 
 }

@@ -108,7 +108,7 @@ public class FirebaseService {
             }
 
             // Create a new user object for first-time registration
-            User user = new User(uid, displayName, email, null, "google");
+            User user = new User(uid, displayName, email, null, "user");
             user.setPhotoUrl(photoUrl); // Set the user's photo URL
             db.collection("users").document(uid).set(user);
 
@@ -249,6 +249,35 @@ public class FirebaseService {
         }
 
         return titles;
+    }
+
+    // Update user profiles for all users
+    public void updateUserProfile(String userId, User updatedUser) throws ExecutionException, InterruptedException {
+        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentSnapshot snapshot = userRef.get().get();
+
+        if (!snapshot.exists()) {
+            throw new RuntimeException("User not found");
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+
+        // Only allow specific fields to be updated
+        updates.put("name", updatedUser.getName());
+        updates.put("email", updatedUser.getEmail());
+        updates.put("photoUrl", updatedUser.getPhotoUrl());
+
+        if (updatedUser.getPhoneNumber() != null) {
+            updates.put("phoneNumber", updatedUser.getPhoneNumber());
+        }
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            String hashedPassword = BCrypt.hashpw(updatedUser.getPassword(), BCrypt.gensalt());
+            updates.put("password", hashedPassword);
+        }
+
+        // Prevent role/userId from being updated
+        userRef.update(updates).get();
     }
 
 }

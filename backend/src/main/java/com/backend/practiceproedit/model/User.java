@@ -6,7 +6,8 @@ public class User {
     private String email;
     private String password;
     private String role;
-    private String photoUrl; // Add this field
+    private String photoUrl;
+    private String phoneNumber;
 
     // Default constructor
     public User() {
@@ -62,11 +63,20 @@ public class User {
         this.role = role;
     }
 
-    public String getPhotoUrl() { // Getter for photoUrl
+    public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) { // Setter for photoUrl
+    public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
 }

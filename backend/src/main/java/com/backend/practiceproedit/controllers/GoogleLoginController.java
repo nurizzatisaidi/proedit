@@ -8,6 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.backend.practiceproedit.model.User;
+import com.backend.practiceproedit.service.FirebaseService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
@@ -17,23 +25,43 @@ import com.google.firebase.auth.FirebaseToken;
 @CrossOrigin(origins = "http://localhost:3000")
 public class GoogleLoginController {
 
+    @Autowired
+    private FirebaseService firebaseService;
+
     @PostMapping
-    public ResponseEntity<String> loginWithGoogle(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> request) {
         String token = request.get("token");
 
         try {
-            // Verify Firebase token
+            // ✅ Verify token from Firebase
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+
             String uid = decodedToken.getUid();
             String email = decodedToken.getEmail();
-            String name = (String) decodedToken.getClaims().get("name");
-            String photoUrl = (String) decodedToken.getClaims().get("picture");
+            String name = decodedToken.getName(); // From Firebase claim
+            String photoUrl = decodedToken.getPicture();
 
-            // Register or log in user
-            // Call registerGoogleUser in FirebaseService if needed
-            return ResponseEntity.ok("Google login successful! UID: " + uid + ", Email: " + email);
+            // ✅ Register if not exists
+            firebaseService.registerGoogleUser(uid, name, email, photoUrl);
+
+            // ✅ Fetch user from Firestore to get their role
+            User user = firebaseService.getUserById(uid);
+
+            if (user == null) {
+                return ResponseEntity.status(404).body("User not found after registration.");
+            }
+
+            // ✅ Send user details to frontend
+            Map<String, String> response = new HashMap<>();
+            response.put("userId", uid);
+            response.put("name", user.getName());
+            response.put("role", user.getRole());
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid Firebase token");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error during Google login: " + e.getMessage());
         }
     }
 }

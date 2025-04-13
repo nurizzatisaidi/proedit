@@ -48,29 +48,38 @@ function Login() {
 
     const handleGoogleLogin = async () => {
         try {
-            // Sign in with Google using Firebase
             const result = await signInWithGoogle();
             const user = result.user;
 
-            console.log("Google User:", user); // Debug: Print user info
+            console.log("Google User:", user);
 
-            // Construct user data
             const userData = {
-                token: await user.getIdToken(), // Get the Firebase ID token
+                token: await user.getIdToken(),
                 uid: user.uid,
                 displayName: user.displayName,
                 email: user.email,
                 photoUrl: user.photoURL,
             };
 
-            // Send user data to the backend for Firestore storage
             const response = await axios.post('http://localhost:8080/google-login', userData);
 
             console.log("Backend response:", response.data);
-            setMessage(`Welcome, ${user.displayName}!`);
 
-            // Redirect to dashboard after successful Google login
-            navigate('/user-dashboard');
+            // Store user details
+            localStorage.setItem("username", response.data.name);
+            localStorage.setItem("role", response.data.role);
+            localStorage.setItem("userId", response.data.userId);
+
+            // Redirect based on role
+            if (response.data.role === "admin") {
+                navigate("/admin-dashboard");
+            } else if (response.data.role === "editor") {
+                navigate("/editor-dashboard");
+            } else {
+                navigate("/user-dashboard"); // default to client
+            }
+
+            setMessage(`Welcome, ${response.data.name}!`);
         } catch (error) {
             console.error("Error during Google Login:", error);
             setMessage("Error logging in with Google.");

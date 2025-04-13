@@ -47,7 +47,7 @@ public class RegisterService {
             }
 
             // Create a new user object
-            User user = new User(uid, displayName, email, null, "google");
+            User user = new User(uid, displayName, email, null, "user");
             user.setPhotoUrl(photoUrl); // Assuming User has a `photoUrl` field
             db.collection("users").add(user);
 

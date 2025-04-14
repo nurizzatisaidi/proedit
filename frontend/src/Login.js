@@ -69,6 +69,7 @@ function Login() {
             localStorage.setItem("username", response.data.name);
             localStorage.setItem("role", response.data.role);
             localStorage.setItem("userId", response.data.userId);
+            localStorage.setItem("profilePic", response.data.photoUrl);
 
             // Redirect based on role
             if (response.data.role === "admin") {

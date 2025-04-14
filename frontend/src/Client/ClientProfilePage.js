@@ -29,9 +29,11 @@ function ClientProfilePage() {
                 name: data.name || "",
                 email: data.email || "",
                 password: "",
-                phoneNumber: data.phone || "",
+                phoneNumber: data.phoneNumber || "",
                 photoUrl: data.photoUrl || ""
             });
+
+            localStorage.setItem("profilePic", data.photoUrl || "");
         } catch (err) {
             console.error("Error fetching user:", err);
         }
@@ -53,11 +55,10 @@ function ClientProfilePage() {
             if (res.ok) {
                 alert("Profile updated successfully!");
 
-                // ✅ Update localStorage so Header.js reflects new name/photo
                 localStorage.setItem("username", formData.name);
                 localStorage.setItem("profilePic", formData.photoUrl);
 
-                fetchUserProfile(); // Refresh displayed profile
+                fetchUserProfile();
             } else {
                 alert("Failed to update profile.");
             }
@@ -81,10 +82,14 @@ function ClientProfilePage() {
                 <Header username={user?.name} />
                 <div className="profile-page">
                     <div className="profile-card">
-                        <img className="profile-pic" src={formData.photoUrl || "https://via.placeholder.com/150"} alt="Profile" />
+                        <img
+                            className="profile-pic"
+                            src={formData.photoUrl || localStorage.getItem("profilePic") || "https://via.placeholder.com/150"}
+                            alt="Profile"
+                        />
                         <h3>{user?.name}</h3>
                         <p>{user?.email}</p>
-                        <p>{user?.phone || "No phone number yet"}</p>
+                        <p>{user?.phoneNumber || "No phone number yet"}</p>
                         <p>Role: {user?.role}</p>
                     </div>
 

@@ -56,6 +56,7 @@ public class GoogleLoginController {
             response.put("userId", uid);
             response.put("name", user.getName());
             response.put("role", user.getRole());
+            response.put("photoUrl", user.getPhotoUrl());
 
             return ResponseEntity.ok(response);
 

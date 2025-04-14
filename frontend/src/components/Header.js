@@ -6,17 +6,25 @@ import { useNavigate } from "react-router-dom";
 const Header = ({ username }) => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || "https://via.placeholder.com/40");
+
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
     // Get user details from localStorage
     const storedUsername = localStorage.getItem("username") || "Guest";
-    const storedProfilePic = localStorage.getItem("profilePic") || "https://via.placeholder.com/40";
 
-    // Toggle dropdown visibility
-    const toggleDropdown = () => {
-        setShowDropdown(!showDropdown);
-    };
+    // 🔁 Watch for profilePic changes in localStorage
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const updatedPic = localStorage.getItem("profilePic") || "https://via.placeholder.com/40";
+            if (updatedPic !== profilePic) {
+                setProfilePic(updatedPic);
+            }
+        }, 1000); // check every 1 second
+
+        return () => clearInterval(interval);
+    }, [profilePic]);
 
     // Close dropdown if clicked outside
     useEffect(() => {
@@ -31,17 +39,19 @@ const Header = ({ username }) => {
         };
     }, []);
 
-    // Show logout confirmation popup instead of logging out immediately
+    const toggleDropdown = () => {
+        setShowDropdown(!showDropdown);
+    };
+
     const handleLogoutRequest = () => {
         setShowDropdown(false);
         setShowLogoutPopup(true);
     };
 
-    // Logout function
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("username");
-        localStorage.removeItem("userRole");
+        localStorage.removeItem("role"); // ✅ correct key
         localStorage.removeItem("profilePic");
         navigate("/");
     };
@@ -58,7 +68,7 @@ const Header = ({ username }) => {
                     <span className="username">Hello, {username || storedUsername}</span>
 
                     <img
-                        src={storedProfilePic}
+                        src={profilePic}
                         alt="Profile"
                         className="profile-picture"
                     />
@@ -74,7 +84,7 @@ const Header = ({ username }) => {
                             <ul>
                                 <li
                                     onClick={() => {
-                                        const role = localStorage.getItem("userRole");
+                                        const role = localStorage.getItem("role");
                                         if (role === "admin") navigate("/admin-myprofile");
                                         else if (role === "editor") navigate("/editor-myprofile");
                                         else navigate("/client-myprofile");
@@ -82,7 +92,6 @@ const Header = ({ username }) => {
                                 >
                                     <FaUser /> My Profile
                                 </li>
-
                                 <li onClick={() => navigate("/settings")}>
                                     <FaCog /> Settings
                                 </li>

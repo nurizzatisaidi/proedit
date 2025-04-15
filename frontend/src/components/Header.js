@@ -1,32 +1,41 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaSignOutAlt, FaAngleDown, FaAngleUp, FaUser, FaCog, FaKey, FaQuestionCircle } from "react-icons/fa";
+import {
+    FaSignOutAlt,
+    FaAngleDown,
+    FaAngleUp,
+    FaUser,
+    FaCog,
+    FaKey,
+    FaQuestionCircle
+} from "react-icons/fa";
 import "../styles/Header.css";
 import { useNavigate } from "react-router-dom";
 
-const Header = ({ username }) => {
+const DEFAULT_PROFILE_PIC = "https://via.placeholder.com/40";
+
+const Header = () => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || "https://via.placeholder.com/40");
+    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || DEFAULT_PROFILE_PIC);
+    const [displayName, setDisplayName] = useState(localStorage.getItem("username") || "Guest");
 
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
-    // Get user details from localStorage
-    const storedUsername = localStorage.getItem("username") || "Guest";
-
-    // 🔁 Watch for profilePic changes in localStorage
+    // ⏱ Sync profilePic and username from localStorage every second
     useEffect(() => {
         const interval = setInterval(() => {
-            const updatedPic = localStorage.getItem("profilePic") || "https://via.placeholder.com/40";
-            if (updatedPic !== profilePic) {
-                setProfilePic(updatedPic);
-            }
-        }, 1000); // check every 1 second
+            const updatedPic = localStorage.getItem("profilePic") || DEFAULT_PROFILE_PIC;
+            const updatedName = localStorage.getItem("username") || "Guest";
+
+            if (updatedPic !== profilePic) setProfilePic(updatedPic);
+            if (updatedName !== displayName) setDisplayName(updatedName);
+        }, 1000);
 
         return () => clearInterval(interval);
-    }, [profilePic]);
+    }, [profilePic, displayName]);
 
-    // Close dropdown if clicked outside
+    // ❌ Close dropdown if clicked outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -34,15 +43,15 @@ const Header = ({ username }) => {
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // 🔄 Toggle dropdown
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
 
+    // 🔓 Logout with confirmation
     const handleLogoutRequest = () => {
         setShowDropdown(false);
         setShowLogoutPopup(true);
@@ -51,8 +60,9 @@ const Header = ({ username }) => {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("username");
-        localStorage.removeItem("role"); // ✅ correct key
+        localStorage.removeItem("role");
         localStorage.removeItem("profilePic");
+        localStorage.removeItem("userId");
         navigate("/");
     };
 
@@ -65,14 +75,8 @@ const Header = ({ username }) => {
                     <span className="header-title">ProEdit</span>
                 </div>
                 <div className="header-right" ref={dropdownRef}>
-                    <span className="username">Hello, {username || storedUsername}</span>
-
-                    <img
-                        src={profilePic}
-                        alt="Profile"
-                        className="profile-picture"
-                    />
-
+                    <span className="username">Hello, {displayName}</span>
+                    <img src={profilePic} alt="Profile" className="profile-picture" />
                     {showDropdown ? (
                         <FaAngleUp className="dropdown-icon" onClick={toggleDropdown} />
                     ) : (
@@ -82,14 +86,7 @@ const Header = ({ username }) => {
                     {showDropdown && (
                         <div className="dropdown-menu">
                             <ul>
-                                <li
-                                    onClick={() => {
-                                        const role = localStorage.getItem("role");
-                                        if (role === "admin") navigate("/admin-myprofile");
-                                        else if (role === "editor") navigate("/editor-myprofile");
-                                        else navigate("/client-myprofile");
-                                    }}
-                                >
+                                <li onClick={() => navigate("/profile")}>
                                     <FaUser /> My Profile
                                 </li>
                                 <li onClick={() => navigate("/settings")}>
@@ -110,7 +107,7 @@ const Header = ({ username }) => {
                 </div>
             </header>
 
-            {/* Logout Confirmation Popup */}
+            {/* 🔒 Logout Confirmation */}
             {showLogoutPopup && (
                 <div className="logout-popup">
                     <div className="popup-content">

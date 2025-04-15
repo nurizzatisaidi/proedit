@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell } from "react-icons/fa";
-import "../styles/ProfilePage.css"; // 👈 create this for custom styles
+import {
+    FaHome,
+    FaFileAlt,
+    FaFolder,
+    FaComments,
+    FaBell
+} from "react-icons/fa";
+import "../styles/ProfilePage.css";
 
-function ClientProfilePage() {
+function ProfilePage() {
     const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("role"); // Get role from localStorage
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
@@ -41,7 +48,7 @@ function ClientProfilePage() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSave = async () => {
@@ -67,17 +74,41 @@ function ClientProfilePage() {
         }
     };
 
-    const menuItems = [
-        { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
-        { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
-        { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
-    ];
+    // 🎯 Role-based sidebar menu
+    let menuItems = [];
+    if (role === "admin") {
+        menuItems = [
+            { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
+            { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
+            { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
+            { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
+        ];
+    } else if (role === "editor") {
+        menuItems = [
+            { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
+            { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/editor-chat-list" },
+            { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
+        ];
+    } else {
+        // default to client/user
+        menuItems = [
+            { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
+            { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
+            { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+            { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        ];
+    }
 
     return (
         <div className="dashboard-container">
-            <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                menuItems={menuItems}
+            />
             <main className="main-content">
                 <Header username={user?.name} />
                 <div className="profile-page">
@@ -87,10 +118,20 @@ function ClientProfilePage() {
                             src={formData.photoUrl || localStorage.getItem("profilePic") || "https://via.placeholder.com/150"}
                             alt="Profile"
                         />
-                        <h3>{user?.name}</h3>
-                        <p>{user?.email}</p>
-                        <p>{user?.phoneNumber || "No phone number yet"}</p>
-                        <p>Role: {user?.role}</p>
+                        <h3 style={{ marginBottom: "10px" }}>{user?.name}</h3>
+
+                        <div className="profile-info-line">
+                            <span className="profile-icon"><FaFileAlt /></span>
+                            <p>{user?.email}</p>
+                        </div>
+                        <div className="profile-info-line">
+                            <span className="profile-icon"><FaComments /></span>
+                            <p>{formData.phoneNumber || "No phone number yet"}</p>
+                        </div>
+                        <div className="profile-info-line">
+                            <span className="profile-icon"><FaFolder /></span>
+                            <p>Role: {user?.role}</p>
+                        </div>
                     </div>
 
                     <div className="profile-form">
@@ -123,4 +164,4 @@ function ClientProfilePage() {
     );
 }
 
-export default ClientProfilePage;
+export default ProfilePage;

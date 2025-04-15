@@ -45,8 +45,19 @@ function EditorProjectsPage() {
         window.location.href = `/editor-project-board/${projectId}`;
     };
 
-    const handleChat = (projectId) => {
-        window.location.href = `/editor-chat/${projectId}`;
+    const handleChat = async (projectId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/chats/project/${projectId}`);
+            if (!response.ok) throw new Error("Chat not found");
+
+            const chat = await response.json();
+            const chatId = chat.chatId;
+
+            window.location.href = `/editor-chat/${chatId}`;
+        } catch (error) {
+            console.error("Error getting chat by projectId:", error);
+            alert("Chat not found for this project.");
+        }
     };
 
 

@@ -6,11 +6,26 @@
 
 .profile-card {
     width: 300px;
-    background: #fff;
+    background: #e9f1ff;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    color: #004285;
+}
+
+.profile-info-line {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #444;
+}
+
+.profile-icon {
+    color: #004285;
+    font-size: 16px;
 }
 
 .profile-pic {

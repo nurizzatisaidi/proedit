@@ -4,6 +4,7 @@ import com.backend.practiceproedit.model.Chat;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Service;
+import com.google.firebase.cloud.FirestoreClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,23 @@ public class ChatService {
             chats.add(chat);
         }
         return chats;
+    }
+
+    // Get chat by the project ID
+    public Chat getChatByProjectId(String projectId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        ApiFuture<QuerySnapshot> future = db.collection("chats")
+                .whereEqualTo("projectId", projectId)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if (!documents.isEmpty()) {
+            return documents.get(0).toObject(Chat.class);
+        }
+
+        return null;
     }
 
 }

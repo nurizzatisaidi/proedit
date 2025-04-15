@@ -130,4 +130,26 @@ public class ChatController {
         }
     }
 
+    // Get all the chats based on projectId
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<Map<String, Object>> getChatByProjectId(@PathVariable String projectId) {
+        try {
+            Chat chat = chatService.getChatByProjectId(projectId);
+
+            if (chat == null) {
+                return ResponseEntity.status(404).body(Map.of("error", "Chat not found"));
+            }
+
+            Map<String, Object> chatMap = new HashMap<>();
+            chatMap.put("chatId", chat.getChatId());
+            chatMap.put("projectId", chat.getProjectId());
+            chatMap.put("participantIds", chat.getParticipantIds());
+
+            return ResponseEntity.ok(chatMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Error fetching chat by projectId"));
+        }
+    }
+
 }

@@ -34,6 +34,28 @@
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 1rem;
+    border: 3px solid #004285;
+}
+
+.profile-pic-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
+}
+
+.upload-icon {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    color: #004285;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 3px;
+
 }
 
 .profile-form {

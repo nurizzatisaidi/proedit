@@ -6,13 +6,16 @@ import {
     FaFileAlt,
     FaFolder,
     FaComments,
-    FaBell
+    FaBell,
+    FaPlusCircle
 } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
+const DEFAULT_PROFILE_PIC = "/default_avatar.png";
+
 function ProfilePage() {
     const userId = localStorage.getItem("userId");
-    const role = localStorage.getItem("role"); // Get role from localStorage
+    const role = localStorage.getItem("role");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
@@ -51,6 +54,17 @@ function ProfilePage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setFormData((prev) => ({ ...prev, photoUrl: reader.result }));
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSave = async () => {
         try {
             const res = await fetch(`http://localhost:8080/users/update-profile/${userId}`, {
@@ -61,10 +75,8 @@ function ProfilePage() {
 
             if (res.ok) {
                 alert("Profile updated successfully!");
-
                 localStorage.setItem("username", formData.name);
                 localStorage.setItem("profilePic", formData.photoUrl);
-
                 fetchUserProfile();
             } else {
                 alert("Failed to update profile.");
@@ -74,7 +86,7 @@ function ProfilePage() {
         }
     };
 
-    // 🎯 Role-based sidebar menu
+    // 🎯 Sidebar based on role
     let menuItems = [];
     if (role === "admin") {
         menuItems = [
@@ -92,7 +104,6 @@ function ProfilePage() {
             { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
         ];
     } else {
-        // default to client/user
         menuItems = [
             { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
             { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
@@ -101,6 +112,15 @@ function ProfilePage() {
             { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
         ];
     }
+
+    const resolvedProfilePic =
+        formData.photoUrl?.trim() !== ""
+            ? formData.photoUrl
+            : localStorage.getItem("profilePic")?.trim() !== "" &&
+                localStorage.getItem("profilePic") !== "null" &&
+                localStorage.getItem("profilePic") !== "undefined"
+                ? localStorage.getItem("profilePic")
+                : DEFAULT_PROFILE_PIC;
 
     return (
         <div className="dashboard-container">
@@ -113,11 +133,24 @@ function ProfilePage() {
                 <Header username={user?.name} />
                 <div className="profile-page">
                     <div className="profile-card">
-                        <img
-                            className="profile-pic"
-                            src={formData.photoUrl || localStorage.getItem("profilePic") || "https://via.placeholder.com/150"}
-                            alt="Profile"
-                        />
+                        <div className="profile-pic-wrapper">
+                            <img
+                                className="profile-pic"
+                                src={resolvedProfilePic}
+                                alt="Profile"
+                            />
+                            <label htmlFor="photoUpload" className="upload-icon">
+                                <FaPlusCircle />
+                            </label>
+                            <input
+                                id="photoUpload"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleImageUpload}
+                            />
+                        </div>
+
                         <h3 style={{ marginBottom: "10px" }}>{user?.name}</h3>
 
                         <div className="profile-info-line">
@@ -153,7 +186,7 @@ function ProfilePage() {
                             <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
                         </div>
                         <div className="form-group">
-                            <label>Photo URL</label>
+                            <label>Photo URL (optional)</label>
                             <input name="photoUrl" value={formData.photoUrl} onChange={handleChange} />
                         </div>
                         <button className="save-btn" onClick={handleSave}>Save</button>

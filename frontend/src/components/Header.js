@@ -11,21 +11,30 @@ import {
 import "../styles/Header.css";
 import { useNavigate } from "react-router-dom";
 
-const DEFAULT_PROFILE_PIC = "https://via.placeholder.com/40";
+// ✅ Path to your default image stored in /public folder
+const DEFAULT_PROFILE_PIC = "/default_avatar.png";
 
 const Header = () => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || DEFAULT_PROFILE_PIC);
+    const [profilePic, setProfilePic] = useState(getStoredProfilePic());
     const [displayName, setDisplayName] = useState(localStorage.getItem("username") || "Guest");
 
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
+    function getStoredProfilePic() {
+        const storedPic = localStorage.getItem("profilePic");
+        if (!storedPic || storedPic === "null" || storedPic === "undefined" || storedPic === "") {
+            return DEFAULT_PROFILE_PIC;
+        }
+        return storedPic;
+    }
+
     // ⏱ Sync profilePic and username from localStorage every second
     useEffect(() => {
         const interval = setInterval(() => {
-            const updatedPic = localStorage.getItem("profilePic") || DEFAULT_PROFILE_PIC;
+            const updatedPic = getStoredProfilePic();
             const updatedName = localStorage.getItem("username") || "Guest";
 
             if (updatedPic !== profilePic) setProfilePic(updatedPic);
@@ -35,7 +44,7 @@ const Header = () => {
         return () => clearInterval(interval);
     }, [profilePic, displayName]);
 
-    // ❌ Close dropdown if clicked outside
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -46,12 +55,10 @@ const Header = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // 🔄 Toggle dropdown
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
 
-    // 🔓 Logout with confirmation
     const handleLogoutRequest = () => {
         setShowDropdown(false);
         setShowLogoutPopup(true);

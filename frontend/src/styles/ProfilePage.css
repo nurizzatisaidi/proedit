@@ -64,7 +64,11 @@
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: none;
+    /* ✅ remove fixed constraint */
 }
+
 
 .profile-form h2 {
     margin-bottom: 1rem;
@@ -81,10 +85,12 @@
 }
 
 .form-group input {
-    width: 100%;
+    width: 80%;
+    max-width: 650px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .save-btn {
@@ -95,4 +101,16 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .profile-page {
+        flex-direction: column;
+    }
+
+    .profile-card,
+    .profile-form {
+        width: 100%;
+        max-width: 100%;
+    }
 }

@@ -1,0 +1,43 @@
+.task-board {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.task-column {
+    flex: 1;
+    padding: 1rem;
+    min-height: 300px;
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-column.todo {
+    background-color: #fff3e0;
+    /* soft orange */
+}
+
+.task-column.inprogress {
+    background-color: #fffde7;
+    /* soft yellow */
+}
+
+.task-column.done {
+    background-color: #e8f5e9;
+    /* soft green */
+}
+
+
+.task-card {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: grab;
+}
+
+.task-column.drag-over {
+    filter: brightness(95%);
+    transition: filter 0.2s ease;
+}

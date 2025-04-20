@@ -20,6 +20,7 @@ import AdminChatList from './Admin/AdminChatList';
 import EditorMessagePage from './Editor/EditorMessagePage';
 import AdminMessagePage from './Admin/AdminMessagePage';
 import ProfilePage from './Client/ProfilePage';
+import EditorTaskBoard from './Editor/EditorTaskBoard';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/editor-chat/:chatId" element={<EditorMessagePage />} />
         <Route path="/admin-chat/:chatId" element={<AdminMessagePage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/editor-project-board/:projectId" element={<EditorTaskBoard />} />
 
 
       </Routes>

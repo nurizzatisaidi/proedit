@@ -25,8 +25,6 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    // Getters and Setters
-
     public String getTaskId() {
         return taskId;
     }

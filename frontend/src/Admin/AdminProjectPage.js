@@ -302,12 +302,12 @@ function AdminProjectPage() {
                         <h2>Create New Project</h2>
                         <form onSubmit={handleCreateProject}>
                             <div className="form-group">
-                                <label className="form-label">Title:</label>
+                                <label>Title:</label>
                                 <input type="text" name="title" value={formData.title} onChange={handleChange} required />
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label">Video Type:</label>
+                                <label>Video Type:</label>
                                 <select name="videoType" value={formData.videoType} onChange={handleChange} required>
                                     <option value="">Select Video Type</option>
                                     {["Tutorial", "Presentation", "Marketing", "Animation", "Interview", "Teaching"].map((type) => (
@@ -332,8 +332,8 @@ function AdminProjectPage() {
                             </div>
 
                             <div className="form-group">
-                                <label className="form-label">Notes:</label>
-                                <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Additional notes or expectations..."></textarea>
+                                <label>Notes:</label>
+                                <textarea name="notes" value={formData.notes} onChange={handleChange} />
                             </div>
 
                             <div className="form-group">

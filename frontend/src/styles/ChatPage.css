@@ -38,15 +38,19 @@
 }
 
 .chat-user-avatar {
-    background: #2563eb;
+    width: 40px;
+    height: 40px;
+    background-color: #4a90e2;
     color: white;
     border-radius: 50%;
-    width: 35px;
-    height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    text-transform: uppercase;
 }
 
 .chat-user-info {

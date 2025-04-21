@@ -101,3 +101,14 @@ textarea {
     resize: vertical;
 
 }
+
+.no-projects-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+}

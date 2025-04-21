@@ -25,19 +25,19 @@ function Login() {
                 localStorage.setItem("username", response.data.name);
                 localStorage.setItem("role", response.data.role);
                 localStorage.setItem("userId", response.data.userId);
-                localStorage.setItem("profilePic", response.data.photoUrl);
+                localStorage.setItem("profilePic", response.data.photoUrl || "");
                 navigate("/admin-dashboard"); // Redirect to admin dashboard
             } else if (response.data.role === "user") {
                 localStorage.setItem("username", response.data.name);
                 localStorage.setItem("role", response.data.role);
                 localStorage.setItem("userId", response.data.userId);
-                localStorage.setItem("profilePic", response.data.photoUrl);
+                localStorage.setItem("profilePic", response.data.photoUrl || "");
                 navigate("/user-dashboard"); // Redirect to user dashboard
             } else if (response.data.role === "editor") {
                 localStorage.setItem("username", response.data.name);
                 localStorage.setItem("role", response.data.role);
                 localStorage.setItem("userId", response.data.userId);
-                localStorage.setItem("profilePic", response.data.photoUrl);
+                localStorage.setItem("profilePic", response.data.photoUrl || "");
                 navigate("/editor-dashboard"); // Redirect to editor dashboard
             } else {
                 setMessage(response.data.message || "Login failed."); // Show error message

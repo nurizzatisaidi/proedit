@@ -1,9 +1,26 @@
-.list-section {
+/* .list-section {
     padding: 20px;
     width: 100%;
     display: flex;
     flex-direction: column;
+} */
+
+.main-content {
+    height: 100vh;
+    /* Ensure it fills the screen */
+    overflow-y: auto;
+    /* Allow vertical scrolling */
+    padding: 1rem;
+    box-sizing: border-box;
 }
+
+.list-section {
+    overflow-y: auto;
+    max-height: calc(100vh - 150px);
+    /* adjust to fit below header/top bar */
+    padding-bottom: 2rem;
+}
+
 
 .top-bar {
     display: flex;
@@ -38,11 +55,27 @@
     background-color: #4cae4c;
 }
 
-.list {
+/* .list {
     display: flex;
     flex-direction: column;
     gap: 15px;
     width: 100%;
+} */
+
+.list {
+    overflow-y: auto;
+    max-height: 60vh;
+    padding-right: 8px;
+}
+
+/* Optional: for better scrolling experience */
+.list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
 }
 
 .list-card {
@@ -426,7 +459,7 @@
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    width: 250px;
+    width: 350px;
     transition: border-color 0.3s ease;
 }
 
@@ -434,6 +467,27 @@
     outline: none;
     border-color: #007bff;
 }
+
+.project-filters {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    margin-bottom: 20px;
+}
+
+.search-wrapper {
+    width: 100%;
+}
+
+.project-filter-dropdown {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 300px;
+}
+
 
 .spinner {
     border: 6px solid #f3f3f3;
@@ -446,6 +500,43 @@
     margin: 40px auto;
 }
 
+.custom-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #004285;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    z-index: 1000;
+    animation: slideUpFade 0.3s ease-in-out;
+}
+
+.no-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+}
+
+@keyframes slideUpFade {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -456,21 +547,6 @@
     }
 }
 
-/* @media (max-width: 500px) {
-    .form-group {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .form-group label {
-        width: 100%;
-        margin-bottom: 5px;
-    }
-
-    .form-group input {
-        width: 100%;
-    }
-} */
 @media (max-width: 500px) {
     .form-group {
         flex-direction: column;

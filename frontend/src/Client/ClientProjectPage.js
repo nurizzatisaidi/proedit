@@ -12,6 +12,9 @@ function ClientProjectPage() {
     const [selectedProject, setSelectedProject] = useState(null);
     const [projects, setProjects] = useState([]);
     const [username, setUsername] = useState("user");
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
+
     const [searchQuery, setSearchQuery] = useState("");
 
 
@@ -42,7 +45,7 @@ function ClientProjectPage() {
                 setProjects(data);
 
                 if (data.length === 0 && !hasShownNoProjectsAlert.current) {
-                    alert("You have no projects yet.");
+                    showToastMessage("You have no projects yet.");
                     hasShownNoProjectsAlert.current = true;
                 }
 
@@ -65,6 +68,15 @@ function ClientProjectPage() {
     const filteredProjects = projects.filter((project) =>
         project.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // hide after 3 seconds
+    };
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -120,7 +132,10 @@ function ClientProjectPage() {
                                 </div>
                             ))
                         ) : (
-                            <p>No projects found.</p>
+                            <div className="no-message">
+                                <p>No projects found.</p>
+                            </div>
+
                         )}
                     </div>
 
@@ -162,6 +177,13 @@ function ClientProjectPage() {
                             <button className="cancel-btn" onClick={() => setShowViewPopup(false)}>Close</button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Toast Message Popup */}
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
                 </div>
             )}
         </div>

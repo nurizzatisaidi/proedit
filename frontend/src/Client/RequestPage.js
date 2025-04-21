@@ -13,9 +13,11 @@ function RequestPage() {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [requests, setRequests] = useState([]);
     const [username, setUsername] = useState("user");
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [requestToDelete, setRequestToDelete] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-
-
     const hasShownNoRequestsAlert = useRef(false);
 
     const [formData, setFormData] = useState({
@@ -51,12 +53,12 @@ function RequestPage() {
                 setRequests(data);
 
                 if (data.length === 0 && !hasShownNoRequestsAlert.current) {
-                    alert("You have no requests yet.");
+                    showToastMessage("You have no requests yet.");
                     hasShownNoRequestsAlert.current = true;
                 }
 
             } else {
-                alert("Failed to load requests.");
+                showToastMessage("You have no requests yet.");
             }
         } catch (error) {
             console.error("Error fetching requests: ", error);
@@ -77,31 +79,6 @@ function RequestPage() {
         setSelectedRequest(request);
         setShowViewPopup(true);
     };
-
-    const handleDelete = async (request) => {
-        if (request.status === "Accepted") {
-            alert("You cannot delete an accepted request.");
-            return;
-        }
-
-        if (!window.confirm("Are you sure you want to delete this request?")) return;
-
-        try {
-            const response = await fetch(`http://localhost:8080/api/requests/delete/${request.requestId}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                alert("Request deleted successfully.");
-                fetchRequests();
-            } else {
-                alert("Failed to delete request.");
-            }
-        } catch (error) {
-            console.error("Error deleting request: ", error);
-        }
-    };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -124,7 +101,7 @@ function RequestPage() {
             });
 
             if (response.ok) {
-                alert("Request submitted successfully!");
+                showToastMessage("Request Accepted Successfully!");
                 setShowRequestPopup(false);
                 setFormData({ title: "", videoType: "", duration: "", sharedDrive: "", notes: "" });
 
@@ -141,6 +118,48 @@ function RequestPage() {
     const filteredRequests = requests.filter((req) =>
         req.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const confirmDeleteRequest = (request) => {
+        if (request.status === "Accepted") {
+            alert("You cannot delete an accepted request.");
+            return;
+        }
+        setRequestToDelete(request);
+        setShowDeletePopup(true);
+    };
+
+    const handleDeleteConfirmed = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/requests/delete/${requestToDelete.requestId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                showToastMessage("Request Deleted Successfully!");
+                setShowDeletePopup(false);
+
+                // 🔥 Optimistically update UI without needing to fetch again
+                setRequests((prevRequests) =>
+                    prevRequests.filter((r) => r.requestId !== requestToDelete.requestId)
+                );
+            } else {
+                alert("Failed to delete request.");
+            }
+        } catch (error) {
+            console.error("Error deleting request: ", error);
+            alert("Error deleting request.");
+        }
+    };
+
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // hide after 3 seconds
+    };
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -195,14 +214,17 @@ function RequestPage() {
                                         <button className="view-btn" onClick={() => handleViewRequest(request)}>
                                             <FaEye /> View
                                         </button>
-                                        <button className="delete-btn" onClick={() => handleDelete(request)}>
+                                        <button className="delete-btn" onClick={() => confirmDeleteRequest(request)}>
                                             <FaTrash /> Delete
                                         </button>
+
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p>No requests found.</p>
+                            <div className="no-message">
+                                <p>No requests found.</p>
+                            </div>
                         )}
                     </div>
 
@@ -307,6 +329,25 @@ function RequestPage() {
                             <button className="cancel-btn" onClick={() => setShowViewPopup(false)}>Close</button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Delete Request Popup */}
+            {showDeletePopup && (
+                <div className="logout-popup">
+                    <div className="popup-content">
+                        <h3>Are you sure you want to delete this request?</h3>
+                        <div className="popup-actions">
+                            <button className="cancel-btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button className="confirm-btn" onClick={handleDeleteConfirmed}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Toast Message Popup */}
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
                 </div>
             )}
         </div>

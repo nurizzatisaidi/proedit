@@ -11,7 +11,6 @@ import {
 import "../styles/Header.css";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Path to your default image stored in /public folder
 const DEFAULT_PROFILE_PIC = "/default_avatar.png";
 
 const Header = () => {
@@ -25,13 +24,15 @@ const Header = () => {
 
     function getStoredProfilePic() {
         const storedPic = localStorage.getItem("profilePic");
-        if (!storedPic || storedPic === "null" || storedPic === "undefined" || storedPic === "") {
+
+        if (!storedPic || storedPic === "null" || storedPic === "undefined" || storedPic.trim() === "") {
             return DEFAULT_PROFILE_PIC;
         }
+
         return storedPic;
     }
 
-    // ⏱ Sync profilePic and username from localStorage every second
+
     useEffect(() => {
         const interval = setInterval(() => {
             const updatedPic = getStoredProfilePic();
@@ -83,7 +84,16 @@ const Header = () => {
                 </div>
                 <div className="header-right" ref={dropdownRef}>
                     <span className="username">Hello, {displayName}</span>
-                    <img src={profilePic} alt="Profile" className="profile-picture" />
+                    <img
+                        src={profilePic}
+                        alt="Profile"
+                        className="profile-picture"
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = DEFAULT_PROFILE_PIC;
+                        }}
+                    />
+
                     {showDropdown ? (
                         <FaAngleUp className="dropdown-icon" onClick={toggleDropdown} />
                     ) : (

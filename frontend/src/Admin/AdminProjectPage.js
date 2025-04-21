@@ -20,6 +20,9 @@ function AdminProjectPage() {
     const [editFormData, setEditFormData] = useState({});
     const [editors, setEditors] = useState([]);
     const [clients, setClients] = useState([]);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState(null);
+
     const [formData, setFormData] = useState({
         title: "",
         videoType: "",
@@ -85,25 +88,52 @@ function AdminProjectPage() {
         setShowEditPopup(true);
     };
 
-    const handleDelete = async (projectId) => {
-        if (window.confirm("Are you sure you want to delete this project and the related request?")) {
-            try {
-                const deleteResponse = await fetch(`http://localhost:8080/api/projects/delete/${projectId}`, {
-                    method: "DELETE",
-                });
+    // const handleDelete = async (projectId) => {
+    //     if (window.confirm("Are you sure you want to delete this project and the related request?")) {
+    //         try {
+    //             const deleteResponse = await fetch(`http://localhost:8080/api/projects/delete/${projectId}`, {
+    //                 method: "DELETE",
+    //             });
 
-                if (deleteResponse.ok) {
-                    alert("Project and related request deleted successfully.");
-                    setProjects(projects.filter(project => project.projectId !== projectId)); // Update UI
-                } else {
-                    throw new Error("Failed to delete project and related request.");
-                }
-            } catch (error) {
-                console.error("Error during deletion: ", error);
-                alert("Error during deletion process. Check logs for more details.");
+    //             if (deleteResponse.ok) {
+    //                 alert("Project and related request deleted successfully.");
+    //                 setProjects(projects.filter(project => project.projectId !== projectId)); // Update UI
+    //             } else {
+    //                 throw new Error("Failed to delete project and related request.");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error during deletion: ", error);
+    //             alert("Error during deletion process. Check logs for more details.");
+    //         }
+    //     }
+    // };
+
+    const confirmDeleteProject = (project) => {
+        setProjectToDelete(project);
+        setShowDeletePopup(true);
+    };
+
+    const handleDeleteConfirmed = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/projects/delete/${projectToDelete.projectId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                alert("Project and related request deleted successfully.");
+                setProjects(projects.filter(project => project.projectId !== projectToDelete.projectId));
+            } else {
+                alert("Failed to delete project.");
             }
+        } catch (error) {
+            console.error("Error deleting project:", error);
+            alert("Error during deletion process.");
+        } finally {
+            setShowDeletePopup(false);
+            setProjectToDelete(null);
         }
     };
+
 
     const handleIssuePayment = (projectId) => {
         window.location.href = `/admin-issue-payment/${projectId}`;
@@ -198,22 +228,26 @@ function AdminProjectPage() {
                         </button>
                     </div>
 
-                    <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
-                        <option value="All">All</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="To Review">To Review</option>
-                        <option value="Completed - Pending Payment">Completed - Pending Payment</option>
-                        <option value="Completed Payment">Completed Payment</option>
-                    </select>
+                    <div className="project-filters">
+                        <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
+                            <option value="All">All</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="To Review">To Review</option>
+                            <option value="Completed - Pending Payment">Completed - Pending Payment</option>
+                            <option value="Completed Payment">Completed Payment</option>
+                        </select>
 
+                        <div className="search-wrapper">
+                            <input
+                                type="text"
+                                placeholder="Search by title or client..."
+                                className="search-input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
 
-                    <input
-                        type="text"
-                        placeholder="Search by title or client..."
-                        className="search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
 
                     <div className="list">
                         {isLoading ? (
@@ -235,7 +269,8 @@ function AdminProjectPage() {
                                 <div className="list-actions">
                                     <button className="view-btn" onClick={() => handleView(project)}><FaEye /> View</button>
                                     <button className="edit-btn" onClick={() => handleEdit(project)}><FaEdit /> Edit</button>
-                                    <button className="delete-btn" onClick={() => handleDelete(project.projectId)}><FaTrash /> Delete</button>
+                                    <button className="delete-btn" onClick={() => confirmDeleteProject(project)}><FaTrash /> Delete</button>
+
                                     <button className="payment-btn" onClick={() => handleIssuePayment(project.projectId)}><FaMoneyBill /> Issue Payment</button>
                                 </div>
                             </div>
@@ -365,6 +400,7 @@ function AdminProjectPage() {
                 </div>
             )}
 
+            {/* Edit Project Popup */}
             {showEditPopup && (
                 <div className="popup-overlay">
                     <div className="popup-content">
@@ -433,6 +469,23 @@ function AdminProjectPage() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Project */}
+            {showDeletePopup && (
+                <div className="logout-popup">
+                    <div className="popup-content">
+                        <h3>Are you sure you want to delete this project?</h3>
+                        <p style={{ marginTop: "10px", fontSize: "14px" }}>
+                            This will also remove the related request from the system.
+                        </p>
+                        <div className="popup-actions">
+                            <button className="cancel-btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button className="confirm-btn" onClick={handleDeleteConfirmed}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

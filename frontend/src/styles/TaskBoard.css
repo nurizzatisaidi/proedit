@@ -14,17 +14,14 @@
 
 .task-column.todo {
     background-color: #fff3e0;
-    /* soft orange */
 }
 
 .task-column.inprogress {
     background-color: #fffde7;
-    /* soft yellow */
 }
 
 .task-column.done {
     background-color: #e8f5e9;
-    /* soft green */
 }
 
 

@@ -18,9 +18,12 @@ function AdminRequestPage() {
     const [assignedEditor, setAssignedEditor] = useState("");
     const [rejectionReason, setRejectionReason] = useState("");
     const [editors, setEditors] = useState([]);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [showCannotDeletePopup, setShowCannotDeletePopup] = useState(false);
+    const [requestToDelete, setRequestToDelete] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-
-
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");
@@ -37,8 +40,6 @@ function AdminRequestPage() {
                 let data = await response.json();
                 console.log("Fetched data:", data);
 
-
-                // ✅ Replace userId with username for frontend display
                 const updatedRequests = await Promise.all(
                     data.map(async (request) => {
                         const userResponse = await fetch(`http://localhost:8080/api/users/${request.userId}`);
@@ -61,7 +62,6 @@ function AdminRequestPage() {
         }
     };
 
-
     // Get the editors dropdown list
     const fetchEditors = async () => {
         try {
@@ -73,7 +73,6 @@ function AdminRequestPage() {
 
             const data = await response.json();
 
-            // ✅ Ensure data is an array and contains the required fields
             if (!Array.isArray(data)) {
                 throw new Error("Invalid editor data format received.");
             }
@@ -92,7 +91,7 @@ function AdminRequestPage() {
             alert("Please provide a comment and select an editor.");
             return;
         }
-        const adminUserId = localStorage.getItem("userId"); // Get admin user ID from localStorage
+        const adminUserId = localStorage.getItem("userId");
 
 
         try {
@@ -108,9 +107,9 @@ function AdminRequestPage() {
             });
 
             if (response.ok) {
-                alert("Request Accepted Successfully!");
+                showToastMessage("Request Accepted Successfully!");
                 setShowAcceptPopup(false);
-                fetchRequests(); // Refresh requests
+                fetchRequests();
             } else {
                 alert("Failed to process request.");
             }
@@ -139,7 +138,7 @@ function AdminRequestPage() {
             if (response.ok) {
                 alert("Request Rejected Successfully!");
                 setShowRejectPopup(false);
-                fetchRequests(); // Refresh requests
+                fetchRequests();
             } else {
                 alert("Failed to process request.");
             }
@@ -148,23 +147,25 @@ function AdminRequestPage() {
         }
     };
 
-
-
-    const handleDelete = async (request) => {
+    const confirmDelete = (request) => {
         if (request.status === "Accepted") {
-            alert("You cannot delete an accepted request.");
+            setShowCannotDeletePopup(true);
             return;
         }
+        setRequestToDelete(request);
+        setShowDeletePopup(true);
+    };
 
-        if (!window.confirm("Are you sure you want to delete this request?")) return;
 
+    const handleDeleteConfirmed = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/delete/${request.requestId}`, {
+            const response = await fetch(`http://localhost:8080/api/requests/delete/${requestToDelete.requestId}`, {
                 method: "DELETE",
             });
 
             if (response.ok) {
                 alert("Request deleted successfully.");
+                setShowDeletePopup(false);
                 fetchRequests();
             } else {
                 alert("Failed to delete request.");
@@ -185,6 +186,14 @@ function AdminRequestPage() {
         const matchesSearch = req.title.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
     });
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // hide after 3 seconds
+    };
 
 
     const menuItems = [
@@ -244,7 +253,8 @@ function AdminRequestPage() {
                                         <button className="view-btn" onClick={() => handleViewRequest(request)}><FaEye /> View</button>
                                         <button className="accept-btn" onClick={() => { setSelectedRequest(request); setShowAcceptPopup(true); }}><FaCheck /> Accept</button>
                                         <button className="reject-btn" onClick={() => { setSelectedRequest(request); setShowRejectPopup(true); }}><FaTimes /> Reject</button>
-                                        <button className="delete-btn" onClick={() => handleDelete(request)}><FaTrash /> Delete</button>
+                                        <button className="delete-btn" onClick={() => confirmDelete(request)}><FaTrash /> Delete</button>
+
                                     </div>
                                 </div>
                             ))
@@ -340,6 +350,41 @@ function AdminRequestPage() {
                             <button className="accept-btn" onClick={handleRejectRequest}>Submit</button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Delete Request Popup */}
+            {showDeletePopup && (
+                <div className="logout-popup">
+                    <div className="popup-content">
+                        <h3>Are you sure you want to delete this request?</h3>
+                        <div className="popup-actions">
+                            <button className="cancel-btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button className="confirm-btn" onClick={handleDeleteConfirmed}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Cannot Delete Request Popup */}
+            {showCannotDeletePopup && (
+                <div className="logout-popup">
+                    <div className="popup-content">
+                        <h3>Cannot delete an accepted request.</h3>
+                        <p style={{ marginTop: "10px", fontSize: "14px" }}>
+                            Once a request is accepted and assigned to an editor, it cannot be removed.
+                        </p>
+                        <div className="popup-actions">
+                            <button className="confirm-btn" onClick={() => setShowCannotDeletePopup(false)}>Okay</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
                 </div>
             )}
 

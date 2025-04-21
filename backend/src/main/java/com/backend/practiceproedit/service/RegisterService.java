@@ -32,29 +32,31 @@ public class RegisterService {
         }
     }
 
-    public String registerGoogleUser(String uid, String displayName, String email, String photoUrl) throws Exception {
-        Firestore db = firebaseService.getFirestore();
-        try {
-            // Check if the user already exists
-            boolean userExists = !db.collection("users")
-                    .whereEqualTo("email", email)
-                    .get()
-                    .get()
-                    .isEmpty();
+    // public String registerGoogleUser(String uid, String displayName, String
+    // email, String photoUrl) throws Exception {
+    // Firestore db = firebaseService.getFirestore();
+    // try {
+    // // Check if the user already exists
+    // boolean userExists = !db.collection("users")
+    // .whereEqualTo("email", email)
+    // .get()
+    // .get()
+    // .isEmpty();
 
-            if (userExists) {
-                return "User already exists";
-            }
+    // if (userExists) {
+    // return "User already exists";
+    // }
 
-            // Create a new user object
-            User user = new User(uid, displayName, email, null, "user");
-            user.setPhotoUrl(photoUrl); // Assuming User has a `photoUrl` field
-            db.collection("users").add(user);
+    // // Create a new user object
+    // User user = new User(uid, displayName, email, null, "user");
+    // user.setPhotoUrl(photoUrl); // Assuming User has a `photoUrl` field
+    // db.collection("users").add(user);
 
-            return "Google user registered successfully!";
-        } catch (Exception e) {
-            throw new Exception("Error during Google user registration: " + e.getMessage());
-        }
-    }
+    // return "Google user registered successfully!";
+    // } catch (Exception e) {
+    // throw new Exception("Error during Google user registration: " +
+    // e.getMessage());
+    // }
+    // }
 
 }

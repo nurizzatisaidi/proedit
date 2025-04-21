@@ -12,6 +12,7 @@ function EditorProjectsPage() {
     const [showViewPopup, setShowViewPopup] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [filterStatus, setFilterStatus] = useState("All");
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");
@@ -79,6 +80,14 @@ function EditorProjectsPage() {
                     <div className="top-bar">
                         <h1>Your Assigned Projects</h1>
                     </div>
+                    <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
+                        <option value="All">All</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="To Review">To Review</option>
+                        <option value="Completed - Pending Payment">Completed - Pending Payment</option>
+                        <option value="Completed Payment">Completed Payment</option>
+                    </select>
+
                     <input
                         type="text"
                         placeholder="Search by title or client..."
@@ -94,10 +103,11 @@ function EditorProjectsPage() {
                             </div>
                         ) : projects.filter((project) => {
                             const lowerQuery = searchQuery.toLowerCase();
-                            return (
+                            const matchesStatus = filterStatus === "All" || project.status === filterStatus;
+                            const matchesSearch =
                                 project.title?.toLowerCase().includes(lowerQuery) ||
-                                project.username?.toLowerCase().includes(lowerQuery)
-                            );
+                                project.username?.toLowerCase().includes(lowerQuery);
+                            return matchesStatus && matchesSearch;
                         }).length > 0 ? (
                             projects
                                 .filter((project) => {

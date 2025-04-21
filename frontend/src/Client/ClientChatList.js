@@ -13,6 +13,8 @@ function ClientChatList() {
     const [searchQuery, setSearchQuery] = useState("");
     const [userId] = useState(localStorage.getItem('userId'));
     const [username, setUsername] = useState(localStorage.getItem('username') || "User");
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
@@ -30,6 +32,10 @@ function ClientChatList() {
             if (!response.ok) throw new Error('Failed to fetch chats');
             const data = await response.json();
             setChats(data);
+
+            if (data.length === 0) {
+                showToastMessage("You have no chats yet.");
+            }
         } catch (error) {
             console.error("Error fetching chats: ", error);
         } finally {
@@ -37,10 +43,20 @@ function ClientChatList() {
         }
     };
 
+
     const navigate = useNavigate();
+
 
     const handleChat = (chatId) => {
         navigate(`/user-chat/${chatId}`);
+    };
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // hide after 3 seconds
     };
 
     const menuItems = [
@@ -51,7 +67,6 @@ function ClientChatList() {
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 
-    // ✅ Filtered chats based on search input
     const filteredChats = chats.filter(chat =>
         chat.projectTitle?.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -81,7 +96,9 @@ function ClientChatList() {
                             <p>Loading chats...</p>
                         </div>
                     ) : filteredChats.length === 0 ? (
-                        <p>You have no chats yet.</p>
+                        <div className="no-message">
+                            <p>You have no chats yet.</p>
+                        </div>
                     ) : (
                         <div className="list">
                             {filteredChats.map(chat => (
@@ -101,6 +118,12 @@ function ClientChatList() {
                     )}
                 </section>
             </main>
+
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
+                </div>
+            )}
         </div>
     );
 }

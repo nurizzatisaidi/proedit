@@ -21,8 +21,7 @@ function AdminRequestPage() {
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [showCannotDeletePopup, setShowCannotDeletePopup] = useState(false);
     const [requestToDelete, setRequestToDelete] = useState(null);
-    const [toastMessage, setToastMessage] = useState("");
-    const [showToast, setShowToast] = useState(false);
+
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
@@ -107,7 +106,7 @@ function AdminRequestPage() {
             });
 
             if (response.ok) {
-                showToastMessage("Request Accepted Successfully!");
+                alert("Request Accepted Successfully!");
                 setShowAcceptPopup(false);
                 fetchRequests();
             } else {
@@ -186,14 +185,6 @@ function AdminRequestPage() {
         const matchesSearch = req.title.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
     });
-
-    const showToastMessage = (message) => {
-        setToastMessage(message);
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-        }, 3000); // hide after 3 seconds
-    };
 
 
     const menuItems = [
@@ -382,11 +373,6 @@ function AdminRequestPage() {
             )}
 
 
-            {showToast && (
-                <div className="custom-toast">
-                    {toastMessage}
-                </div>
-            )}
 
         </div>
     );

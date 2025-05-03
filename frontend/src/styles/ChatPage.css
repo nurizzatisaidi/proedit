@@ -5,7 +5,6 @@
 .chat-layout-container {
     display: flex;
     height: calc(100vh - 130px);
-    /* slightly less to make room for header */
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -82,7 +81,6 @@
     padding: 0.5rem 1rem;
     margin-bottom: 1rem;
     height: 60px;
-    /* ✅ Limit height */
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -91,7 +89,6 @@
 
 .chat-header .spinner {
     width: 24px;
-    /* ✅ Smaller spinner just for header */
     height: 24px;
     border-width: 4px;
 }
@@ -103,7 +100,6 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    /* IMPORTANT: allows flex container to not overflow */
 }
 
 
@@ -122,11 +118,8 @@
 
 .own-message {
     align-self: flex-end;
-    /* ✅ Aligns to the right */
     background-color: #3b82f6;
-    /* ✅ Blue background */
     color: white;
-    /* ✅ White text */
     border-top-right-radius: 0;
     text-align: right;
 }
@@ -186,10 +179,26 @@
     cursor: pointer;
 }
 
+.taskboard-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    background-color: #865ec5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: auto;
+    transition: background-color 0.3s ease;
+}
+
+.taskboard-btn:hover {
+    background-color: #593c88;
+}
+
+
 .spinner {
     border: 6px solid #f3f3f3;
     border-top: 6px solid #3498db;
-    /* Blue top */
     border-radius: 50%;
     width: 50px;
     height: 50px;

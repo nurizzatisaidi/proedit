@@ -13,7 +13,6 @@
     justify-content: center;
     align-items: center;
     padding: 15px;
-    /* Adjust padding if necessary */
 }
 
 .sidebar-header .logo {
@@ -23,27 +22,22 @@
 
 .sidebar.collapsed {
     width: 80px;
-    /* Shrinks the sidebar width when collapsed */
 }
 
 .sidebar-menu {
     list-style: none;
     padding: 0;
     margin: 5px 0;
-    /* Adjust this value to move the menu items closer to the logo */
 }
 
 .logo-container {
     width: 200px;
     height: 150px;
-    /* Set the visible height */
     overflow: hidden;
-    /* Hide the part that exceeds the container */
 }
 
 .logo {
     width: 100%;
-    /* Ensure the logo scales properly */
     height: auto;
 }
 
@@ -51,8 +45,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* margin-bottom: 10px; */
-    /* Adjust to control space below the logo */
 }
 
 .logo-title .logo {
@@ -80,11 +72,8 @@
 
 .menu-icon {
     font-size: 1.5rem;
-    /* Adjust icon size */
     margin-right: 20px;
-    /* Add space between the icon and text */
     color: #fff;
-    /* Icon color */
 }
 
 .sidebar.collapsed .menu-item {
@@ -97,10 +86,9 @@
 
 .sidebar.collapsed .menu-item span {
     display: none;
-    /* Hides the text in collapsed mode */
 }
 
-/* Settings menu at the bottom */
+
 .settings-menu {
     margin-top: auto;
 }

@@ -138,8 +138,24 @@ function ClientMessagePage() {
                     {/* Right Chat View */}
                     <div className="chat-view-panel">
                         <div className="chat-header">
-                            {isChatListLoading ? <div className="spinner" /> : <h2>{activeChat?.projectTitle || "Chat"}</h2>}
+                            {isChatListLoading ? (
+                                <div className="spinner" />
+                            ) : (
+                                <>
+                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
+                                    {activeChat?.projectId && (
+                                        <button
+                                            className="taskboard-btn"
+                                            onClick={() => navigate(`/client-projects/${activeChat.projectId}/progress`)}
+                                        >
+                                            View Task Board
+                                        </button>
+                                    )}
+                                </>
+                            )}
                         </div>
+
+
 
                         <div className="messages-container">
                             {isMessageLoading ? (

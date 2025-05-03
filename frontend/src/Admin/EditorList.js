@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header"; // Import the reusable Header component
+import Header from "../components/Header";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -85,7 +85,7 @@ function EditorList() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username={username} /> {/* Add the reusable Header component */}
+                <Header username={username} />
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>Editors List</h1>

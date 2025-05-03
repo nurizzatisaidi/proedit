@@ -74,7 +74,7 @@ function ClientProjectPage() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // hide after 3 seconds
+        }, 3000);
     };
 
 

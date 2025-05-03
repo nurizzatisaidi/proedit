@@ -97,7 +97,7 @@ function AdminMessagePage() {
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/admin-chat" },
+        { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
@@ -139,8 +139,23 @@ function AdminMessagePage() {
                     {/* Right Chat View */}
                     <div className="chat-view-panel">
                         <div className="chat-header">
-                            {isChatListLoading ? <div className="spinner" /> : <h2>{activeChat?.projectTitle || "Chat"}</h2>}
+                            {isChatListLoading ? (
+                                <div className="spinner" />
+                            ) : (
+                                <>
+                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
+                                    {activeChat?.projectId && (
+                                        <button
+                                            className="taskboard-btn"
+                                            onClick={() => navigate(`/admin-projects/${activeChat.projectId}/progress`)}
+                                        >
+                                            View Task Board
+                                        </button>
+                                    )}
+                                </>
+                            )}
                         </div>
+
 
                         <div className="messages-container">
                             {isMessageLoading ? (

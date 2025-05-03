@@ -168,4 +168,15 @@ public class ProjectService {
         chatRef.set(chat);
         return chatRef.getId();
     }
+
+    // Get Project by its ProjectId
+    public Project getProjectById(String projectId) {
+        try {
+            return firebaseService.getProjectById(projectId);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

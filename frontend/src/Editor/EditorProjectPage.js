@@ -80,21 +80,27 @@ function EditorProjectsPage() {
                     <div className="top-bar">
                         <h1>Your Assigned Projects</h1>
                     </div>
-                    <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
-                        <option value="All">All</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="To Review">To Review</option>
-                        <option value="Completed - Pending Payment">Completed - Pending Payment</option>
-                        <option value="Completed Payment">Completed Payment</option>
-                    </select>
 
-                    <input
-                        type="text"
-                        placeholder="Search by title or client..."
-                        className="search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                    <div className="project-filters">
+                        <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
+                            <option value="All">All</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="To Review">To Review</option>
+                            <option value="Completed - Pending Payment">Completed - Pending Payment</option>
+                            <option value="Completed Payment">Completed Payment</option>
+                        </select>
+
+                        <div className="search-wrapper">
+                            <input
+                                type="text"
+                                placeholder="Search by title or client..."
+                                className="search-input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
                     <div className="list">
                         {isLoading ? (
                             <div style={{ textAlign: "center" }}>

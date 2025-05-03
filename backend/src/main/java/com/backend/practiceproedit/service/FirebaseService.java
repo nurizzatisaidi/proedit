@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
+import com.backend.practiceproedit.model.Project;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -249,6 +250,12 @@ public class FirebaseService {
         }
 
         return titles;
+    }
+
+    // Get a project by its Project ID
+    public Project getProjectById(String projectId) throws ExecutionException, InterruptedException {
+        DocumentSnapshot doc = db.collection("projects").document(projectId).get().get();
+        return doc.exists() ? doc.toObject(Project.class) : null;
     }
 
     // Update user profiles for all users

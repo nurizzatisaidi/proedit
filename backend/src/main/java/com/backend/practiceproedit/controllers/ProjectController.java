@@ -89,4 +89,20 @@ public class ProjectController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    // Get project by projectId
+    @GetMapping("/{projectId}")
+    public ResponseEntity<Project> getProjectById(@PathVariable String projectId) {
+        try {
+            Project project = projectService.getProjectById(projectId);
+            if (project != null) {
+                return ResponseEntity.ok(project);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

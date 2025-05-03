@@ -1,4 +1,6 @@
 .task-board {
+    height: 100%;
+    min-height: 650px;
     display: flex;
     gap: 1rem;
     justify-content: space-between;
@@ -7,7 +9,7 @@
 .task-column {
     flex: 1;
     padding: 1rem;
-    min-height: 300px;
+    min-height: 00px;
     border-radius: 8px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
@@ -37,4 +39,40 @@
 .task-column.drag-over {
     filter: brightness(95%);
     transition: filter 0.2s ease;
+}
+
+.task-actions {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.canceltask-btn {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.canceltask-btn:hover {
+    background-color: #d18317;
+}
+
+.top-bar {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.project-title-sub {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 0.3rem;
+    color: #2f567c;
+}
+
+
+@media (max-width: 768px) {
+    .task-column {
+        flex: 0 0 85%;
+    }
 }

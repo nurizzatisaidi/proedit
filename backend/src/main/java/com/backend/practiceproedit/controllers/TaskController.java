@@ -1,6 +1,9 @@
 package com.backend.practiceproedit.controllers;
 
 import com.backend.practiceproedit.model.Task;
+import com.backend.practiceproedit.model.Project;
+import com.backend.practiceproedit.service.ProjectService;
+import java.util.ArrayList;
 import com.backend.practiceproedit.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,9 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ProjectService projectService;
 
     // Create a new task under a specific project
     @PostMapping("/{projectId}/tasks")
@@ -62,4 +68,26 @@ public class TaskController {
             return ResponseEntity.status(500).body("Error deleting task: " + e.getMessage());
         }
     }
+
+    // Get all Tasks by editor
+    @GetMapping("/editor/{editorId}/tasks")
+    public ResponseEntity<List<Task>> getTasksByEditor(@PathVariable String editorId) {
+        try {
+            List<Project> projects = projectService.getProjectsByEditorId(editorId);
+            List<Task> allTasks = new ArrayList<>();
+
+            for (Project project : projects) {
+                List<Task> projectTasks = taskService.getTasksByProject(project.getProjectId());
+                for (Task task : projectTasks) {
+                    task.setProjectTitle(project.getTitle()); // ✅ add project title to task
+                    allTasks.add(task);
+                }
+            }
+
+            return ResponseEntity.ok(allTasks);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 }

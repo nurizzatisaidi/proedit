@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus } from "react-icons/fa";
+import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
@@ -269,9 +269,13 @@ function AdminProjectPage() {
                                 <div className="list-actions">
                                     <button className="view-btn" onClick={() => handleView(project)}><FaEye /> View</button>
                                     <button className="edit-btn" onClick={() => handleEdit(project)}><FaEdit /> Edit</button>
-                                    <button className="delete-btn" onClick={() => confirmDeleteProject(project)}><FaTrash /> Delete</button>
-
+                                    <button
+                                        className="board-btn"
+                                        onClick={() => window.location.href = `/admin-projects/${project.projectId}/progress`}
+                                    ><FaTasks />Board
+                                    </button>
                                     <button className="payment-btn" onClick={() => handleIssuePayment(project.projectId)}><FaMoneyBill /> Issue Payment</button>
+                                    <button className="delete-btn" onClick={() => confirmDeleteProject(project)}><FaTrash /> Delete</button>
                                 </div>
                             </div>
                         ))}

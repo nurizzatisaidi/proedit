@@ -1,6 +1,7 @@
 // Import necessary Firebase modules
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -18,7 +19,10 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Auth and Google Auth Provider
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const storage = getStorage(app);
 
 // Export signInWithGoogle function and other Firebase utilities
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+
+export { auth, googleProvider, storage };
 export default app;

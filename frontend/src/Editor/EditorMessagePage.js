@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFolder, FaComments, FaBell } from 'react-icons/fa';
-import "../styles/ChatPage.css"; // Make sure spinner CSS is here or globally included
+import { FaHome, FaFolder, FaComments, FaBell, FaPaperclip } from 'react-icons/fa';
+import "../styles/ChatPage.css";
 
 function EditorMessagePage() {
     const { chatId } = useParams();
@@ -18,6 +20,9 @@ function EditorMessagePage() {
     const [newMessage, setNewMessage] = useState("");
     const [isChatListLoading, setIsChatListLoading] = useState(true);
     const [isMessageLoading, setIsMessageLoading] = useState(true);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isSending, setIsSending] = useState(false);
+
 
     const messagesEndRef = useRef(null);
 
@@ -56,23 +61,35 @@ function EditorMessagePage() {
     };
 
     const handleSendMessage = async () => {
-        if (!newMessage.trim()) return;
-
-        const optimisticMessage = {
-            content: newMessage,
-            senderId: userId,
-            senderUsername: username,
-            timestamp: { seconds: Math.floor(Date.now() / 1000) }
-        };
-
-        setMessages(prev => [...prev, optimisticMessage]);
-        setNewMessage("");
+        if (!newMessage.trim() && !selectedFile) return;
+        setIsSending(true);
 
         try {
+            let contentToSend = newMessage;
+
+            if (selectedFile) {
+                const fileRef = ref(storage, `chat_attachments/${chatId}/${Date.now()}_${selectedFile.name}`);
+                await uploadBytes(fileRef, selectedFile);
+                contentToSend = await getDownloadURL(fileRef);
+            }
+
+            const optimisticMessage = {
+                content: contentToSend,
+                senderId: userId,
+                senderUsername: username,
+                timestamp: { seconds: Math.floor(Date.now() / 1000) }
+            };
+
+            setMessages(prev => [...prev, optimisticMessage]);
+            setNewMessage("");
+            setSelectedFile(null);
+
             const payload = {
                 chatId,
                 senderId: userId,
-                content: optimisticMessage.content,
+                senderUsername: username,
+                timestamp: optimisticMessage.timestamp,
+                content: contentToSend,
             };
 
             await fetch("http://localhost:8080/api/messages/send", {
@@ -84,8 +101,11 @@ function EditorMessagePage() {
             setTimeout(fetchMessages, 300);
         } catch (error) {
             console.error("Error sending message:", error);
+        } finally {
+            setIsSending(false);
         }
     };
+
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -137,8 +157,23 @@ function EditorMessagePage() {
                     {/* Right Chat View */}
                     <div className="chat-view-panel">
                         <div className="chat-header">
-                            {isChatListLoading ? <div className="spinner" /> : <h2>{activeChat?.projectTitle || "Chat"}</h2>}
+                            {isChatListLoading ? (
+                                <div className="spinner" />
+                            ) : (
+                                <>
+                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
+                                    {activeChat?.projectId && (
+                                        <button
+                                            className="taskboard-btn"
+                                            onClick={() => navigate(`/editor-project-board/${activeChat.projectId}`)}
+                                        >
+                                            View Task Board
+                                        </button>
+                                    )}
+                                </>
+                            )}
                         </div>
+
 
                         <div className="messages-container">
                             {isMessageLoading ? (
@@ -173,11 +208,27 @@ function EditorMessagePage() {
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
+                                placeholder={selectedFile ? `📎 ${selectedFile.name}` : "Type a message or attach a file..."}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                             />
-                            <button onClick={handleSendMessage}>Send</button>
+                            <button onClick={handleSendMessage} disabled={isSending}>
+                                {isSending ? "Sending..." : "Send"}
+                            </button>
+                            <label className="file-label" title="Attach file">
+                                <FaPaperclip size={16} />
+                                <input
+                                    type="file"
+                                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                                    onChange={(e) => {
+                                        if (e.target.files[0]) {
+                                            setSelectedFile(e.target.files[0]);
+                                        }
+                                    }}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
                         </div>
+
                     </div>
                 </div>
             </main>

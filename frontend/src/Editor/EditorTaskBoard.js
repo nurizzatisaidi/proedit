@@ -119,7 +119,7 @@ const EditorTaskBoard = () => {
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>Task Board</h1>
-                        <button className="add-user-btn" onClick={() => setShowPopup(true)}>
+                        <button className="create-task-btn" onClick={() => setShowPopup(true)}>
                             <FaPlus /> Create Task
                         </button>
                     </div>

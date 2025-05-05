@@ -13,8 +13,8 @@ function ClientProjectPage() {
     const [projects, setProjects] = useState([]);
     const [username, setUsername] = useState("user");
     const [toastMessage, setToastMessage] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All");
     const [showToast, setShowToast] = useState(false);
-
     const [searchQuery, setSearchQuery] = useState("");
 
 
@@ -65,9 +65,11 @@ function ClientProjectPage() {
     };
 
 
-    const filteredProjects = projects.filter((project) =>
-        project.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredProjects = projects.filter((project) => {
+        const matchesTitle = project.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === "All" || project.status === statusFilter;
+        return matchesTitle && matchesStatus;
+    });
 
     const showToastMessage = (message) => {
         setToastMessage(message);
@@ -98,13 +100,28 @@ function ClientProjectPage() {
                     </div>
 
                     {/* Display List of Requests */}
-                    <input
-                        type="text"
-                        placeholder="Search by title"
-                        className="search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                    <div className="proj-filters">
+                        <select
+                            className="proj-filter-dropdown"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="All">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+
+                        <input
+                            type="text"
+                            placeholder="Search by title..."
+                            className="search-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
 
                     <div className="list">
                         {isLoading ? (

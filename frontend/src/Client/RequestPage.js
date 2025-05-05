@@ -17,6 +17,7 @@ function RequestPage() {
     const [showToast, setShowToast] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [requestToDelete, setRequestToDelete] = useState(null);
+    const [filterStatus, setFilterStatus] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
     const hasShownNoRequestsAlert = useRef(false);
 
@@ -115,9 +116,11 @@ function RequestPage() {
         }
     };
 
-    const filteredRequests = requests.filter((req) =>
-        req.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredRequests = requests.filter((req) => {
+        const matchesStatus = filterStatus === "All" || req.status === filterStatus;
+        const matchesSearch = req.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesStatus && matchesSearch;
+    });
 
     const confirmDeleteRequest = (request) => {
         if (request.status === "Accepted") {
@@ -184,13 +187,26 @@ function RequestPage() {
                     </div>
 
                     {/* Display List of Requests */}
-                    <input
-                        type="text"
-                        placeholder="Search by title"
-                        className="search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                    <div className="request-filters">
+                        <select className="request-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
+                            <option value="All">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                        <div className="search-wrapper">
+                            <input
+                                type="text"
+                                placeholder="Search by title..."
+                                className="search-input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+
 
                     <div className="list">
                         {isLoading ? (

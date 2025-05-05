@@ -47,6 +47,23 @@
     gap: 0.5rem;
 }
 
+.create-task-btn {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.create-task-btn:hover {
+    background-color: #4cae4c;
+}
+
+
 .canceltask-btn {
     background-color: #f0ad4e;
     color: white;
@@ -59,8 +76,14 @@
 .top-bar {
     margin-bottom: 1rem;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    /* change from column to row */
+    justify-content: space-between;
+    /* space out title and button */
+    align-items: center;
+    /* align them vertically */
+    padding: 0 20px;
+    /* optional: add padding to match the rest of layout */
 }
 
 .project-title-sub {

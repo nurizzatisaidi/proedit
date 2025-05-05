@@ -19,7 +19,6 @@
     background-color: #1d5ae6;
 }
 
-/* Modal */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -34,7 +33,6 @@
 
 .popup-content {
     width: 600px;
-    /* Bigger popup box */
     background: white;
     padding: 25px;
     border-radius: 10px;
@@ -55,7 +53,6 @@
 .form-group-edit select {
     width: 440px;
     box-sizing: border-box;
-    /* prevents padding from affecting total width */
 }
 
 .form-group-edit {
@@ -90,7 +87,6 @@ input,
 select,
 textarea {
     width: 400px;
-    /* Same width for all fields */
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -100,4 +96,21 @@ textarea {
     height: 80px;
     resize: vertical;
 
+}
+
+.request-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.request-filter-dropdown {
+    padding: 8px;
+    width: 300px;
+    font-size: 16px;
+}
+
+.search-wrapper {
+    flex: 1;
 }

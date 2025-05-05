@@ -23,10 +23,13 @@
 
 
 .top-bar {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding: 0 20px;
+    /* Optional: spacing on left/right */
 }
 
 .top-bar h1 {

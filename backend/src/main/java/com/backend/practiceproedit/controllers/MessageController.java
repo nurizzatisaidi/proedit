@@ -17,6 +17,22 @@ public class MessageController {
     private MessageService messageService;
 
     // POST: Send message
+    // @PostMapping("/send")
+    // public ResponseEntity<Map<String, Object>> sendMessage(@RequestBody
+    // Map<String, String> payload) {
+    // try {
+    // String chatId = payload.get("chatId");
+    // String senderId = payload.get("senderId");
+    // String content = payload.get("content");
+
+    // Map<String, Object> message = messageService.createMessage(chatId, senderId,
+    // content);
+    // return ResponseEntity.ok(message);
+    // } catch (Exception e) {
+    // return ResponseEntity.status(500).body(null);
+    // }
+    // }
+
     @PostMapping("/send")
     public ResponseEntity<Map<String, Object>> sendMessage(@RequestBody Map<String, String> payload) {
         try {
@@ -24,7 +40,13 @@ public class MessageController {
             String senderId = payload.get("senderId");
             String content = payload.get("content");
 
-            Map<String, Object> message = messageService.createMessage(chatId, senderId, content);
+            // Optional file metadata
+            String fileUrl = payload.get("fileUrl");
+            String fileType = payload.get("fileType");
+            String fileName = payload.get("fileName");
+
+            Map<String, Object> message = messageService.createMessage(chatId, senderId, content, fileUrl, fileType,
+                    fileName);
             return ResponseEntity.ok(message);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);

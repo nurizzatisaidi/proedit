@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell } from 'react-icons/fa';
-import "../styles/ChatPage.css"; // make sure spinner CSS is added here or imported
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaPaperclip } from 'react-icons/fa';
+import "../styles/ChatPage.css";
 
 function ClientMessagePage() {
     const { chatId } = useParams();
@@ -18,16 +20,21 @@ function ClientMessagePage() {
     const [newMessage, setNewMessage] = useState("");
     const [isChatListLoading, setIsChatListLoading] = useState(true); // 🔄 loading flag
     const [isMessageLoading, setIsMessageLoading] = useState(true);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isSending, setIsSending] = useState(false);
 
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        fetchChatList();
+        const fetch = async () => await fetchChatList();
+        fetch();
     }, []);
 
     useEffect(() => {
-        if (chatId) fetchMessages();
+        const fetch = async () => await fetchMessages();
+        if (chatId) fetch();
     }, [chatId]);
+
 
     const fetchChatList = async () => {
         setIsChatListLoading(true);
@@ -55,20 +62,56 @@ function ClientMessagePage() {
         }
     };
 
-    const handleSendMessage = async () => {
-        if (!newMessage.trim()) return;
-
-        const optimisticMessage = {
-            content: newMessage,
-            senderId: userId,
-            senderUsername: username,
-            timestamp: { seconds: Math.floor(Date.now() / 1000) }
-        };
-
-        setMessages(prev => [...prev, optimisticMessage]);
-        setNewMessage("");
+    const handleCombinedSend = async () => {
+        if (!newMessage.trim() && !selectedFile) return;
+        setIsSending(true);
 
         try {
+            // If file selected
+            if (selectedFile) {
+                const fileRef = ref(storage, `chat_attachments/${chatId}/${Date.now()}_${selectedFile.name}`);
+                await uploadBytes(fileRef, selectedFile);
+                const fileUrl = await getDownloadURL(fileRef);
+
+                const optimisticMessage = {
+                    content: fileUrl,
+                    senderId: userId,
+                    senderUsername: username,
+                    timestamp: { seconds: Math.floor(Date.now() / 1000) }
+                };
+
+                setMessages(prev => [...prev, optimisticMessage]); // ✅ instant feedback
+
+                const payload = {
+                    chatId,
+                    senderId: userId,
+                    senderUsername: username,
+                    timestamp: optimisticMessage.timestamp,
+                    content: fileUrl,
+                };
+
+                await fetch("http://localhost:8080/api/messages/send", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                setSelectedFile(null);
+                setNewMessage("");
+                setIsSending(false);
+                return;
+            }
+
+            const optimisticMessage = {
+                content: newMessage,
+                senderId: userId,
+                senderUsername: username,
+                timestamp: { seconds: Math.floor(Date.now() / 1000) }
+            };
+
+            setMessages(prev => [...prev, optimisticMessage]);
+            setNewMessage("");
+
             const payload = {
                 chatId,
                 senderId: userId,
@@ -82,10 +125,14 @@ function ClientMessagePage() {
             });
 
             setTimeout(fetchMessages, 300);
-        } catch (error) {
-            console.error("Error sending message:", error);
+        } catch (err) {
+            console.error("Failed to send message:", err);
+        } finally {
+            setIsSending(false);
         }
     };
+
+
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -166,7 +213,14 @@ function ClientMessagePage() {
                                         {msg.senderId !== userId && (
                                             <strong className="sender-name">{msg.senderUsername}</strong>
                                         )}
-                                        <p>{msg.content}</p>
+                                        <p>
+                                            {msg.content.startsWith("https://firebasestorage") ? (
+                                                msg.content.match(/\.(jpeg|jpg|gif|png)$/)
+                                                    ? <img src={msg.content} alt="attachment" style={{ maxWidth: "200px" }} />
+                                                    : <a href={msg.content} target="_blank" rel="noopener noreferrer">View File</a>
+                                            ) : msg.content}
+                                        </p>
+
                                         <span className="timestamp">
                                             {msg.timestamp?.seconds
                                                 ? new Date(msg.timestamp.seconds * 1000).toLocaleString([], {
@@ -190,11 +244,36 @@ function ClientMessagePage() {
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
-                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                placeholder={
+                                    selectedFile
+                                        ? `📎 ${selectedFile.name}`
+                                        : "Type a message or attach a file..."
+                                }
+                                onKeyPress={(e) => e.key === 'Enter' && handleCombinedSend()}
                             />
-                            <button onClick={handleSendMessage}>Send</button>
+
+                            <button onClick={handleCombinedSend} disabled={isSending}>
+                                {isSending ? "Sending..." : "Send"}
+                            </button>
+
+                            <label className="file-label" title="Attach file">
+                                <FaPaperclip size={16} />
+                                <input
+                                    type="file"
+                                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                                    onChange={(e) => {
+                                        if (e.target.files[0]) {
+                                            setSelectedFile(e.target.files[0]);
+                                        }
+                                    }}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
                         </div>
+
+
+
+
                     </div>
                 </div>
             </main>

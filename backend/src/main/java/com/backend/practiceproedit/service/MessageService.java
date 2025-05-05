@@ -21,13 +21,35 @@ public class MessageService {
     }
 
     // Create a new message in the chat
-    public Map<String, Object> createMessage(String chatId, String senderId, String content)
+    // public Map<String, Object> createMessage(String chatId, String senderId,
+    // String content)
+    // throws ExecutionException, InterruptedException {
+
+    // CollectionReference messagesRef =
+    // db.collection("chats").document(chatId).collection("messages");
+    // DocumentReference newMessageRef = messagesRef.document();
+
+    // String senderUsername = firebaseService.getUsernameById(senderId); // get
+    // sender's name
+
+    // Map<String, Object> message = new HashMap<>();
+    // message.put("messageId", newMessageRef.getId());
+    // message.put("senderId", senderId);
+    // message.put("senderUsername", senderUsername);
+    // message.put("content", content);
+    // message.put("timestamp", FieldValue.serverTimestamp());
+
+    // newMessageRef.set(message).get(); // Save to Firestore
+    // return message;
+    // }
+    public Map<String, Object> createMessage(String chatId, String senderId, String content,
+            String fileUrl, String fileType, String fileName)
             throws ExecutionException, InterruptedException {
 
         CollectionReference messagesRef = db.collection("chats").document(chatId).collection("messages");
         DocumentReference newMessageRef = messagesRef.document();
 
-        String senderUsername = firebaseService.getUsernameById(senderId); // get sender's name
+        String senderUsername = firebaseService.getUsernameById(senderId);
 
         Map<String, Object> message = new HashMap<>();
         message.put("messageId", newMessageRef.getId());
@@ -36,7 +58,15 @@ public class MessageService {
         message.put("content", content);
         message.put("timestamp", FieldValue.serverTimestamp());
 
-        newMessageRef.set(message).get(); // Save to Firestore
+        // Optional file fields
+        if (fileUrl != null)
+            message.put("fileUrl", fileUrl);
+        if (fileType != null)
+            message.put("fileType", fileType);
+        if (fileName != null)
+            message.put("fileName", fileName);
+
+        newMessageRef.set(message).get();
         return message;
     }
 

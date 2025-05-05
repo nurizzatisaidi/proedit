@@ -1,6 +1,7 @@
 package com.backend.practiceproedit.model;
 
 import java.util.Date;
+import javax.persistence.Transient;
 
 public class Task {
     private String taskId;
@@ -10,6 +11,9 @@ public class Task {
     private Date dueDate;
     private String status; // todo, inprogress, done
     private Date createdAt;
+
+    @Transient // optional if you want to make it clearer
+    private String projectTitle;
 
     public Task() {
     }
@@ -79,5 +83,13 @@ public class Task {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getProjectTitle() {
+        return projectTitle;
+    }
+
+    public void setProjectTitle(String projectTitle) {
+        this.projectTitle = projectTitle;
     }
 }

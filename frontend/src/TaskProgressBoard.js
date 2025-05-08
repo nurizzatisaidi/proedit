@@ -14,7 +14,21 @@ const TaskProgressBoard = () => {
     const [allTasksDone, setAllTasksDone] = useState(false);
     const [showBlockedPopup, setShowBlockedPopup] = useState(false);
     const [projectTitle, setProjectTitle] = useState("");
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [projectDetails, setProjectDetails] = useState({});
+    const [privateDrive, setPrivateDrive] = useState("");
 
+    const [lineItems, setLineItems] = useState([]);
+
+    const addLineItem = () => {
+        setLineItems([...lineItems, { label: "", amount: "" }]);
+    };
+
+    const totalAmount = lineItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+
+    const formattedDescription = lineItems
+        .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
+        .join("\n");
 
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
@@ -51,6 +65,7 @@ const TaskProgressBoard = () => {
             const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
             const data = await res.json();
             setProjectTitle(data.title || "Untitled Project");
+            setProjectDetails(data); // store full project object
         } catch (err) {
             console.error("Error fetching project title:", err);
         }
@@ -79,6 +94,45 @@ const TaskProgressBoard = () => {
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 
+    const handleSubmit = async () => {
+        const formattedDescription = lineItems
+            .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
+            .join("\n");
+
+        const payload = {
+            projectId: projectDetails.projectId,
+            projectTitle: projectDetails.title,
+            clientId: projectDetails.userId,
+            clientUsername: projectDetails.username,
+            editorId: projectDetails.editorId,
+            editorUsername: projectDetails.editorUsername,
+            amount: totalAmount,
+            description: formattedDescription,
+            privateDrive: privateDrive
+        };
+
+        try {
+            const res = await fetch("http://localhost:8080/api/payments/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+                alert("Payment issued successfully!");
+                setShowPaymentPopup(false);
+            } else {
+                alert("Failed to issue payment.");
+            }
+        } catch (err) {
+            console.error("Error creating payment:", err);
+            alert("An error occurred.");
+        }
+    };
+
+
     return (
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
@@ -97,7 +151,7 @@ const TaskProgressBoard = () => {
                                         className="issue-payment-btn"
                                         onClick={() => {
                                             if (allTasksDone) {
-                                                alert("Redirecting to Issue Payment...");
+                                                setShowPaymentPopup(true);
                                             } else {
                                                 setShowBlockedPopup(true);
                                             }
@@ -144,6 +198,7 @@ const TaskProgressBoard = () => {
                     </div>
                 </section>
 
+                {/* Task status blocked pop up*/}
                 {showBlockedPopup && (
                     <div className="popup-overlay">
                         <div className="popup-content">
@@ -155,6 +210,85 @@ const TaskProgressBoard = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Payment Pop up */}
+                {showPaymentPopup && (
+                    <div className="popup-overlay">
+                        <div className="popup-content issue-payment-popup">
+                            <h2>Issue Payment</h2>
+
+                            <div className="request-details">
+                                <div className="detail-row"><span>Project:</span> {projectDetails.title}</div>
+                                <div className="detail-row"><span>Client:</span> {projectDetails.username}</div>
+                                <div className="detail-row"><span>Editor:</span> {projectDetails.editorUsername}</div>
+                            </div>
+
+                            <h4 style={{ marginTop: "15px", marginLeft: "8px" }}>Breakdown</h4>
+                            <table className="payment-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th style={{ textAlign: "right" }}>Amount (RM)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {lineItems.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    value={item.label}
+                                                    onChange={(e) => {
+                                                        const updated = [...lineItems];
+                                                        updated[index].label = e.target.value;
+                                                        setLineItems(updated);
+                                                    }}
+                                                    placeholder="e.g. Scriptwriting"
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    value={item.amount}
+                                                    onChange={(e) => {
+                                                        const updated = [...lineItems];
+                                                        updated[index].amount = e.target.value;
+                                                        setLineItems(updated);
+                                                    }}
+                                                    placeholder="0.00"
+                                                    style={{ textAlign: "right" }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div className="add-row-wrapper">
+                                <button className="add-row-btn" onClick={addLineItem}>➕ Add Row</button>
+                            </div>
+
+                            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Total: RM {totalAmount.toFixed(2)}</p>
+
+                            <div className="form-group">
+                                <label>Final Drive Link:</label>
+                                <input
+                                    type="text"
+                                    value={privateDrive}
+                                    onChange={(e) => setPrivateDrive(e.target.value)}
+                                    placeholder="https://drive.google.com/..."
+                                />
+                            </div>
+
+                            <div className="popup-buttons">
+                                <button className="cancel-btn" onClick={() => setShowPaymentPopup(false)}>Cancel</button>
+                                <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                )}
+
 
             </main>
         </div>

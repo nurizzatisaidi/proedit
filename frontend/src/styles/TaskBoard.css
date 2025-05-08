@@ -199,6 +199,108 @@
     margin-bottom: 10px;
 }
 
+.issue-payment-popup {
+    width: 500px;
+    max-width: 90%;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.issue-payment-popup h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.payment-table {
+    width: 100%;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+}
+
+.payment-table td:first-child input {
+    width: 100%;
+    margin-right: 400px;
+    max-width: 450px;
+    /* wider description field */
+}
+
+.payment-table td:last-child input {
+    width: 100%;
+    max-width: 100px;
+    /* shorter amount input */
+    text-align: right;
+}
+
+.payment-table th,
+.payment-table td {
+    padding: 8px;
+}
+
+.payment-table input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.add-row-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    color: #5cb85c;
+    border: 2px solid #5cb85c;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-row-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.add-row-btn:hover {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.issue-payment-popup {
+    max-width: 95vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.issue-payment-popup .form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.issue-payment-popup .form-group label {
+    min-width: 140px;
+    white-space: nowrap;
+    /* prevent wrapping */
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.issue-payment-popup .form-group input {
+    flex: 1;
+    max-width: 390px;
+    /* Adjust this value as needed */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
 
 @media (max-width: 768px) {
     .task-column {

@@ -4,7 +4,7 @@ import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPaperclip } from 'react-icons/fa';
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPaperclip, FaMoneyBillWave } from 'react-icons/fa';
 import "../styles/ChatPage.css";
 
 function AdminMessagePage() {
@@ -121,6 +121,7 @@ function AdminMessagePage() {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ];
 
     const activeChat = useMemo(

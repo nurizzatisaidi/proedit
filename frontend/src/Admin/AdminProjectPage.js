@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks } from "react-icons/fa";
+import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
@@ -22,6 +22,11 @@ function AdminProjectPage() {
     const [clients, setClients] = useState([]);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [projectToDelete, setProjectToDelete] = useState(null);
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [lineItems, setLineItems] = useState([]);
+    const [privateDrive, setPrivateDrive] = useState("");
+    const [selectedPaymentProject, setSelectedPaymentProject] = useState(null);
+
 
     const [formData, setFormData] = useState({
         title: "",
@@ -135,9 +140,57 @@ function AdminProjectPage() {
     };
 
 
-    const handleIssuePayment = (projectId) => {
-        window.location.href = `/admin-issue-payment/${projectId}`;
+    const addLineItem = () => {
+        setLineItems([...lineItems, { label: "", amount: "" }]);
     };
+
+    const totalAmount = lineItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+
+    const handleIssuePayment = (project) => {
+        setSelectedPaymentProject(project);
+        setLineItems([]); // Reset for new project
+        setPrivateDrive(project.privateDrive || "");
+        setShowPaymentPopup(true);
+    };
+
+    const handleSubmitPayment = async () => {
+        const description = lineItems
+            .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
+            .join("\n");
+
+        const payload = {
+            projectId: selectedPaymentProject.projectId,
+            projectTitle: selectedPaymentProject.title,
+            clientId: selectedPaymentProject.userId,
+            clientUsername: selectedPaymentProject.username,
+            editorId: selectedPaymentProject.editorId,
+            editorUsername: selectedPaymentProject.editorUsername,
+            amount: totalAmount,
+            description: description,
+            privateDrive: privateDrive
+        };
+
+        try {
+            const res = await fetch("http://localhost:8080/api/payments/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+                alert("Payment issued successfully!");
+                setShowPaymentPopup(false);
+            } else {
+                alert("Failed to issue payment.");
+            }
+        } catch (err) {
+            console.error("Error creating payment:", err);
+            alert("An error occurred.");
+        }
+    };
+
 
     const handleCreateProject = async (e) => {
         e.preventDefault();
@@ -213,6 +266,7 @@ function AdminProjectPage() {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ];
 
     return (
@@ -274,7 +328,8 @@ function AdminProjectPage() {
                                         onClick={() => window.location.href = `/admin-projects/${project.projectId}/progress`}
                                     ><FaTasks />Board
                                     </button>
-                                    <button className="payment-btn" onClick={() => handleIssuePayment(project.projectId)}><FaMoneyBill /> Issue Payment</button>
+                                    <button className="payment-btn" onClick={() => handleIssuePayment(project)}><FaMoneyBill /> Issue Payment</button>
+
                                     <button className="delete-btn" onClick={() => confirmDeleteProject(project)}><FaTrash /> Delete</button>
                                 </div>
                             </div>
@@ -489,6 +544,84 @@ function AdminProjectPage() {
                     </div>
                 </div>
             )}
+
+            {/* Isuue Payment for Project */}
+            {showPaymentPopup && selectedPaymentProject && (
+                <div className="popup-overlay">
+                    <div className="popup-content issue-payment-popup">
+                        <h2>Issue Payment</h2>
+
+                        <div className="request-details">
+                            <div className="detail-row"><span>Project:</span> {selectedPaymentProject.title}</div>
+                            <div className="detail-row"><span>Client:</span> {selectedPaymentProject.username}</div>
+                            <div className="detail-row"><span>Editor:</span> {selectedPaymentProject.editorUsername}</div>
+                        </div>
+
+                        <h4 style={{ marginTop: "15px", marginLeft: "8px" }}>Breakdown</h4>
+                        <table className="payment-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th style={{ textAlign: "right" }}>Amount (RM)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lineItems.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value={item.label}
+                                                onChange={(e) => {
+                                                    const updated = [...lineItems];
+                                                    updated[index].label = e.target.value;
+                                                    setLineItems(updated);
+                                                }}
+                                                placeholder="e.g. Scriptwriting"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={item.amount}
+                                                onChange={(e) => {
+                                                    const updated = [...lineItems];
+                                                    updated[index].amount = e.target.value;
+                                                    setLineItems(updated);
+                                                }}
+                                                placeholder="0.00"
+                                                style={{ textAlign: "right" }}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        <div className="add-row-wrapper">
+                            <button className="add-row-btn" onClick={addLineItem}>➕ Add Row</button>
+                        </div>
+
+                        <p style={{ marginTop: "10px", fontWeight: "bold" }}>Total: RM {totalAmount.toFixed(2)}</p>
+
+                        <div className="form-group">
+                            <label>Final Drive Link:</label>
+                            <input
+                                type="text"
+                                value={privateDrive}
+                                onChange={(e) => setPrivateDrive(e.target.value)}
+                                placeholder="https://drive.google.com/..."
+                            />
+                        </div>
+
+                        <div className="popup-buttons">
+                            <button className="cancel-btn" onClick={() => setShowPaymentPopup(false)}>Cancel</button>
+                            <button className="submit-btn" onClick={handleSubmitPayment}>Submit</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
         </div>
     );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash, FaEye, FaUser, FaUsers, FaCheck, FaTimes } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash, FaEye, FaUser, FaUsers, FaCheck, FaTimes, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
 function AdminRequestPage() {
@@ -195,6 +195,7 @@ function AdminRequestPage() {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ];
 
     return (

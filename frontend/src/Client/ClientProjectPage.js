@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaEye } from "react-icons/fa";
+import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaEye, FaTasks, FaMoneyBill } from "react-icons/fa";
 import "../styles/ProjectPage.css";
 import "../styles/List.css";
 
@@ -16,6 +16,11 @@ function ClientProjectPage() {
     const [statusFilter, setStatusFilter] = useState("All");
     const [showToast, setShowToast] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [paymentPopupProjectId, setPaymentPopupProjectId] = useState(null);
+    const [paymentDetails, setPaymentDetails] = useState(null);
+    const [paymentMap, setPaymentMap] = useState({}); // key = projectId, value = payment data or null
+
+
 
 
     const hasShownNoProjectsAlert = useRef(false);
@@ -43,6 +48,21 @@ function ClientProjectPage() {
                 const data = await response.json();
                 console.log("Fetched Projects:", data);
                 setProjects(data);
+                for (const project of data) {
+                    try {
+                        const res = await fetch(`http://localhost:8080/api/payments/project/${project.projectId}/latest`);
+
+                        if (res.ok) {
+                            const paymentData = await res.json();
+                            setPaymentMap(prev => ({ ...prev, [project.projectId]: paymentData }));
+                        } else {
+                            setPaymentMap(prev => ({ ...prev, [project.projectId]: null }));
+                        }
+                    } catch (err) {
+                        setPaymentMap(prev => ({ ...prev, [project.projectId]: null }));
+                    }
+                }
+
 
                 if (data.length === 0 && !hasShownNoProjectsAlert.current) {
                     showToastMessage("You have no projects yet.");
@@ -63,6 +83,17 @@ function ClientProjectPage() {
         setSelectedProject(project);
         setShowViewPopup(true);
     };
+
+    const handleViewPaymentDetails = (projectId) => {
+        const payment = paymentMap[projectId];
+        if (payment) {
+            setPaymentDetails(payment);
+            setPaymentPopupProjectId(projectId);
+        } else {
+            showToastMessage("Payment has not been issued yet by the admin.");
+        }
+    };
+
 
 
     const filteredProjects = projects.filter((project) => {
@@ -145,6 +176,20 @@ function ClientProjectPage() {
                                         <button className="view-btn" onClick={() => handleViewProject(project)}>
                                             <FaEye /> View
                                         </button>
+                                        <button
+                                            className="board-btn"
+                                            onClick={() => window.location.href = `/client-projects/${project.projectId}/progress`}
+                                        >
+                                            <FaTasks /> Task Board
+                                        </button>
+                                        <button
+                                            className="payment-btn"
+                                            onClick={() => handleViewPaymentDetails(project.projectId)}
+                                        >
+                                            <FaMoneyBill /> View Payment
+                                        </button>
+
+
                                     </div>
                                 </div>
                             ))
@@ -196,6 +241,49 @@ function ClientProjectPage() {
                     </div>
                 </div>
             )}
+
+            {paymentPopupProjectId && paymentDetails && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h2>Payment Details</h2>
+
+                        <div className="request-details">
+                            <div className="detail-row"><span>Project:</span> {paymentDetails.projectTitle}</div>
+                            <div className="detail-row"><span>Issued By:</span> {paymentDetails.clientUsername}</div>
+                            <div className="detail-row"><span>Editor:</span> {paymentDetails.editorUsername}</div>
+                            <div className="detail-row">
+                                <span>Issued On:</span>{" "}
+                                {paymentDetails.createdAt?.seconds
+                                    ? new Date(paymentDetails.createdAt.seconds * 1000).toLocaleString()
+                                    : "N/A"}
+                            </div>
+                            <div className="detail-row"><span>Amount:</span> RM {parseFloat(paymentDetails.amount).toFixed(2)}</div>
+                            <div className="detail-row"><span>Description:</span></div>
+                            <pre style={{ whiteSpace: "pre-wrap", fontSize: "14px" }}>{paymentDetails.description}</pre>
+
+                        </div>
+
+                        {paymentDetails.status === "pending_client_payment" && (
+                            <p style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}>
+                                Payment is Pending.
+                            </p>
+                        )}
+
+                        <div className="popup-buttons">
+                            <button className="cancel-btn" onClick={() => setPaymentPopupProjectId(null)}>Close</button>
+                            {paymentDetails.status === "pending_client_payment" && (
+                                <button className="submit-btn" onClick={() => {
+                                    alert("Redirecting to PayPal...");
+                                    setPaymentPopupProjectId(null);
+                                }}>
+                                    Continue Payment
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
             {/* Toast Message Popup */}
             {showToast && (

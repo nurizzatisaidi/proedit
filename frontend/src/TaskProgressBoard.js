@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-import { FaHome, FaFolder, FaComments, FaBell, FaFileAlt, FaUser, FaUsers } from "react-icons/fa";
+import { FaHome, FaFolder, FaComments, FaBell, FaFileAlt, FaUser, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import "./styles/TaskBoard.css";
 import "./styles/List.css";
 
@@ -17,6 +17,14 @@ const TaskProgressBoard = () => {
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
     const [projectDetails, setProjectDetails] = useState({});
     const [privateDrive, setPrivateDrive] = useState("");
+    const [paymentExists, setPaymentExists] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
+    const [showClientPaymentPopup, setShowClientPaymentPopup] = useState(false);
+    const [paymentDetails, setPaymentDetails] = useState(null);
+
+
+
 
     const [lineItems, setLineItems] = useState([]);
 
@@ -71,11 +79,40 @@ const TaskProgressBoard = () => {
         }
     }, [projectId]);
 
+    const checkPaymentExists = useCallback(async () => {
+        try {
+            const res = await fetch(`http://localhost:8080/api/payments/project/${projectId}/latest`);
+
+            if (res.ok) {
+                const data = await res.json();
+                setPaymentExists(true);
+                setPaymentDetails(data);
+            } else {
+                setPaymentExists(false);
+            }
+
+        } catch (err) {
+            console.error("Error checking payment:", err);
+            setPaymentExists(false);
+        }
+    }, [projectId]);
+
+    const showToastWithTimeout = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000); // hide after 3 seconds
+    };
+
+
+
 
     useEffect(() => {
         fetchTasks();
         fetchProjectTitle();
-    }, [fetchTasks, fetchProjectTitle]);
+        if (role === "user") {
+            checkPaymentExists();
+        }
+    }, [fetchTasks, fetchProjectTitle, checkPaymentExists]);
 
 
     const menuItems = role === "admin" ? [
@@ -86,6 +123,7 @@ const TaskProgressBoard = () => {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ] : [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
@@ -165,15 +203,19 @@ const TaskProgressBoard = () => {
                                     <button
                                         className="make-payment-btn"
                                         onClick={() => {
-                                            if (allTasksDone) {
-                                                alert("Redirecting to Make Payment...");
-                                            } else {
+                                            if (!paymentExists) {
+                                                showToastWithTimeout("Payment is not available yet. Please wait for the admin to issue it.");
+                                            } else if (!allTasksDone) {
                                                 setShowBlockedPopup(true);
+                                            } else {
+                                                setShowClientPaymentPopup(true); // show popup
                                             }
                                         }}
                                     >
                                         Make Payment
                                     </button>
+
+
                                 </div>
                             ) : null}
                         </div>
@@ -289,7 +331,54 @@ const TaskProgressBoard = () => {
 
                 )}
 
+                {/* Client Make Payment Pop up */}
+                {showClientPaymentPopup && paymentDetails && (
+                    <div className="popup-overlay">
+                        <div className="popup-content">
+                            <h2>Confirm Payment</h2>
 
+                            <div className="request-details">
+                                <div className="detail-row"><span>Project:</span> {paymentDetails.projectTitle}</div>
+                                <div className="detail-row"><span>Issued By:</span> {paymentDetails.clientUsername}</div>
+                                <div className="detail-row"><span>Editor:</span> {paymentDetails.editorUsername}</div>
+                                {/* Convert Firestore timestamp if needed */}
+                                <div className="detail-row">
+                                    <span>Issued On:</span>{" "}
+                                    {paymentDetails.createdAt?.seconds
+                                        ? new Date(paymentDetails.createdAt.seconds * 1000).toLocaleString()
+                                        : "N/A"}
+                                </div>
+                                <div className="detail-row"><span>Amount:</span> RM {parseFloat(paymentDetails.amount).toFixed(2)}</div>
+                                <div className="detail-row"><span>Description:</span></div>
+                                <pre style={{ whiteSpace: "pre-wrap", fontSize: "14px" }}>{paymentDetails.description}</pre>
+                            </div>
+
+                            {paymentDetails.status === "pending_client_payment" && (
+                                <p style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}>
+                                    Payment is Pending.
+                                </p>
+                            )}
+
+                            <div className="popup-buttons">
+                                <button className="cancel-btn" onClick={() => setShowClientPaymentPopup(false)}>Cancel</button>
+                                <button className="submit-btn" onClick={() => {
+                                    alert("Redirecting to PayPal...");
+                                    setShowClientPaymentPopup(false);
+                                }}>
+                                    Continue Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+                {/* Payment is not available yet */}
+                {showToast && (
+                    <div className="custom-toast">
+                        {toastMessage}
+                    </div>
+                )}
             </main>
         </div>
     );

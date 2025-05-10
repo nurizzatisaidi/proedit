@@ -22,7 +22,7 @@ import AdminMessagePage from './Admin/AdminMessagePage';
 import ProfilePage from './Client/ProfilePage';
 import EditorTaskBoard from './Editor/EditorTaskBoard';
 import TaskProgressBoard from "./TaskProgressBoard";
-
+import AdminPaymentList from './Admin/AdminPaymentList';
 
 function App() {
   return (
@@ -50,6 +50,7 @@ function App() {
         <Route path="/editor-project-board/:projectId" element={<EditorTaskBoard />} />
         <Route path="/client-projects/:projectId/progress" element={<TaskProgressBoard />} />
         <Route path="/admin-projects/:projectId/progress" element={<TaskProgressBoard />} />
+        <Route path="/admin-payments" element={<AdminPaymentList />} />
 
 
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaUser, FaUsers } from 'react-icons/fa';
+import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaUser, FaUsers, FaMoneyBillWave } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -49,6 +49,7 @@ function AdminChatList() {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ];
 
     const filteredChats = chats.filter(chat =>

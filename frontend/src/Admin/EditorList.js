@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
 function EditorList() {
@@ -79,6 +79,7 @@ function EditorList() {
         { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
         { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
         { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
     ];
 
     return (

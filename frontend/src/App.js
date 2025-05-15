@@ -23,6 +23,8 @@ import ProfilePage from './Client/ProfilePage';
 import EditorTaskBoard from './Editor/EditorTaskBoard';
 import TaskProgressBoard from "./TaskProgressBoard";
 import AdminPaymentList from './Admin/AdminPaymentList';
+import ClientPaymentList from './Client/ClientPaymentList';
+
 
 function App() {
   return (
@@ -51,6 +53,7 @@ function App() {
         <Route path="/client-projects/:projectId/progress" element={<TaskProgressBoard />} />
         <Route path="/admin-projects/:projectId/progress" element={<TaskProgressBoard />} />
         <Route path="/admin-payments" element={<AdminPaymentList />} />
+        <Route path="/user-payments" element={<ClientPaymentList />} />
 
 
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/UserDashboard.css";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaMoneyBillWave } from "react-icons/fa";
 
 function UserDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -20,6 +20,7 @@ function UserDashboard() {
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 

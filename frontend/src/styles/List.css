@@ -58,20 +58,12 @@
     background-color: #4cae4c;
 }
 
-/* .list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-} */
-
 .list {
     overflow-y: auto;
     max-height: 60vh;
     padding-right: 8px;
 }
 
-/* Optional: for better scrolling experience */
 .list::-webkit-scrollbar {
     width: 6px;
 }
@@ -124,7 +116,6 @@
     font-size: 12px;
     font-weight: 500;
     margin-top: 12px;
-    /* 👈 This adds the gap */
 }
 
 .status-badge.in-progress {
@@ -509,14 +500,15 @@
     bottom: 30px;
     right: 30px;
     background-color: #004285;
-    color: #fff;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    font-size: 14px;
-    z-index: 1000;
-    animation: slideUpFade 0.3s ease-in-out;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-weight: bold;
+    animation: fadeInOut 3s ease-in-out;
 }
+
 
 .no-message {
     display: flex;
@@ -570,5 +562,27 @@
 
     .form-note {
         margin-left: 0;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
     }
 }

@@ -4,7 +4,7 @@ import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaPaperclip } from 'react-icons/fa';
+import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaPaperclip, FaMoneyBillWave } from 'react-icons/fa';
 import "../styles/ChatPage.css";
 
 function ClientMessagePage() {
@@ -145,6 +145,7 @@ function ClientMessagePage() {
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 

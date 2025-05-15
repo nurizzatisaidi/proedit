@@ -64,7 +64,6 @@
 .task-card small {
     font-size: 13px;
     color: #999;
-    /* light gray for date */
     margin-top: 6px;
 }
 
@@ -114,13 +113,9 @@
     margin-bottom: 1rem;
     display: flex;
     flex-direction: row;
-    /* change from column to row */
     justify-content: space-between;
-    /* space out title and button */
     align-items: center;
-    /* align them vertically */
     padding: 0 20px;
-    /* optional: add padding to match the rest of layout */
 }
 
 .project-title-sub {
@@ -222,13 +217,11 @@
     width: 100%;
     margin-right: 400px;
     max-width: 450px;
-    /* wider description field */
 }
 
 .payment-table td:last-child input {
     width: 100%;
     max-width: 100px;
-    /* shorter amount input */
     text-align: right;
 }
 
@@ -286,7 +279,6 @@
 .issue-payment-popup .form-group label {
     min-width: 140px;
     white-space: nowrap;
-    /* prevent wrapping */
     font-weight: bold;
     margin-top: 10px;
 }
@@ -294,7 +286,6 @@
 .issue-payment-popup .form-group input {
     flex: 1;
     max-width: 390px;
-    /* Adjust this value as needed */
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;

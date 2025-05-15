@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell } from 'react-icons/fa';
+import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -64,6 +64,7 @@ function ClientChatList() {
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 

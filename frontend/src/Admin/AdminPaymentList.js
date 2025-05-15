@@ -16,6 +16,11 @@ function AdminPaymentList() {
     const [isLoading, setIsLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [paymentToDelete, setPaymentToDelete] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
+
     const username = localStorage.getItem("username") || "Admin";
 
     useEffect(() => {
@@ -41,7 +46,6 @@ function AdminPaymentList() {
     };
 
     const deletePayment = async (payment) => {
-        if (!window.confirm("Are you sure you want to delete this payment?")) return;
 
         try {
             const response = await fetch(`http://localhost:8080/api/payments/${payment.projectId}/${payment.paymentId}`, {
@@ -49,15 +53,21 @@ function AdminPaymentList() {
             });
 
             if (response.ok) {
-                alert("Payment deleted successfully.");
+                showToastMessage("Payment deleted successfully.");
                 fetchAllPayments();
             } else {
-                alert("Failed to delete payment.");
+                showToastMessage("Failed to delete payment.");
             }
         } catch (error) {
             console.error("Error deleting payment:", error);
             alert("An error occurred while deleting.");
         }
+    };
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     useEffect(() => {
@@ -144,7 +154,13 @@ function AdminPaymentList() {
                                         }}>
                                             <FaEye /> View
                                         </button>
-                                        <button className="delete-btn" onClick={() => deletePayment(payment)}>
+                                        <button
+                                            className="delete-btn"
+                                            onClick={() => {
+                                                setPaymentToDelete(payment);
+                                                setShowDeletePopup(true);
+                                            }}
+                                        >
                                             <FaTrash /> Delete
                                         </button>
                                     </div>
@@ -179,6 +195,48 @@ function AdminPaymentList() {
                         </div>
                     </div>
                 )}
+
+                {/* Delete Payment Popup */}
+                {showDeletePopup && paymentToDelete && (
+                    <div className="popup-overlay">
+                        <div className="popup-content">
+                            <h2>Confirm Delete</h2>
+                            <p>Are you sure you want to delete the payment for <strong>{paymentToDelete.projectTitle}</strong>?</p>
+
+                            <div className="popup-buttons">
+
+                                <button
+                                    className="cancel-btn"
+                                    onClick={() => {
+                                        setShowDeletePopup(false);
+                                        setPaymentToDelete(null);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="reject-btn"
+                                    onClick={async () => {
+                                        await deletePayment(paymentToDelete);
+                                        setShowDeletePopup(false);
+                                        setPaymentToDelete(null);
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Toast Message */}
+                {showToast && (
+                    <div className="custom-toast">
+                        {toastMessage}
+                    </div>
+                )}
+
+
             </main>
         </div>
     );

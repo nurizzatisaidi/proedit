@@ -21,6 +21,8 @@ function AdminRequestPage() {
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [showCannotDeletePopup, setShowCannotDeletePopup] = useState(false);
     const [requestToDelete, setRequestToDelete] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -106,11 +108,12 @@ function AdminRequestPage() {
             });
 
             if (response.ok) {
-                alert("Request Accepted Successfully!");
+                showToastMessage("Request accepted successfully!");
+
                 setShowAcceptPopup(false);
                 fetchRequests();
             } else {
-                alert("Failed to process request.");
+                showToastMessage("Failed to process request.");
             }
         } catch (error) {
             console.error("Error processing request: ", error);
@@ -135,11 +138,12 @@ function AdminRequestPage() {
             });
 
             if (response.ok) {
-                alert("Request Rejected Successfully!");
+                showToastMessage("Request rejected successfully!");
+
                 setShowRejectPopup(false);
                 fetchRequests();
             } else {
-                alert("Failed to process request.");
+                showToastMessage("Failed to process request.");
             }
         } catch (error) {
             console.error("Error processing request: ", error);
@@ -163,17 +167,23 @@ function AdminRequestPage() {
             });
 
             if (response.ok) {
-                alert("Request deleted successfully.");
+                showToastMessage("Request deleted successfully!");
+
                 setShowDeletePopup(false);
                 fetchRequests();
             } else {
-                alert("Failed to delete request.");
+                showToastMessage("Failed to delete request.");
             }
         } catch (error) {
             console.error("Error deleting request: ", error);
         }
     };
 
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
 
     const handleViewRequest = (request) => {
         setSelectedRequest(request);
@@ -370,6 +380,13 @@ function AdminRequestPage() {
                             <button className="confirm-btn" onClick={() => setShowCannotDeletePopup(false)}>Okay</button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Toast Message */}
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
                 </div>
             )}
 

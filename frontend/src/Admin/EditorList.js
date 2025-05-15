@@ -12,6 +12,12 @@ function EditorList() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [editorToDelete, setEditorToDelete] = useState(null);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [editedEditor, setEditedEditor] = useState({ userId: "", name: "", email: "", password: "" });
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [newEditor, setNewEditor] = useState({ name: "", email: "", password: "" });
 
     useEffect(() => {
@@ -40,36 +46,75 @@ function EditorList() {
         }
         try {
             await axios.post("http://localhost:8080/users/register-editor", newEditor);
-            alert("Editor added successfully!");
+            showToastMessage("Editor added successfully!");
             setNewEditor({ name: "", email: "", password: "" });
             setShowAddPopup(false);
             fetchEditors();
         } catch (error) {
             console.error("Error adding editor:", error);
-            alert("Failed to add editor.");
+            showToastMessage("Failed to add editor.");
         }
     };
 
-    const handleDeleteEditor = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this editor?")) return;
+
+    const confirmDeleteEditor = async () => {
         try {
-            await axios.delete(`http://localhost:8080/users/editors/${id}`);
-            alert("Editor deleted successfully!");
+            await axios.delete(`http://localhost:8080/users/editors/${editorToDelete.userId}`);
+            showToastMessage("Editor deleted successfully!");
+            setShowDeletePopup(false);
+            setEditorToDelete(null);
             fetchEditors();
         } catch (error) {
             console.error("Error deleting editor:", error);
-            alert("Failed to delete editor.");
+            showToastMessage("Failed to delete editor.");
+            setShowDeletePopup(false);
         }
     };
 
-    const handleEditEditor = (id) => {
-        alert(`Edit functionality for editor with ID ${id} will be added later.`);
+
+
+    const handleDeleteEditor = (editor) => {
+        setEditorToDelete(editor);
+        setShowDeletePopup(true);
+    };
+
+    const handleEditEditor = (editor) => {
+        setEditedEditor({
+            userId: editor.userId,
+            name: editor.name,
+            email: editor.email,
+            password: ""
+        });
+        setShowEditPopup(true);
+    };
+
+    const submitEditEditor = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.put(`http://localhost:8080/users/update-profile/${editedEditor.userId}`, editedEditor);
+            showToastMessage("Editor updated successfully!");
+            setShowEditPopup(false);
+            fetchEditors();
+        } catch (error) {
+            console.error("Error updating editor:", error);
+            showToastMessage("Failed to update editor.");
+        }
+    };
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // auto hide after 3s
     };
 
     const filteredEditors = editors.filter((editor) =>
         editor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         editor.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
@@ -116,8 +161,10 @@ function EditorList() {
                                         <p><strong>Email:</strong> {editor.email}</p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="edit-btn" onClick={() => handleEditEditor(editor.userId)}><FaEdit />Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDeleteEditor(editor.userId)}><FaTrash />Delete</button>
+                                        <button className="edit-btn" onClick={() => handleEditEditor(editor)}><FaEdit />Edit</button>
+
+                                        <button className="delete-btn" onClick={() => handleDeleteEditor(editor)}>
+                                            <FaTrash />Delete</button>
                                     </div>
                                 </div>
                             ))
@@ -172,7 +219,74 @@ function EditorList() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Editor Popup */}
+            {showDeletePopup && editorToDelete && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h2>Confirm Delete</h2>
+                        <p>Are you sure you want to delete <strong>{editorToDelete.name}</strong>?</p>
+                        <div className="popup-buttons">
+                            <button className="cancel-btn" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                            <button className="reject-btn" onClick={confirmDeleteEditor}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Update Editor Popup */}
+            {showEditPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h2>Edit Editor</h2>
+                        <form onSubmit={submitEditEditor}>
+                            <div className="form-group">
+                                <label>Name:</label>
+                                <input
+                                    type="text"
+                                    value={editedEditor.name}
+                                    onChange={(e) => setEditedEditor({ ...editedEditor, name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    value={editedEditor.email}
+                                    onChange={(e) => setEditedEditor({ ...editedEditor, email: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>New Password:</label>
+                                <input
+                                    type="password"
+                                    placeholder="Only when a new password is needed..."
+                                    value={editedEditor.password}
+                                    onChange={(e) => setEditedEditor({ ...editedEditor, password: e.target.value })}
+                                />
+                            </div>
+                            <div className="popup-buttons">
+                                <button type="button" className="cancel-btn" onClick={() => setShowEditPopup(false)}>Cancel</button>
+                                <button type="submit" className="submit-btn">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Message */}
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
+                </div>
+            )}
+
+
         </div>
+
+
     );
 }
 

@@ -24,7 +24,10 @@ function AdminProjectPage() {
     const [projectToDelete, setProjectToDelete] = useState(null);
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
     const [lineItems, setLineItems] = useState([]);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [privateDrive, setPrivateDrive] = useState("");
+
     const [selectedPaymentProject, setSelectedPaymentProject] = useState(null);
 
 
@@ -44,6 +47,15 @@ function AdminProjectPage() {
         fetchClients();
 
     }, []);
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 3000); // auto hide after 3s
+    };
+
 
     const fetchAllProjects = async () => {
         setIsLoading(true);
@@ -125,11 +137,12 @@ function AdminProjectPage() {
             });
 
             if (response.ok) {
-                alert("Project and related request deleted successfully.");
+                showToastMessage("Project and related request deleted successfully.");
                 setProjects(projects.filter(project => project.projectId !== projectToDelete.projectId));
             } else {
-                alert("Failed to delete project.");
+                showToastMessage("Failed to delete project.");
             }
+
         } catch (error) {
             console.error("Error deleting project:", error);
             alert("Error during deletion process.");
@@ -203,7 +216,7 @@ function AdminProjectPage() {
             });
 
             if (response.ok) {
-                alert("Project created successfully!");
+                showToastMessage("Project created successfully!");
                 setShowCreatePopup(false);
                 setFormData({
                     title: "",
@@ -212,9 +225,9 @@ function AdminProjectPage() {
                     sharedDrive: "",
                     notes: "",
                 });
-                fetchAllProjects(); // refresh list
+                fetchAllProjects();
             } else {
-                alert("Failed to create project.");
+                showToastMessage("Failed to create project.");
             }
         } catch (error) {
             console.error("Error creating project:", error);
@@ -247,12 +260,13 @@ function AdminProjectPage() {
             });
 
             if (response.ok) {
-                alert("Project updated successfully!");
+                showToastMessage("Project updated successfully!");
                 setShowEditPopup(false);
                 fetchAllProjects();
             } else {
-                alert("Failed to update project.");
+                showToastMessage("Failed to update project.");
             }
+
         } catch (error) {
             console.error("Error updating project:", error);
         }
@@ -621,6 +635,14 @@ function AdminProjectPage() {
                     </div>
                 </div>
             )}
+
+            {/* Toast Message*/}
+            {showToast && (
+                <div className="custom-toast">
+                    {toastMessage}
+                </div>
+            )}
+
 
 
         </div>

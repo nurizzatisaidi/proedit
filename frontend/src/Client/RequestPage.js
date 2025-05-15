@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash } from "react-icons/fa";
+import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/RequestPage.css";
 import "../styles/List.css";
 
@@ -169,6 +169,7 @@ function RequestPage() {
         { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+        { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
         { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
     ];
 

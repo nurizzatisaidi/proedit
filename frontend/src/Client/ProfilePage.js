@@ -7,7 +7,7 @@ import {
     FaFolder,
     FaComments,
     FaBell,
-    FaPlusCircle
+    FaPlusCircle, FaMoneyBillWave, FaUser, FaUsers
 } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
@@ -95,6 +95,9 @@ function ProfilePage() {
             { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
             { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
             { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
+            { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
+            { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+            { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
         ];
     } else if (role === "editor") {
         menuItems = [
@@ -109,6 +112,7 @@ function ProfilePage() {
             { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
             { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
             { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+            { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
             { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
         ];
     }

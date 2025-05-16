@@ -24,9 +24,12 @@ public class RequestService {
     private final Firestore db;
     private final FirebaseService firebaseService;
 
-    public RequestService(FirebaseService firebaseService) {
+    private final NotificationService notificationService;
+
+    public RequestService(FirebaseService firebaseService, NotificationService notificationService) {
         this.db = firebaseService.getFirestore();
         this.firebaseService = firebaseService;
+        this.notificationService = notificationService;
     }
 
     // Create a new request in Firebase
@@ -128,7 +131,9 @@ public class RequestService {
                 request.setRejectionReason(comment);
             }
 
-            RequestHandler handler = RequestHandlerFactory.getHandler(status);
+            // Factory that injects notification service
+            RequestHandlerFactory factory = new RequestHandlerFactory(notificationService);
+            RequestHandler handler = factory.getHandler(status);
             handler.handleRequest(db, request);
         }
     }

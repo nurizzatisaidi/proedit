@@ -256,3 +256,101 @@ body {
     background-color: #d9534f;
     color: white;
 }
+
+.create-banner {
+    background: #fcffe0;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.create-banner h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #122969;
+}
+
+.create-banner button {
+    background-color: #122969;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-banner button:hover {
+    background-color: rgb(46, 88, 179);
+}
+
+.stats-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    flex: 1;
+    padding: 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.light-blue {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.light-orange {
+    background-color: #fff7ed;
+    color: #c2410c;
+}
+
+.dashboard-section {
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    text-align: left;
+    /* 👈 Ensures all text is aligned to the left */
+}
+
+.dashboard-section h4 {
+    margin-bottom: 0.8rem;
+    text-align: left;
+}
+
+.card {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.8rem;
+    text-align: left;
+    /* 👈 Align text inside card to the left */
+    justify-content: flex-start;
+    /* 👈 Align layout content to the left */
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.muted {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.card.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.card.clickable:hover {
+    background-color: #f2f7ff;
+}

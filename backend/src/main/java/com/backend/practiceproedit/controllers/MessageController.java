@@ -16,34 +16,17 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    // POST: Send message
-    // @PostMapping("/send")
-    // public ResponseEntity<Map<String, Object>> sendMessage(@RequestBody
-    // Map<String, String> payload) {
-    // try {
-    // String chatId = payload.get("chatId");
-    // String senderId = payload.get("senderId");
-    // String content = payload.get("content");
-
-    // Map<String, Object> message = messageService.createMessage(chatId, senderId,
-    // content);
-    // return ResponseEntity.ok(message);
-    // } catch (Exception e) {
-    // return ResponseEntity.status(500).body(null);
-    // }
-    // }
-
     @PostMapping("/send")
-    public ResponseEntity<Map<String, Object>> sendMessage(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Map<String, Object>> sendMessage(@RequestBody Map<String, Object> payload) {
         try {
-            String chatId = payload.get("chatId");
-            String senderId = payload.get("senderId");
-            String content = payload.get("content");
+            String chatId = (String) payload.get("chatId");
+            String senderId = (String) payload.get("senderId");
+            String content = (String) payload.get("content");
 
             // Optional file metadata
-            String fileUrl = payload.get("fileUrl");
-            String fileType = payload.get("fileType");
-            String fileName = payload.get("fileName");
+            String fileUrl = (String) payload.get("fileUrl");
+            String fileType = (String) payload.get("fileType");
+            String fileName = (String) payload.get("fileName");
 
             Map<String, Object> message = messageService.createMessage(chatId, senderId, content, fileUrl, fileType,
                     fileName);

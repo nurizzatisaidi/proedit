@@ -4,7 +4,12 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.backend.practiceproedit.model.Payment;
+import com.backend.practiceproedit.model.Notification;
+import com.backend.practiceproedit.service.NotificationService;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.google.cloud.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +21,17 @@ import com.google.cloud.firestore.Query;
 @Service
 public class PaymentService {
 
+    @Autowired
+    private NotificationService notificationService;
+
     public String createPayment(Payment payment) throws Exception {
         Firestore db = FirestoreClient.getFirestore();
 
-        // Set the path to: projects/{projectId}/payments/{autoId}
         CollectionReference paymentsRef = db.collection("projects")
                 .document(payment.getProjectId())
                 .collection("payments");
 
-        DocumentReference newDoc = paymentsRef.document(); // auto-generate ID
+        DocumentReference newDoc = paymentsRef.document();
         String paymentId = newDoc.getId();
 
         Map<String, Object> data = new HashMap<>();
@@ -42,6 +49,17 @@ public class PaymentService {
         data.put("privateDrive", payment.getPrivateDrive());
 
         newDoc.set(data).get();
+
+        // 🔔 Create a notification for the client
+        Notification notification = new Notification();
+        notification.setUserId(payment.getClientId());
+        notification.setType("payment");
+        notification.setMessage("A new payment is issued for your project: " + payment.getProjectTitle());
+        notification.setRelatedId(payment.getProjectId());
+        notification.setRead(false);
+        notification.setTimestamp(Timestamp.now());
+        notificationService.createNotification(notification);
+
         return paymentId;
     }
 

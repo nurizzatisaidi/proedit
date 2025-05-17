@@ -12,7 +12,6 @@ body {
     background-color: #f9f9f9;
 }
 
-/* General styles */
 .dashboard-container {
     display: flex;
     flex-direction: row;
@@ -25,19 +24,14 @@ body {
 .header {
     background-color: #e9f1ff;
     padding: 5px 15px;
-    /* Reduce padding */
     margin: 0 0 20px 0;
-    /* Ensure no unnecessary margin at the top */
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: auto;
-    /* Allow height to adjust based on content */
     min-height: 50px;
-    /* Set a minimum height */
     box-sizing: border-box;
-    /* Ensure padding doesn't add to the height */
 }
 
 
@@ -50,33 +44,24 @@ body {
 
 .header-logo {
     width: 100px;
-    /* Adjust the size as needed */
     height: auto;
-    /* Maintain aspect ratio */
     max-height: 100%;
-    /* Ensure it doesn't overflow the header */
 }
 
 .vertical-line {
     width: 2px;
-    /* Thickness of the line */
     height: 30px;
-    /* Height of the line */
     background-color: #3a3a3a;
-    /* Line color */
 }
 
 .header-title {
     font-size: 18px;
-    /* Adjust text size */
     font-weight: bold;
     color: #1d1d1d;
     display: flex;
-    /* Ensures proper alignment within the container */
     align-items: center;
     margin-top: 5px;
     margin-left: 10px;
-    /* Move text slightly down */
 }
 
 .header-right {
@@ -119,14 +104,8 @@ body {
 }
 
 .sidebar {
-    /* width: 250px; */
-    /* background-color: #003366; */
-    /* color: white; */
-    /* display: flex; */
-    /* flex-direction: column; */
     padding: 20px;
     transition: width 0.3s ease;
-    /* overflow: hidden; */
 }
 
 .sidebar.collapsed {
@@ -155,9 +134,7 @@ body {
 .header {
     background-color: #dbe8fd;
     height: 80px;
-    /* Set a fixed height */
     padding: 0 15px;
-    /* Adjust padding for centering content */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -289,6 +266,49 @@ body {
     background-color: rgb(46, 88, 179);
 }
 
+.create-banner.enhanced-banner {
+    display: flex;
+    align-items: center;
+    background-color: #dae0ff9c;
+    border-left: 6px solid #007bff;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
+}
+
+.create-banner.enhanced-banner .banner-icon {
+    width: 120px;
+    height: 115px;
+    margin-right: 1.5rem;
+}
+
+.create-banner.enhanced-banner .banner-content {
+    flex: 1;
+}
+
+.create-banner.enhanced-banner h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #003366;
+}
+
+.create-banner.enhanced-banner button {
+    margin-top: 10px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.create-banner.enhanced-banner button:hover {
+    background-color: #0056b3;
+}
+
 .stats-row {
     display: flex;
     gap: 1rem;
@@ -317,7 +337,6 @@ body {
     margin-bottom: 2rem;
     padding: 0 1rem;
     text-align: left;
-    /* 👈 Ensures all text is aligned to the left */
 }
 
 .dashboard-section h4 {
@@ -332,9 +351,7 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     margin-bottom: 0.8rem;
     text-align: left;
-    /* 👈 Align text inside card to the left */
     justify-content: flex-start;
-    /* 👈 Align layout content to the left */
     align-items: flex-start;
     display: flex;
     flex-direction: column;

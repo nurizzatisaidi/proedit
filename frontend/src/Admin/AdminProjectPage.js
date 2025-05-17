@@ -193,10 +193,10 @@ function AdminProjectPage() {
             });
 
             if (res.ok) {
-                alert("Payment issued successfully!");
+                showToastMessage("Payment issued successfully!");
                 setShowPaymentPopup(false);
             } else {
-                alert("Failed to issue payment.");
+                showToastMessage("Failed to issue payment.");
             }
         } catch (err) {
             console.error("Error creating payment:", err);

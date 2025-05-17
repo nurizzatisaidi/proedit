@@ -64,12 +64,16 @@ function UserDashboard() {
                 <Header username={username} />
 
                 {/* ✅ Top Collaboration Banner */}
-                <div className="create-banner">
-                    <h3>🚀 Collaborate with Eflix</h3>
-                    <button onClick={() => window.location.href = "/user-requests"}>
-                        Create Request
-                    </button>
+                <div className="create-banner enhanced-banner">
+                    <img src="/StartRequest.png" alt="Start Collaboration" className="banner-icon" />
+                    <div className="banner-content">
+                        <h3>Collaborate with Eflix now !</h3>
+                        <button onClick={() => window.location.href = "/user-requests"}>
+                            Create Request
+                        </button>
+                    </div>
                 </div>
+
 
                 {/* ✅ Stats Row */}
                 <div className="stats-row">
@@ -101,8 +105,6 @@ function UserDashboard() {
                     )}
                 </div>
 
-
-                {/* ✅ Notifications Section */}
                 {/* ✅ Notifications Section */}
                 <div className="dashboard-section">
                     <h4>Notifications</h4>
@@ -116,8 +118,11 @@ function UserDashboard() {
                                 } else if (n.type === "request") {
                                     window.location.href = "/user-requests";
                                 } else if (n.type === "task" && n.relatedId) {
-                                    window.location.href = `/user-projects/${n.relatedId}/progress`;
+                                    window.location.href = `/client-projects/${n.relatedId}/progress`;
+                                } else if (n.type === "payment" && n.relatedId) {
+                                    window.location.href = `/user-projects`;
                                 }
+
                             };
 
                             return (

@@ -237,7 +237,8 @@ function AdminProjectPage() {
 
     const filteredProjects = projects.filter((project) => {
         const matchesStatus = filterStatus === "All" || project.status === filterStatus;
-        const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = (project.title || "").toLowerCase().includes(searchQuery.toLowerCase());
+
         return matchesStatus && matchesSearch;
     });
 

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Date;
+import com.google.firebase.cloud.FirestoreClient;
 
 import com.google.cloud.Timestamp;
 
@@ -177,6 +178,35 @@ public class ProjectService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<Project> getProjectsWithPendingPaymentStatus() throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        List<Project> result = new ArrayList<>();
+
+        ApiFuture<QuerySnapshot> projectQuery = db.collection("projects").get();
+        List<QueryDocumentSnapshot> projectDocs = projectQuery.get().getDocuments();
+
+        for (QueryDocumentSnapshot projectDoc : projectDocs) {
+            Project project = projectDoc.toObject(Project.class);
+            project.setProjectId(projectDoc.getId());
+
+            // Check for 'pending_client_payment' in payments subcollection
+            CollectionReference paymentsRef = projectDoc.getReference().collection("payments");
+            QuerySnapshot paymentsSnapshot = paymentsRef.get().get();
+
+            for (QueryDocumentSnapshot paymentDoc : paymentsSnapshot.getDocuments()) {
+                String status = paymentDoc.getString("status");
+                if ("pending_client_payment".equalsIgnoreCase(status)) {
+                    project.setStatus("Completed - Pending Payment"); // Optional override for chart display
+                    break;
+                }
+            }
+
+            result.add(project);
+        }
+
+        return result;
     }
 
 }

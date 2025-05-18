@@ -99,6 +99,23 @@
     background-color: #4cae4c;
 }
 
+.submit-complete-btn {
+    background-color: #fc9220;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.submit-complete-btn:hover {
+    background-color: #c06c14;
+}
+
+
 
 .canceltask-btn {
     background-color: #f0ad4e;
@@ -189,6 +206,7 @@
 .make-payment-btn:hover {
     background-color: #43a047;
 }
+
 
 .popup-content h3 {
     margin-bottom: 10px;

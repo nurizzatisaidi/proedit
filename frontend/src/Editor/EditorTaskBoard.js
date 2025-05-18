@@ -13,6 +13,8 @@ const EditorTaskBoard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [editingTask, setEditingTask] = useState(null);
     const [taskToDelete, setTaskToDelete] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const username = localStorage.getItem("username") || "Editor";
 
     const statuses = ["todo", "inprogress", "done"];
@@ -40,6 +42,9 @@ const EditorTaskBoard = () => {
             console.error("Error fetching tasks:", err);
         }
     }, [projectId]);
+
+    const isProjectDone = Object.values(tasks).flat().length > 0 &&
+        Object.values(tasks).flat().every(task => task.status === "done");
 
     useEffect(() => {
         fetchTasks();
@@ -86,6 +91,7 @@ const EditorTaskBoard = () => {
         setNewTask({ title: "", description: "", dueDate: "" });
         setShowPopup(false);
         fetchTasks();
+        showToastMessage("Task created successfully!");
     };
 
     const confirmDeleteTask = async () => {
@@ -95,12 +101,18 @@ const EditorTaskBoard = () => {
             });
             setTaskToDelete(null);
             fetchTasks();
+            showToastMessage("Task deleted successfully.");
         } catch (err) {
-            alert("Error deleting task");
+            showToastMessage("Error deleting task");
             console.error(err);
         }
     };
 
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
 
 
     const menuItems = [
@@ -220,8 +232,9 @@ const EditorTaskBoard = () => {
                                     });
                                     setEditingTask(null);
                                     fetchTasks();
+                                    showToastMessage("Task updated successfully!");
                                 } catch (err) {
-                                    alert("Failed to update task.");
+                                    showToastMessage("Failed to update task.");
                                 }
                             }}>
                                 <div className="form-group">
@@ -273,7 +286,32 @@ const EditorTaskBoard = () => {
                     </div>
                 )}
 
+                {isProjectDone && (
+                    <div style={{ position: "fixed", bottom: "30px", right: "30px", zIndex: 999 }}>
+                        <button
+                            className="submit-complete-btn"
+                            onClick={async () => {
+                                try {
+                                    await fetch(`http://localhost:8080/api/projects/update/${projectId}`, {
+                                        method: "PUT",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ status: "To Review" }),
+                                    });
+                                    showToastMessage("Project marked as 'To Review'");
+                                } catch (err) {
+                                    console.error("Failed to update project status:", err);
+                                    showToastMessage("Failed to update status. Please try again.");
+                                }
+                            }}
+                        >
+                            Project Completed (To Review)
+                        </button>
+                    </div>
+                )}
 
+                {showToast && (
+                    <div className="custom-toast">{toastMessage}</div>
+                )}
             </main>
         </div>
     );

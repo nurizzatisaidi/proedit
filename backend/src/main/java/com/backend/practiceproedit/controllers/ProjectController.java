@@ -105,4 +105,14 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/with-payment-status")
+    public ResponseEntity<List<Project>> getAllProjectsIncludingPaymentStatus() {
+        try {
+            List<Project> projects = projectService.getProjectsWithPendingPaymentStatus();
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

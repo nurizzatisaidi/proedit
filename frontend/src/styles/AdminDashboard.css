@@ -107,18 +107,14 @@
     background-color: #fff3e0;
 }
 
-/* Editor text - dark green */
 .editor-card h4,
 .editor-card p {
     color: #006400;
-    /* dark green */
 }
 
-/* Client text - dark purple */
 .client-card h4,
 .client-card p {
     color: #4B0082;
-    /* dark purple */
 }
 
 .dashboard-section {

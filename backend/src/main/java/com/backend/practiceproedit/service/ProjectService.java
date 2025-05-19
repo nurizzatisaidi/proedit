@@ -30,12 +30,25 @@ public class ProjectService {
     // Method to get All projects
     public List<Project> getAllProjects() throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> future = db.collection("projects").get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        QuerySnapshot snapshot = future.get(); // ✅ correct
+        List<QueryDocumentSnapshot> documents = snapshot.getDocuments();
 
         List<Project> projects = new ArrayList<>();
         for (QueryDocumentSnapshot document : documents) {
             Project project = document.toObject(Project.class);
-            project.setProjectId(document.getId()); // Add Firestore doc ID
+            project.setProjectId(document.getId());
+
+            CollectionReference paymentsRef = document.getReference().collection("payments");
+            QuerySnapshot paymentSnapshot = paymentsRef.get().get();
+
+            for (QueryDocumentSnapshot paymentDoc : paymentSnapshot.getDocuments()) {
+                String status = paymentDoc.getString("status");
+                if ("pending_client_payment".equalsIgnoreCase(status)) {
+                    project.setStatus("Pending Payment");
+                    break;
+                }
+            }
+
             projects.add(project);
         }
         return projects;
@@ -96,16 +109,22 @@ public class ProjectService {
         if (document.exists()) {
             Project existingProject = document.toObject(Project.class);
 
-            if (existingProject != null) {
+            if (updatedProject.getTitle() != null)
                 existingProject.setTitle(updatedProject.getTitle());
+            if (updatedProject.getVideoType() != null)
                 existingProject.setVideoType(updatedProject.getVideoType());
+            if (updatedProject.getDuration() != null)
                 existingProject.setDuration(updatedProject.getDuration());
+            if (updatedProject.getNotes() != null)
                 existingProject.setNotes(updatedProject.getNotes());
+            if (updatedProject.getEditorUsername() != null)
                 existingProject.setEditorUsername(updatedProject.getEditorUsername());
+            if (updatedProject.getStatus() != null)
                 existingProject.setStatus(updatedProject.getStatus());
+            if (updatedProject.getSharedDrive() != null)
                 existingProject.setSharedDrive(updatedProject.getSharedDrive());
+            if (updatedProject.getPrivateDrive() != null)
                 existingProject.setPrivateDrive(updatedProject.getPrivateDrive());
-            }
 
             docRef.set(existingProject);
             return existingProject;
@@ -207,6 +226,33 @@ public class ProjectService {
         }
 
         return result;
+    }
+
+    // Chaneg Project status when all payments are paid
+    public void updateProjectStatusIfAllPaymentsPaid(String projectId) throws Exception {
+        DocumentReference projectRef = db.collection("projects").document(projectId);
+        CollectionReference paymentsRef = projectRef.collection("payments");
+
+        // Get all payments for the project
+        List<QueryDocumentSnapshot> paymentDocs = paymentsRef.get().get().getDocuments();
+
+        if (paymentDocs.isEmpty()) {
+            return; // No payments yet, do not update status
+        }
+
+        boolean allPaid = true;
+        for (QueryDocumentSnapshot paymentDoc : paymentDocs) {
+            String status = paymentDoc.getString("status");
+            if (!"paid".equalsIgnoreCase(status)) {
+                allPaid = false;
+                break;
+            }
+        }
+
+        // ✅ If all payments are paid, update the project status
+        if (allPaid) {
+            projectRef.update("status", "Completed Payment");
+        }
     }
 
 }

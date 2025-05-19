@@ -180,7 +180,8 @@ function AdminProjectPage() {
             editorUsername: selectedPaymentProject.editorUsername,
             amount: totalAmount,
             description: description,
-            privateDrive: privateDrive
+            privateDrive: privateDrive,
+            adminId: localStorage.getItem("userId"),
         };
 
         try {
@@ -273,6 +274,16 @@ function AdminProjectPage() {
         }
     };
 
+    const displayStatus = (project) => {
+        if (project.payments && Array.isArray(project.payments)) {
+            const hasPendingPayment = project.payments.some(p => p.status === "pending_client_payment");
+            if (hasPendingPayment) {
+                return "Pending Payment";
+            }
+        }
+        return project.status || "Status Unknown";
+    };
+
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
@@ -302,7 +313,7 @@ function AdminProjectPage() {
                             <option value="All">All</option>
                             <option value="In Progress">In Progress</option>
                             <option value="To Review">To Review</option>
-                            <option value="Completed - Pending Payment">Completed - Pending Payment</option>
+                            <option value="Pending Payment">Pending Payment</option>
                             <option value="Completed Payment">Completed Payment</option>
                         </select>
 
@@ -330,8 +341,8 @@ function AdminProjectPage() {
                                     <h3 className="list-title">{project.title}</h3>
                                     <p>Client: {project.username || "Unknown"}</p>
                                     <p>
-                                        <span className={`status-badge ${project.status ? project.status.toLowerCase().replace(" ", "-") : ''}`}>
-                                            {project.status || "Status Unknown"}
+                                        <span className={`status-badge ${displayStatus(project).toLowerCase().replace(/\s/g, "-")}`}>
+                                            {displayStatus(project)}
                                         </span>
                                     </p>
                                 </div>

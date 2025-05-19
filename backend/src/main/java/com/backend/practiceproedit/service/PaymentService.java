@@ -10,6 +10,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.Timestamp;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import java.io.ByteArrayOutputStream;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.borders.SolidBorder;
+
+import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +128,7 @@ public class PaymentService {
         return allPayments;
     }
 
+    // Deleting a payment
     public String deletePayment(String projectId, String paymentId) throws Exception {
         Firestore db = FirestoreClient.getFirestore();
 
@@ -126,6 +141,78 @@ public class PaymentService {
         writeResult.get(); // wait for deletion to complete
 
         return "Payment deleted successfully.";
+    }
+
+    // Generate invoive
+    public byte[] generateInvoice(String projectId, String paymentId) throws Exception {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentSnapshot doc = db.collection("projects")
+                .document(projectId)
+                .collection("payments")
+                .document(paymentId).get().get();
+
+        if (!doc.exists())
+            throw new Exception("Payment not found");
+
+        Map<String, Object> data = doc.getData();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        // 1. Add Logo (bigger)
+        InputStream logoStream = getClass().getClassLoader().getResourceAsStream("static/Proedit_Logo.png");
+        if (logoStream != null) {
+            byte[] logoBytes = logoStream.readAllBytes();
+            Image logo = new Image(ImageDataFactory.create(logoBytes))
+                    .scaleToFit(180, 180)
+                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                    .setMarginBottom(5);
+            document.add(logo);
+        }
+
+        // 2. Company Description
+        document.add(new Paragraph("Eflix Enterprise Sdn. Bhd. in Collaboration with ProEdit System")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(11));
+
+        document.add(new Paragraph("We care, we contribute: Enhancing Learning")
+                .setBold()
+                .setItalic()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(10)
+                .setMarginBottom(20));
+
+        // 3. Invoice Title
+        document.add(new Paragraph("Payment Invoice")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBold()
+                .setFontSize(16)
+                .setMarginBottom(15));
+
+        // 4. Payment Details Table
+        Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 2 }))
+                .useAllAvailableWidth()
+                .setBorder(new SolidBorder(1));
+
+        table.addCell("Invoice ID").addCell(paymentId);
+        table.addCell("Project Title").addCell((String) data.get("projectTitle"));
+        table.addCell("Client").addCell((String) data.get("clientUsername"));
+        table.addCell("Editor").addCell((String) data.get("editorUsername"));
+        table.addCell("Amount").addCell("RM " + data.get("amount"));
+        table.addCell("Status").addCell((String) data.get("status"));
+
+        document.add(table);
+
+        // 5. Footer
+        document.add(new Paragraph("\nThank you for working with Eflix!")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(10)
+                .setItalic());
+
+        document.close();
+        return out.toByteArray();
     }
 
 }

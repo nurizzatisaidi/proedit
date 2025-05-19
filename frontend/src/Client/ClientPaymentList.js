@@ -16,6 +16,8 @@ function ClientPaymentList() {
     const [isLoading, setIsLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(null);
+    const [showPayPal, setShowPayPal] = useState(false);
+
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username") || "User";
 
@@ -54,6 +56,65 @@ function ClientPaymentList() {
         });
         setFilteredPayments(filtered);
     }, [searchQuery, filterStatus, payments]);
+
+    useEffect(() => {
+        if (showPayPal && selectedPayment) {
+            const interval = setInterval(() => {
+                if (window.paypal) {
+                    const container = document.getElementById("paypal-button-container");
+                    if (container) {
+                        container.innerHTML = "";
+                    }
+
+                    window.paypal.Buttons({
+                        createOrder: function (data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    description: selectedPayment.description || "Project Payment",
+                                    amount: {
+                                        currency_code: "MYR",
+                                        value: selectedPayment.amount.toFixed(2),
+                                    }
+                                }]
+                            });
+                        },
+                        onApprove: async function (data, actions) {
+                            const order = await actions.order.capture();
+                            const transactionId = order.id;
+
+                            const res = await fetch(`http://localhost:8080/api/payments/confirm`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    paymentId: selectedPayment.paymentId,
+                                    projectId: selectedPayment.projectId,
+                                    paypalTransactionId: transactionId,
+                                }),
+                            });
+
+                            if (res.ok) {
+                                alert("Payment successful!");
+                                setShowPayPal(false);
+                                fetchClientPayments();
+                            } else {
+                                alert("Failed to confirm payment.");
+                            }
+                        },
+                        onError: function (err) {
+                            console.error("PayPal error:", err);
+                            alert("There was an error processing the payment.");
+                        }
+                    }).render("#paypal-button-container");
+
+                    clearInterval(interval); // ✅ Stop checking once PayPal is ready
+                }
+            }, 300); // Check every 300ms
+
+            return () => clearInterval(interval); // Cleanup on component unmount
+        }
+    }, [showPayPal, selectedPayment]);
+
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -126,8 +187,31 @@ function ClientPaymentList() {
                                             <FaEye /> View
                                         </button>
                                         {payment.status === "pending_client_payment" && (
-                                            <button className="payment-btn" onClick={() => alert("Redirecting to PayPal...")}> <FaWallet /> Pay Now </button>
+                                            <button
+                                                className="payment-btn"
+                                                onClick={() => {
+                                                    setSelectedPayment(payment);
+                                                    setShowPayPal(true);
+                                                }}
+                                            >
+                                                <FaWallet /> Pay Now
+                                            </button>
+
+
                                         )}
+
+                                        {payment.status === "paid" && (
+                                            <a
+                                                href={`http://localhost:8080/api/payments/invoice/${payment.projectId}/${payment.paymentId}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="payment-btn"
+                                            >
+                                                Download Invoice
+                                            </a>
+                                        )}
+
+
                                     </div>
                                 </div>
                             ))
@@ -147,9 +231,20 @@ function ClientPaymentList() {
                                 <div className="detail-row"><span>Issued On:</span> {selectedPayment.createdAt?.seconds ? new Date(selectedPayment.createdAt.seconds * 1000).toLocaleString() : "N/A"}</div>
                                 <div className="detail-row"><span>Description:</span></div>
                                 <pre style={{ whiteSpace: "pre-wrap" }}>{selectedPayment.description}</pre>
-                                {selectedPayment.privateDrive && (
-                                    <div className="detail-row"><span>Final Drive:</span> <a href={selectedPayment.privateDrive} target="_blank" rel="noopener noreferrer">View</a></div>
+                                {selectedPayment.status === "paid" && selectedPayment.privateDrive && (
+                                    <div className="detail-row">
+                                        <span>Final Drive:</span>
+                                        <a href={selectedPayment.privateDrive} target="_blank" rel="noopener noreferrer">View</a>
+                                    </div>
                                 )}
+
+                                {selectedPayment.status !== "paid" && (
+                                    <div className="detail-row">
+                                        <span>Final Drive:</span>
+                                        <em>Complete payment to access the final product.</em>
+                                    </div>
+                                )}
+
                             </div>
                             <div className="center-button">
                                 <button className="cancel-btn" onClick={() => setShowPopup(false)}>Close</button>
@@ -157,6 +252,17 @@ function ClientPaymentList() {
                         </div>
                     </div>
                 )}
+
+                {showPayPal && selectedPayment && (
+                    <div className="popup-overlay">
+                        <div className="popup-content">
+                            <h2>Complete Your Payment</h2>
+                            <div id="paypal-button-container"></div>
+                            <button className="cancel-btn" onClick={() => setShowPayPal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                )}
+
             </main>
         </div>
     );

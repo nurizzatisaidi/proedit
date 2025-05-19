@@ -237,6 +237,8 @@ function AdminDashboard() {
                                         window.location.href = "/admin-requests";
                                     } else if (n.type === "task" && n.relatedId) {
                                         window.location.href = `/admin-projects`;
+                                    } else if (n.type === "payment" && n.relatedId) {
+                                        window.location.href = `/admin-payments`; // Or specific project view if applicable
                                     } else {
                                         console.log("No navigation for this type.");
                                     }

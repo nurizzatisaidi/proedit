@@ -5,7 +5,7 @@ public class Project {
     private String title;
     private String status;
     private String videoType;
-    private int duration;
+    private Integer duration;
     private String sharedDrive;
     private String notes;
     private String userId;
@@ -49,11 +49,11 @@ public class Project {
         this.videoType = videoType;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 

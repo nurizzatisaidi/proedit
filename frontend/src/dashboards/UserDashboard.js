@@ -63,100 +63,102 @@ function UserDashboard() {
             <main className="main-content">
                 <Header username={username} />
 
-                {/* ✅ Top Collaboration Banner */}
-                <div className="create-banner enhanced-banner">
-                    <img src="/StartRequest.png" alt="Start Collaboration" className="banner-icon" />
-                    <div className="banner-content">
-                        <h3>Collaborate with Eflix now !</h3>
-                        <button onClick={() => window.location.href = "/user-requests"}>
-                            Create Request
-                        </button>
+                <div className="content-scroll">
+                    {/* ✅ Top Collaboration Banner */}
+                    <div className="create-banner enhanced-banner">
+                        <img src="/StartRequest.png" alt="Start Collaboration" className="banner-icon" />
+                        <div className="banner-content">
+                            <h3>Collaborate with Eflix now !</h3>
+                            <button onClick={() => window.location.href = "/user-requests"}>
+                                Create Request
+                            </button>
+                        </div>
                     </div>
-                </div>
 
 
-                {/* ✅ Stats Row */}
-                <div className="stats-row">
-                    <div className="stat-card light-blue">
-                        <h4>Total Projects</h4>
-                        <p>{projects.length}</p>
+                    {/* ✅ Stats Row */}
+                    <div className="stats-row">
+                        <div className="stat-card light-blue">
+                            <h4>Total Projects</h4>
+                            <p>{projects.length}</p>
+                        </div>
+                        <div className="stat-card light-orange">
+                            <h4>Pending Requests</h4>
+                            <p>{pending.length}</p>
+                        </div>
                     </div>
-                    <div className="stat-card light-orange">
-                        <h4>Pending Requests</h4>
-                        <p>{pending.length}</p>
-                    </div>
-                </div>
 
-                {/* ✅ Ongoing Projects Section */}
-                <div className="dashboard-section">
-                    <h4>Ongoing Projects</h4>
-                    {ongoing.length === 0 ? (
-                        <p className="muted">No ongoing projects</p>
-                    ) : (
-                        ongoing.slice(0, 6).map((proj, i) => (
-                            <div
-                                className="card clickable"
-                                key={i}
-                                onClick={() => window.location.href = "/user-projects"}
-                            >
-                                <strong>{proj.title}</strong>
-                            </div>
-                        ))
-                    )}
-                </div>
-
-                {/* ✅ Notifications Section */}
-                <div className="dashboard-section">
-                    <h4>Notifications</h4>
-                    {notifications.length === 0 ? (
-                        <p className="muted">No new notifications</p>
-                    ) : (
-                        notifications.slice(0, 6).map((n, i) => {
-                            const handleNotificationClick = () => {
-                                if (n.type === "chat" && n.relatedId) {
-                                    window.location.href = `/user-chat/${n.relatedId}`;
-                                } else if (n.type === "request") {
-                                    window.location.href = "/user-requests";
-                                } else if (n.type === "task" && n.relatedId) {
-                                    window.location.href = `/client-projects/${n.relatedId}/progress`;
-                                } else if (n.type === "payment" && n.relatedId) {
-                                    window.location.href = `/user-projects`;
-                                }
-
-                            };
-
-                            return (
+                    {/* ✅ Ongoing Projects Section */}
+                    <div className="dashboard-section">
+                        <h4>Ongoing Projects</h4>
+                        {ongoing.length === 0 ? (
+                            <p className="muted">No ongoing projects</p>
+                        ) : (
+                            ongoing.slice(0, 6).map((proj, i) => (
                                 <div
                                     className="card clickable"
                                     key={i}
-                                    onClick={handleNotificationClick}
+                                    onClick={() => window.location.href = "/user-projects"}
                                 >
-                                    <p>{n.message}</p>
-                                    <small className="tag">{n.type}</small>
+                                    <strong>{proj.title}</strong>
                                 </div>
-                            );
-                        })
-                    )}
-                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* ✅ Notifications Section */}
+                    <div className="dashboard-section">
+                        <h4>Notifications</h4>
+                        {notifications.length === 0 ? (
+                            <p className="muted">No new notifications</p>
+                        ) : (
+                            notifications.slice(0, 6).map((n, i) => {
+                                const handleNotificationClick = () => {
+                                    if (n.type === "chat" && n.relatedId) {
+                                        window.location.href = `/user-chat/${n.relatedId}`;
+                                    } else if (n.type === "request") {
+                                        window.location.href = "/user-requests";
+                                    } else if (n.type === "task" && n.relatedId) {
+                                        window.location.href = `/client-projects/${n.relatedId}/progress`;
+                                    } else if (n.type === "payment" && n.relatedId) {
+                                        window.location.href = `/user-projects`;
+                                    }
+
+                                };
+
+                                return (
+                                    <div
+                                        className="card clickable"
+                                        key={i}
+                                        onClick={handleNotificationClick}
+                                    >
+                                        <p>{n.message}</p>
+                                        <small className="tag">{n.type}</small>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
 
 
 
-                {/* ✅ Active Chats Section */}
-                <div className="dashboard-section">
-                    <h4>Active Chats</h4>
-                    {chats.length === 0 ? (
-                        <p className="muted">No chats</p>
-                    ) : (
-                        chats.slice(0, 6).map((c, i) => (
-                            <div
-                                className="card clickable"
-                                key={i}
-                                onClick={() => window.location.href = `/user-chat/${c.chatId}`}
-                            >
-                                <strong>{c.projectTitle}</strong>
-                            </div>
-                        ))
-                    )}
+                    {/* ✅ Active Chats Section */}
+                    <div className="dashboard-section">
+                        <h4>Active Chats</h4>
+                        {chats.length === 0 ? (
+                            <p className="muted">No chats</p>
+                        ) : (
+                            chats.slice(0, 6).map((c, i) => (
+                                <div
+                                    className="card clickable"
+                                    key={i}
+                                    onClick={() => window.location.href = `/user-chat/${c.chatId}`}
+                                >
+                                    <strong>{c.projectTitle}</strong>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
 
             </main>

@@ -2,10 +2,18 @@ package com.backend.practiceproedit.controllers;
 
 import com.backend.practiceproedit.model.Payment;
 import com.backend.practiceproedit.service.PaymentService;
+import com.backend.practiceproedit.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.backend.practiceproedit.model.Notification;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.firebase.cloud.FirestoreClient;
+import com.google.cloud.firestore.FieldValue;
+import com.backend.practiceproedit.service.NotificationService;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +24,12 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private ProjectService projectService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/create")
     public ResponseEntity<String> createPayment(@RequestBody Payment payment) {
@@ -73,6 +87,70 @@ public class PaymentController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to delete payment: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<String> confirmPayment(@RequestBody Map<String, String> request) {
+        String paymentId = request.get("paymentId");
+        String projectId = request.get("projectId");
+        String paypalTransactionId = request.get("paypalTransactionId");
+
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            DocumentReference paymentRef = db.collection("projects")
+                    .document(projectId)
+                    .collection("payments")
+                    .document(paymentId);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("status", "paid");
+            updates.put("paypalTransactionId", paypalTransactionId);
+            updates.put("paidAt", FieldValue.serverTimestamp());
+
+            // Fetch project info to get adminId (assuming 1 admin)
+            DocumentSnapshot projectDoc = db.collection("projects").document(projectId).get().get();
+            String projectTitle = projectDoc.getString("title");
+            String clientUsername = projectDoc.getString("username");
+
+            // You may store adminId somewhere or hardcode for now
+            String adminId = "aXKdbBx5w7hsaVW8QjMjRANNqwo2"; // 🔁 Replace with actual admin user ID
+
+            Notification notification = new Notification();
+            notification.setUserId(adminId);
+            notification.setType("payment");
+            notification.setMessage("Client " + clientUsername + " has paid for project: " + projectTitle);
+            notification.setRelatedId(projectId);
+            notification.setRead(false);
+            notification.setTimestamp(com.google.cloud.Timestamp.now());
+
+            notificationService.createNotification(notification);
+
+            paymentRef.update(updates).get();
+
+            // ✅ Check and update project status if all payments are paid
+            projectService.updateProjectStatusIfAllPaymentsPaid(projectId);
+
+            return ResponseEntity.ok("Payment confirmed.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error confirming payment.");
+        }
+    }
+
+    // Downloading invoice per payment
+    @GetMapping("/invoice/{projectId}/{paymentId}")
+    public ResponseEntity<byte[]> generateInvoice(
+            @PathVariable String projectId,
+            @PathVariable String paymentId) {
+        try {
+            byte[] pdfData = paymentService.generateInvoice(projectId, paymentId);
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=invoice_" + paymentId + ".pdf")
+                    .body(pdfData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
         }
     }
 

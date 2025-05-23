@@ -14,8 +14,11 @@ function ClientPaymentList() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
     const [isLoading, setIsLoading] = useState(true);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(null);
+
     const [showPayPal, setShowPayPal] = useState(false);
 
     const userId = localStorage.getItem("userId");
@@ -93,17 +96,19 @@ function ClientPaymentList() {
                             });
 
                             if (res.ok) {
-                                alert("Payment successful!");
+                                showToastMessage("Payment successful!");
                                 setShowPayPal(false);
                                 fetchClientPayments();
                             } else {
-                                alert("Failed to confirm payment.");
+                                showToastMessage("Failed to confirm payment.");
                             }
+
                         },
                         onError: function (err) {
                             console.error("PayPal error:", err);
-                            alert("There was an error processing the payment.");
+                            showToastMessage("There was an error processing the payment.");
                         }
+
                     }).render("#paypal-button-container");
 
                     clearInterval(interval); // ✅ Stop checking once PayPal is ready
@@ -114,6 +119,11 @@ function ClientPaymentList() {
         }
     }, [showPayPal, selectedPayment]);
 
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
 
 
     const menuItems = [
@@ -218,7 +228,7 @@ function ClientPaymentList() {
                         )}
                     </div>
                 </section>
-
+                {/* Select Payment Pop up */}
                 {showPopup && selectedPayment && (
                     <div className="popup-overlay">
                         <div className="popup-content">
@@ -253,6 +263,7 @@ function ClientPaymentList() {
                     </div>
                 )}
 
+                {/* Paypal Pop up */}
                 {showPayPal && selectedPayment && (
                     <div className="popup-overlay">
                         <div className="popup-content">
@@ -260,6 +271,13 @@ function ClientPaymentList() {
                             <div id="paypal-button-container"></div>
                             <button className="cancel-btn" onClick={() => setShowPayPal(false)}>Cancel</button>
                         </div>
+                    </div>
+                )}
+
+                {/* Toast Message*/}
+                {showToast && (
+                    <div className="custom-toast">
+                        {toastMessage}
                     </div>
                 )}
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
-    FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaTrash, FaMoneyBillWave
+    FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaTrash, FaMoneyBillWave, FaEdit
 } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
@@ -18,6 +18,7 @@ function AdminPaymentList() {
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [paymentToDelete, setPaymentToDelete] = useState(null);
+    const [showUpdatePopup, setShowUpdatePopup] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
 
@@ -69,6 +70,12 @@ function AdminPaymentList() {
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
     };
+
+    const [breakdownRows, setBreakdownRows] = useState([
+        { label: "", amount: 0 }
+    ]);
+    const [privateDriveLink, setPrivateDriveLink] = useState("");
+
 
     useEffect(() => {
         const lowerSearch = searchQuery.toLowerCase();
@@ -163,6 +170,31 @@ function AdminPaymentList() {
                                         >
                                             <FaTrash /> Delete
                                         </button>
+                                        {payment.status === "pending_client_payment" && (
+                                            <button
+                                                className="edit-btn"
+                                                onClick={() => {
+                                                    setSelectedPayment(payment);
+
+                                                    // Populate breakdown rows from description string
+                                                    const parsedBreakdown = payment.description
+                                                        ? payment.description.split("\n").map(line => {
+                                                            const [label, amountPart] = line.split(": RM ");
+                                                            return { label: label.trim(), amount: parseFloat(amountPart) || 0 };
+                                                        })
+                                                        : [{ label: "", amount: 0 }];
+                                                    setBreakdownRows(parsedBreakdown);
+
+                                                    // Populate private drive link
+                                                    setPrivateDriveLink(payment.privateDrive || "");
+
+                                                    setShowUpdatePopup(true);
+                                                }}
+                                            >
+                                                <FaEdit /> Edit
+                                            </button>
+
+                                        )}
                                     </div>
                                 </div>
                             ))
@@ -186,6 +218,14 @@ function AdminPaymentList() {
                                 {selectedPayment.paypalTransactionId && (
                                     <div className="detail-row">
                                         <span>PayPal ID:</span> {selectedPayment.paypalTransactionId}
+                                    </div>
+                                )}
+                                {selectedPayment.status === "paid" && selectedPayment.privateDrive && (
+                                    <div className="detail-row">
+                                        <span>Final Drive:</span>
+                                        <a href={selectedPayment.privateDrive} target="_blank" rel="noopener noreferrer">
+                                            View Drive Link
+                                        </a>
                                     </div>
                                 )}
                             </div>
@@ -228,6 +268,115 @@ function AdminPaymentList() {
                         </div>
                     </div>
                 )}
+
+                {/* Update Payment for NOT PAID YET */}
+                {showUpdatePopup && selectedPayment && (
+                    <div className="popup-overlay">
+                        <div className="popup-content issue-payment-popup">
+                            <h2>Edit Payment</h2>
+
+                            <h4 style={{ marginTop: "15px", marginLeft: "8px" }}>Breakdown</h4>
+                            <table className="payment-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th style={{ textAlign: "right" }}>Amount (RM)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {breakdownRows.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    value={item.label}
+                                                    onChange={(e) => {
+                                                        const updated = [...breakdownRows];
+                                                        updated[index].label = e.target.value;
+                                                        setBreakdownRows(updated);
+                                                    }}
+                                                    placeholder="e.g. Scriptwriting"
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    value={item.amount}
+                                                    onChange={(e) => {
+                                                        const updated = [...breakdownRows];
+                                                        updated[index].amount = parseFloat(e.target.value) || 0;
+                                                        setBreakdownRows(updated);
+                                                    }}
+                                                    placeholder="0.00"
+                                                    style={{ textAlign: "right" }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div className="add-row-wrapper">
+                                <button className="add-row-btn" onClick={() => setBreakdownRows([...breakdownRows, { label: "", amount: 0 }])}>
+                                    ➕ Add Row
+                                </button>
+                            </div>
+
+                            <p style={{ marginTop: "10px", fontWeight: "bold" }}>
+                                Total: RM {breakdownRows.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0).toFixed(2)}
+                            </p>
+
+                            <div className="form-group">
+                                <label>Final Drive Link:</label>
+                                <input
+                                    type="text"
+                                    value={privateDriveLink}
+                                    onChange={(e) => setPrivateDriveLink(e.target.value)}
+                                    placeholder="https://drive.google.com/..."
+                                />
+                            </div>
+
+                            <div className="popup-buttons">
+                                <button className="cancel-btn" onClick={() => setShowUpdatePopup(false)}>Cancel</button>
+                                <button
+                                    className="submit-btn"
+                                    onClick={async () => {
+                                        const totalAmount = breakdownRows.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+                                        const description = breakdownRows.map(item => `${item.label}: RM ${parseFloat(item.amount).toFixed(2)}`).join("\n");
+
+                                        try {
+                                            const response = await fetch(`http://localhost:8080/api/payments/${selectedPayment.projectId}/${selectedPayment.paymentId}`, {
+                                                method: "PUT",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({
+                                                    amount: totalAmount,
+                                                    description: description,
+                                                    privateDrive: privateDriveLink,
+                                                }),
+                                            });
+
+                                            if (response.ok) {
+                                                showToastMessage("Payment updated successfully.");
+                                                setShowUpdatePopup(false);
+                                                fetchAllPayments();
+                                            } else {
+                                                showToastMessage("Failed to update payment.");
+                                            }
+                                        } catch (error) {
+                                            console.error("Update error:", error);
+                                            showToastMessage("Error updating payment.");
+                                        }
+                                    }}
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                )}
+
+
 
                 {/* Toast Message */}
                 {showToast && (

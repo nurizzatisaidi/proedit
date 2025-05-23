@@ -138,6 +138,19 @@
     background-color: #5cb85c;
 }
 
+.status-badge.pending_client_payment {
+    background-color: #f0ad4e;
+    /* orange */
+    color: white;
+}
+
+.status-badge.paid {
+    background-color: #5cb85c;
+    /* green */
+    color: white;
+}
+
+
 .edit-btn {
     background-color: #9460ac;
 }
@@ -525,6 +538,26 @@
     color: #555;
     text-align: center;
 }
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.detail-table th,
+.detail-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    vertical-align: top;
+    text-align: left;
+}
+
+.detail-table th {
+    background-color: #f2f2f2;
+    width: 30%;
+}
+
 
 @keyframes slideUpFade {
     from {

@@ -16,6 +16,7 @@ const EditorTaskBoard = () => {
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const username = localStorage.getItem("username") || "Editor";
+    const [projectTitle, setProjectTitle] = useState("");
 
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
@@ -43,11 +44,23 @@ const EditorTaskBoard = () => {
         }
     }, [projectId]);
 
+    const fetchProjectTitle = useCallback(async () => {
+        try {
+            const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
+            const data = await res.json();
+            setProjectTitle(data.title || "Untitled Project");
+        } catch (err) {
+            console.error("Error fetching project title:", err);
+        }
+    }, [projectId]);
+
+
     const isProjectDone = Object.values(tasks).flat().length > 0 &&
         Object.values(tasks).flat().every(task => task.status === "done");
 
     useEffect(() => {
         fetchTasks();
+        fetchProjectTitle();
     }, [fetchTasks]);
 
     const handleDragEnd = async (result) => {
@@ -129,8 +142,20 @@ const EditorTaskBoard = () => {
                 <Header username={username} />
 
                 <section className="list-section">
-                    <div className="top-bar">
-                        <h1>Task Board</h1>
+                    <div
+                        className="top-bar" style={{
+                            display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap"
+                        }}
+                    >
+                        <div>
+                            <h1 style={{ marginBottom: "0px" }}>Task Board</h1>
+                            <p style={{
+                                fontSize: "16px", fontWeight: "bold", color: "#37517e", marginTop: "8px"
+                            }}
+                            >
+                                Project: {projectTitle}
+                            </p>
+                        </div>
                         <button className="create-task-btn" onClick={() => setShowPopup(true)}>
                             <FaPlus /> Create Task
                         </button>
@@ -292,17 +317,31 @@ const EditorTaskBoard = () => {
                             className="submit-complete-btn"
                             onClick={async () => {
                                 try {
-                                    await fetch(`http://localhost:8080/api/projects/update/${projectId}`, {
+                                    const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
+                                    const data = await res.json();
+
+                                    if (data.status === "To Review") {
+                                        showToastMessage("Project is already marked as 'To Review'");
+                                        return;
+                                    }
+
+                                    const updateRes = await fetch(`http://localhost:8080/api/projects/update-status/${projectId}`, {
                                         method: "PUT",
                                         headers: { "Content-Type": "application/json" },
                                         body: JSON.stringify({ status: "To Review" }),
                                     });
-                                    showToastMessage("Project marked as 'To Review'");
+
+                                    if (updateRes.ok) {
+                                        showToastMessage("Project marked as 'To Review'");
+                                    } else {
+                                        showToastMessage("Failed to update status. Please try again.");
+                                    }
                                 } catch (err) {
                                     console.error("Failed to update project status:", err);
                                     showToastMessage("Failed to update status. Please try again.");
                                 }
                             }}
+
                         >
                             Project Completed (To Review)
                         </button>

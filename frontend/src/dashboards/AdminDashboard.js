@@ -115,7 +115,12 @@ function AdminDashboard() {
             });
 
             setRequests(req);
-            setNotifications(notif.slice(0, 5));
+            const sortedNotif = notif.sort((a, b) => {
+                const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                return bTime - aTime; // Most recent first
+            });
+            setNotifications(sortedNotif.slice(0, 5));
         } catch (err) {
             console.error("Error loading dashboard data", err);
         }
@@ -247,7 +252,11 @@ function AdminDashboard() {
                                 return (
                                     <div key={i} className="card clickable" onClick={handleNotificationClick}>
                                         <p>{n.message}</p>
-                                        <small className="tag">{n.type}</small>
+                                        <small className="tag">{n.type}</small><br />
+                                        <small style={{ color: "#777" }}>
+                                            {new Date((n.timestamp?.seconds || n.timestamp?._seconds || 0) * 1000).toLocaleString()}
+                                        </small>
+
                                     </div>
                                 );
                             })

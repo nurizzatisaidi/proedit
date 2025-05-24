@@ -4,7 +4,7 @@ import com.backend.practiceproedit.model.Project;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Service;
-
+import com.backend.practiceproedit.model.Notification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -13,11 +13,14 @@ import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Date;
 import com.google.firebase.cloud.FirestoreClient;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.Timestamp;
 
 @Service
 public class ProjectService {
+
+    @Autowired
+    private NotificationService notificationService;
 
     private final Firestore db;
     private final FirebaseService firebaseService;
@@ -249,9 +252,46 @@ public class ProjectService {
             }
         }
 
-        // ✅ If all payments are paid, update the project status
         if (allPaid) {
             projectRef.update("status", "Completed Payment");
+        }
+    }
+
+    public void updateProjectStatusIfChanged(String projectId, String newStatus)
+            throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference projectRef = db.collection("projects").document(projectId);
+        DocumentSnapshot projectDoc = projectRef.get().get();
+
+        String currentStatus = projectDoc.getString("status");
+        if (!newStatus.equals(currentStatus)) {
+            // Update the status
+            projectRef.update("status", newStatus);
+
+            // Notify admins if status changed to "To Review"
+            if ("To Review".equals(newStatus)) {
+                String projectTitle = projectDoc.getString("title");
+                String clientUsername = projectDoc.getString("username"); // optional if needed
+
+                List<QueryDocumentSnapshot> admins = db.collection("users")
+                        .whereEqualTo("role", "admin")
+                        .get()
+                        .get()
+                        .getDocuments();
+
+                for (QueryDocumentSnapshot admin : admins) {
+                    Notification notification = new Notification();
+                    notification.setUserId(admin.getId());
+                    notification.setType("project");
+                    notification.setMessage("Project \"" + projectTitle + "\" has been submitted for review.");
+                    notification.setRelatedId(projectId);
+                    notification.setRead(false);
+                    notification.setTimestamp(com.google.cloud.Timestamp.now());
+
+                    // You may autowire or access your NotificationService to save it
+                    notificationService.createNotification(notification);
+                }
+            }
         }
     }
 

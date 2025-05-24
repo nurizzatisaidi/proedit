@@ -5,7 +5,7 @@ import com.backend.practiceproedit.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.Map;
 import java.util.List;
 
 @RestController
@@ -112,6 +112,19 @@ public class ProjectController {
             return ResponseEntity.ok(projects);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @PutMapping("/update-status/{projectId}")
+    public ResponseEntity<String> updateProjectStatus(@PathVariable String projectId,
+            @RequestBody Map<String, String> request) {
+        try {
+            String newStatus = request.get("status");
+            projectService.updateProjectStatusIfChanged(projectId, newStatus);
+            return ResponseEntity.ok("Project status updated.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating project status.");
         }
     }
 

@@ -13,6 +13,7 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.cloud.firestore.FieldValue;
 import com.backend.practiceproedit.service.NotificationService;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,23 +109,31 @@ public class PaymentController {
             updates.put("paypalTransactionId", paypalTransactionId);
             updates.put("paidAt", FieldValue.serverTimestamp());
 
-            // Fetch project info to get adminId (assuming 1 admin)
+            // Fetch project info to get project title & client username
             DocumentSnapshot projectDoc = db.collection("projects").document(projectId).get().get();
             String projectTitle = projectDoc.getString("title");
             String clientUsername = projectDoc.getString("username");
 
-            // You may store adminId somewhere or hardcode for now
-            String adminId = "aXKdbBx5w7hsaVW8QjMjRANNqwo2"; // 🔁 Replace with actual admin user ID
+            // 🔁 Dynamically get all admin users
+            List<QueryDocumentSnapshot> adminUsers = db.collection("users")
+                    .whereEqualTo("role", "admin")
+                    .get()
+                    .get()
+                    .getDocuments();
 
-            Notification notification = new Notification();
-            notification.setUserId(adminId);
-            notification.setType("payment");
-            notification.setMessage("Client " + clientUsername + " has paid for project: " + projectTitle);
-            notification.setRelatedId(projectId);
-            notification.setRead(false);
-            notification.setTimestamp(com.google.cloud.Timestamp.now());
+            for (QueryDocumentSnapshot adminDoc : adminUsers) {
+                String adminId = adminDoc.getId();
 
-            notificationService.createNotification(notification);
+                Notification notification = new Notification();
+                notification.setUserId(adminId);
+                notification.setType("payment");
+                notification.setMessage("Client " + clientUsername + " has paid for project: " + projectTitle);
+                notification.setRelatedId(projectId);
+                notification.setRead(false);
+                notification.setTimestamp(com.google.cloud.Timestamp.now());
+
+                notificationService.createNotification(notification);
+            }
 
             paymentRef.update(updates).get();
 

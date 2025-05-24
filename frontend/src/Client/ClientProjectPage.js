@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaEye, FaTasks, FaMoneyBill, FaMoneyBillWave } from "react-icons/fa";
@@ -18,23 +18,11 @@ function ClientProjectPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [paymentPopupProjectId, setPaymentPopupProjectId] = useState(null);
     const [paymentDetails, setPaymentDetails] = useState(null);
-    const [paymentMap, setPaymentMap] = useState({}); // key = projectId, value = payment data or null
-
-
-
-
+    const [paymentMap, setPaymentMap] = useState({});
     const hasShownNoProjectsAlert = useRef(false);
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) {
-            setUsername(storedName);
-        }
 
-        fetchProjects();
-    }, []);
-
-    const fetchProjects = async () => {
+    const fetchProjects = useCallback(async () => {
         setIsLoading(true);
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -48,10 +36,10 @@ function ClientProjectPage() {
                 const data = await response.json();
                 console.log("Fetched Projects:", data);
                 setProjects(data);
+
                 for (const project of data) {
                     try {
                         const res = await fetch(`http://localhost:8080/api/payments/project/${project.projectId}/latest`);
-
                         if (res.ok) {
                             const paymentData = await res.json();
                             setPaymentMap(prev => ({ ...prev, [project.projectId]: paymentData }));
@@ -62,7 +50,6 @@ function ClientProjectPage() {
                         setPaymentMap(prev => ({ ...prev, [project.projectId]: null }));
                     }
                 }
-
 
                 if (data.length === 0 && !hasShownNoProjectsAlert.current) {
                     showToastMessage("You have no projects yet.");
@@ -77,7 +64,19 @@ function ClientProjectPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+
+        fetchProjects();
+    }, [fetchProjects]);
+
+
+
 
     const handleViewProject = (project) => {
         setSelectedProject(project);

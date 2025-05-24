@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
@@ -15,15 +16,7 @@ function EditorChatList() {
     const [username, setUsername] = useState(localStorage.getItem('username') || "Editor");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) {
-            setUsername(storedName);
-        }
-        fetchChats();
-    }, []);
-
-    const fetchChats = async () => {
+    const fetchChats = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
@@ -35,7 +28,15 @@ function EditorChatList() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+        fetchChats();
+    }, [fetchChats]);
 
     const navigate = useNavigate();
 

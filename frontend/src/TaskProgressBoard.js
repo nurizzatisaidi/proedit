@@ -22,10 +22,6 @@ const TaskProgressBoard = () => {
     const [showToast, setShowToast] = useState(false);
     const [showClientPaymentPopup, setShowClientPaymentPopup] = useState(false);
     const [paymentDetails, setPaymentDetails] = useState(null);
-
-
-
-
     const [lineItems, setLineItems] = useState([]);
 
     const addLineItem = () => {
@@ -33,10 +29,6 @@ const TaskProgressBoard = () => {
     };
 
     const totalAmount = lineItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-
-    const formattedDescription = lineItems
-        .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
-        .join("\n");
 
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
@@ -103,16 +95,13 @@ const TaskProgressBoard = () => {
         setTimeout(() => setShowToast(false), 3000); // hide after 3 seconds
     };
 
-
-
-
     useEffect(() => {
         fetchTasks();
         fetchProjectTitle();
         if (role === "user") {
             checkPaymentExists();
         }
-    }, [fetchTasks, fetchProjectTitle, checkPaymentExists]);
+    }, [fetchTasks, fetchProjectTitle, checkPaymentExists, role]);
 
 
     const menuItems = role === "admin" ? [

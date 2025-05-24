@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash, FaMoneyBillWave } from "react-icons/fa";
@@ -29,16 +29,7 @@ function RequestPage() {
         notes: "",
     });
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) {
-            setUsername(storedName);
-        }
-
-        fetchRequests();
-    }, []);
-
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         setIsLoading(true);
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -57,7 +48,6 @@ function RequestPage() {
                     showToastMessage("You have no requests yet.");
                     hasShownNoRequestsAlert.current = true;
                 }
-
             } else {
                 showToastMessage("You have no requests yet.");
             }
@@ -66,8 +56,16 @@ function RequestPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+
+        fetchRequests();
+    }, [fetchRequests]);
 
     const videoTypes = ["Tutorial", "Presentation", "Marketing", "Animation", "Interview", "Teaching"];
 

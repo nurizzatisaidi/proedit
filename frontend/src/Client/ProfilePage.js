@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
@@ -26,11 +26,8 @@ function ProfilePage() {
         photoUrl: ""
     });
 
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
 
-    const fetchUserProfile = async () => {
+    const fetchUserProfile = useCallback(async () => {
         try {
             const res = await fetch(`http://localhost:8080/users/${userId}`);
             const data = await res.json();
@@ -42,12 +39,15 @@ function ProfilePage() {
                 phoneNumber: data.phoneNumber || "",
                 photoUrl: data.photoUrl || ""
             });
-
             localStorage.setItem("profilePic", data.photoUrl || "");
         } catch (err) {
             console.error("Error fetching user:", err);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, [fetchUserProfile]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

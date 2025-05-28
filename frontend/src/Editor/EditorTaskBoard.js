@@ -61,7 +61,7 @@ const EditorTaskBoard = () => {
     useEffect(() => {
         fetchTasks();
         fetchProjectTitle();
-    }, [fetchTasks]);
+    }, [fetchTasks, fetchProjectTitle]);
 
     const handleDragEnd = async (result) => {
         const { source, destination } = result;

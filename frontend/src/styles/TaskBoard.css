@@ -3,7 +3,9 @@
     min-height: 650px;
     display: flex;
     gap: 1rem;
+    align-items: flex-start;
     justify-content: space-between;
+
 }
 
 .task-column {
@@ -12,6 +14,14 @@
     min-height: 00px;
     border-radius: 8px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-column h3 {
+    margin-bottom: 10px;
 }
 
 .task-column.todo {
@@ -323,6 +333,15 @@
     z-index: 1000;
     animation: slideUpFade 0.3s ease-in-out;
 }
+
+.project-filter-dropdown {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    max-width: 450px;
+}
+
 
 @keyframes slideUpFade {
     from {

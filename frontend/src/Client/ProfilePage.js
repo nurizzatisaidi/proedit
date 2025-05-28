@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
@@ -10,8 +10,6 @@ import {
     FaPlusCircle, FaMoneyBillWave, FaUser, FaUsers
 } from "react-icons/fa";
 import "../styles/ProfilePage.css";
-
-const DEFAULT_PROFILE_PIC = "/default_avatar.png";
 
 function ProfilePage() {
     const userId = localStorage.getItem("userId");
@@ -26,11 +24,8 @@ function ProfilePage() {
         photoUrl: ""
     });
 
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
 
-    const fetchUserProfile = async () => {
+    const fetchUserProfile = useCallback(async () => {
         try {
             const res = await fetch(`http://localhost:8080/users/${userId}`);
             const data = await res.json();
@@ -42,12 +37,15 @@ function ProfilePage() {
                 phoneNumber: data.phoneNumber || "",
                 photoUrl: data.photoUrl || ""
             });
-
             localStorage.setItem("profilePic", data.photoUrl || "");
         } catch (err) {
             console.error("Error fetching user:", err);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, [fetchUserProfile]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -113,18 +111,10 @@ function ProfilePage() {
             { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
             { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
             { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-            { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+            { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
         ];
     }
 
-    const resolvedProfilePic =
-        formData.photoUrl?.trim() !== ""
-            ? formData.photoUrl
-            : localStorage.getItem("profilePic")?.trim() !== "" &&
-                localStorage.getItem("profilePic") !== "null" &&
-                localStorage.getItem("profilePic") !== "undefined"
-                ? localStorage.getItem("profilePic")
-                : DEFAULT_PROFILE_PIC;
 
     return (
         <div className="dashboard-container">
@@ -140,9 +130,15 @@ function ProfilePage() {
                         <div className="profile-pic-wrapper">
                             <img
                                 className="profile-pic"
-                                src={resolvedProfilePic}
+                                src={formData.photoUrl?.trim() ? formData.photoUrl : "/default_avatar.png"}
                                 alt="Profile"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/default_avatar.png";
+                                }}
                             />
+
+
                             <label htmlFor="photoUpload" className="upload-icon">
                                 <FaPlusCircle />
                             </label>

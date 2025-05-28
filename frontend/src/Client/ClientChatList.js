@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave } from 'react-icons/fa';
+import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave, FaTasks } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -17,15 +16,7 @@ function ClientChatList() {
     const [showToast, setShowToast] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) {
-            setUsername(storedName);
-        }
-        fetchChats();
-    }, []);
-
-    const fetchChats = async () => {
+    const fetchChats = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
@@ -41,11 +32,19 @@ function ClientChatList() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+        fetchChats();
+    }, [fetchChats]);
+
 
 
     const navigate = useNavigate();
-
 
     const handleChat = (chatId) => {
         navigate(`/user-chat/${chatId}`);
@@ -56,7 +55,7 @@ function ClientChatList() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // hide after 3 seconds
+        }, 3000);
     };
 
     const menuItems = [
@@ -65,7 +64,7 @@ function ClientChatList() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     const filteredChats = chats.filter(chat =>
@@ -82,7 +81,7 @@ function ClientChatList() {
                         <h1>My Chats</h1>
                     </div>
 
-                    {/* ✅ Search Field */}
+                    {/* Search Field */}
                     <input
                         type="text"
                         placeholder="Search by project title"
@@ -111,6 +110,12 @@ function ClientChatList() {
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
                                             <FaComments /> Chat
+                                        </button>
+                                        <button
+                                            className="board-btn"
+                                            onClick={() => window.location.href = `/client-projects/${chat.projectId}/progress`}
+                                        >
+                                            <FaTasks /> Task Board
                                         </button>
                                     </div>
                                 </div>

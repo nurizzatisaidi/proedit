@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -22,19 +22,9 @@ function EditorMessagePage() {
     const [isMessageLoading, setIsMessageLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSending, setIsSending] = useState(false);
-
-
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        fetchChatList();
-    }, []);
-
-    useEffect(() => {
-        if (chatId) fetchMessages();
-    }, [chatId]);
-
-    const fetchChatList = async () => {
+    const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
@@ -45,9 +35,9 @@ function EditorMessagePage() {
         } finally {
             setIsChatListLoading(false);
         }
-    };
+    }, [userId]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         setIsMessageLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/messages/chat/${chatId}`);
@@ -58,7 +48,14 @@ function EditorMessagePage() {
         } finally {
             setIsMessageLoading(false);
         }
-    };
+    }, [chatId]);
+    useEffect(() => {
+        fetchChatList();
+    }, [fetchChatList]);
+
+    useEffect(() => {
+        if (chatId) fetchMessages();
+    }, [chatId, fetchMessages]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() && !selectedFile) return;

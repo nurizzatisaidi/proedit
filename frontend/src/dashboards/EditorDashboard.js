@@ -12,6 +12,11 @@ const EditorDashboard = () => {
     const [editorId, setEditorId] = useState("");
     const [projectCount, setProjectCount] = useState(0);
     const [tasks, setTasks] = useState({ todo: [], inprogress: [], done: [] });
+    const [selectedProjectId, setSelectedProjectId] = useState("all");
+
+    const [projects, setProjects] = useState([]);
+    const [allTasks, setAllTasks] = useState([]);
+
 
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
@@ -29,34 +34,43 @@ const EditorDashboard = () => {
 
     const fetchTasksForEditor = useCallback(async () => {
         if (!editorId) return;
-
         try {
             const res = await fetch(`http://localhost:8080/api/projects/editor/${editorId}/tasks`);
             const data = await res.json();
-
-            const grouped = { todo: [], inprogress: [], done: [] };
-            data.forEach(task => {
-                const key = task.status?.toLowerCase().replace(/\s/g, "");
-                if (grouped[key]) grouped[key].push(task);
-            });
-
-            setTasks(grouped);
+            setAllTasks(data); // Keep all tasks for filtering
+            updateFilteredTasks(data, selectedProjectId);
         } catch (err) {
             console.error("Error fetching tasks:", err);
         }
-    }, [editorId]);
+    }, [editorId, selectedProjectId]);
 
-    const fetchProjectCount = useCallback(async () => {
+
+    const updateFilteredTasks = (taskList, projectId) => {
+        const filtered = projectId === "all"
+            ? taskList
+            : taskList.filter(t => t.projectId === projectId);
+
+        const grouped = { todo: [], inprogress: [], done: [] };
+        filtered.forEach(task => {
+            const key = task.status?.toLowerCase().replace(/\s/g, "");
+            if (grouped[key]) grouped[key].push(task);
+        });
+        setTasks(grouped);
+    };
+
+
+    const fetchEditorProjects = useCallback(async () => {
         if (!editorId) return;
-
         try {
             const res = await fetch(`http://localhost:8080/api/projects/editor/${editorId}`);
-            const projects = await res.json();
-            setProjectCount(projects.length);
+            const data = await res.json();
+            setProjects(data);
+            setProjectCount(data.length);
         } catch (err) {
-            console.error("Error fetching project count:", err);
+            console.error("Error fetching projects:", err);
         }
     }, [editorId]);
+
 
     const handleDragEnd = async (result) => {
         const { source, destination } = result;
@@ -82,11 +96,18 @@ const EditorDashboard = () => {
         });
     };
 
+    const handleProjectFilterChange = (e) => {
+        const value = e.target.value;
+        setSelectedProjectId(value);
+        updateFilteredTasks(allTasks, value);
+    };
+
 
     useEffect(() => {
         fetchTasksForEditor();
-        fetchProjectCount();
-    }, [fetchTasksForEditor, fetchProjectCount]);
+        fetchEditorProjects(); // ✅ use it here
+    }, [fetchTasksForEditor, fetchEditorProjects]);
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
@@ -114,6 +135,16 @@ const EditorDashboard = () => {
                             <h4>Incomplete Tasks</h4>
                             <p>{incompleteTaskCount}</p>
                         </div>
+                    </div>
+
+                    <div className="project-title-header">
+                        <label>Filter by Project:</label>
+                        <select value={selectedProjectId} onChange={handleProjectFilterChange} className="project-filter-dropdown">
+                            <option value="all">All Projects</option>
+                            {projects.map(p => (
+                                <option key={p.projectId} value={p.projectId}>{p.title}</option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Kanban Board */}

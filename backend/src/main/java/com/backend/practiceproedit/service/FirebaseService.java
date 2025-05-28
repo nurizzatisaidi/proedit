@@ -16,10 +16,9 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
 import com.backend.practiceproedit.model.Project;
-
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-
+import com.google.cloud.firestore.Query;
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -285,6 +284,18 @@ public class FirebaseService {
 
         // Prevent role/userId from being updated
         userRef.update(updates).get();
+    }
+
+    public List<String> getAllUserIdsByRole(String role) throws ExecutionException, InterruptedException {
+        Firestore db = getFirestore();
+        Query query = db.collection("users").whereEqualTo("role", role);
+        ApiFuture<QuerySnapshot> future = query.get();
+
+        List<String> userIds = new ArrayList<>();
+        for (DocumentSnapshot document : future.get().getDocuments()) {
+            userIds.add(document.getId()); // doc ID is userId
+        }
+        return userIds;
     }
 
 }

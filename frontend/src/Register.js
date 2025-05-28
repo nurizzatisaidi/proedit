@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 
 import './styles/register.css';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
@@ -14,10 +12,7 @@ function Register() {
     const [acceptTerms, setAcceptTerms] = useState(false);
     const [message, setMessage] = useState('');
     const [showTermsPopup, setShowTermsPopup] = useState(false);
-
     const navigate = useNavigate();
-    const auth = getAuth();
-    const db = getFirestore();
 
     const handleSubmit = async (e) => {
         e.preventDefault();

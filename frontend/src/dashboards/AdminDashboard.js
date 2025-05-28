@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/AdminDashboard.css";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -40,11 +40,8 @@ function AdminDashboard() {
         if (storedId) setAdminId(storedId);
     }, []);
 
-    useEffect(() => {
-        if (adminId) fetchAllData();
-    }, [productivityFilter, adminId]);
-
-    const fetchAllData = async () => {
+    // Stable fetchAllData so it doesn't warn in CI
+    const fetchAllData = useCallback(async () => {
         const urls = {
             projects: "http://localhost:8080/api/projects/with-payment-status",
             editors: "http://localhost:8080/users/editors",
@@ -71,7 +68,6 @@ function AdminDashboard() {
             setClients(cli);
 
             const now = new Date();
-
             const getTimeBoundary = (filter) => {
                 const d = new Date(now);
                 if (filter === "week") d.setDate(d.getDate() - 7);
@@ -115,16 +111,27 @@ function AdminDashboard() {
             });
 
             setRequests(req);
-            const sortedNotif = notif.sort((a, b) => {
-                const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
-                const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
-                return bTime - aTime; // Most recent first
-            });
-            setNotifications(sortedNotif.slice(0, 5));
+
+            const unreadNotif = notif
+                .filter(n => !n.read)
+                .sort((a, b) => {
+                    const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                    const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                    return bTime - aTime;
+                });
+
+            setNotifications(unreadNotif.slice(0, 5));
+
         } catch (err) {
             console.error("Error loading dashboard data", err);
         }
-    };
+    }, [adminId, productivityFilter]); // Must include all dependencies used inside the function
+
+    useEffect(() => {
+        if (adminId) {
+            fetchAllData();
+        }
+    }, [adminId, productivityFilter, fetchAllData]);
 
 
     const pendingRequests = requests.filter(r => r.status === "Pending");

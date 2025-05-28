@@ -24,7 +24,9 @@ import EditorTaskBoard from './Editor/EditorTaskBoard';
 import TaskProgressBoard from "./TaskProgressBoard";
 import AdminPaymentList from './Admin/AdminPaymentList';
 import ClientPaymentList from './Client/ClientPaymentList';
-
+import ClientNotificationList from './Client/ClientNotificationList';
+import AdminNotificationList from './Admin/AdminNotificationList';
+import EditorNotificationList from './Editor/EditorNotificationList';
 
 function App() {
   return (
@@ -54,9 +56,9 @@ function App() {
         <Route path="/admin-projects/:projectId/progress" element={<TaskProgressBoard />} />
         <Route path="/admin-payments" element={<AdminPaymentList />} />
         <Route path="/user-payments" element={<ClientPaymentList />} />
-
-
-
+        <Route path="/client-notifications" element={<ClientNotificationList />} />
+        <Route path="/admin-notifications" element={<AdminNotificationList />} />
+        <Route path="/editor-notifications" element={<EditorNotificationList />} />
       </Routes>
     </Router>
   );

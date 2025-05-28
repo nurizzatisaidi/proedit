@@ -86,6 +86,14 @@
     min-height: 80px;
 }
 
+.list-card.read {
+    border-left: 4px solid #71767a;
+}
+
+.list-card.unread {
+    border-left: 4px solid #3e88c5;
+}
+
 .list-title {
     font-size: 20px;
     font-weight: 600;

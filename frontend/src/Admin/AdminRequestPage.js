@@ -252,12 +252,51 @@ function AdminRequestPage() {
                                         </p>
                                     </div>
                                     <div className="list-actions">
-                                        <button className="view-btn" onClick={() => handleViewRequest(request)}><FaEye /> View</button>
-                                        <button className="accept-btn" onClick={() => { setSelectedRequest(request); setShowAcceptPopup(true); }}><FaCheck /> Accept</button>
-                                        <button className="reject-btn" onClick={() => { setSelectedRequest(request); setShowRejectPopup(true); }}><FaTimes /> Reject</button>
-                                        <button className="delete-btn" onClick={() => confirmDelete(request)}><FaTrash /> Delete</button>
+                                        <button
+                                            className="view-btn"
+                                            onClick={() => handleViewRequest(request)}
+                                        >
+                                            <FaEye /> View
+                                        </button>
 
+                                        <button
+                                            className="accept-btn"
+                                            onClick={() => {
+                                                setSelectedRequest(request);
+                                                setShowAcceptPopup(true);
+                                            }}
+                                            disabled={request.status !== "Pending"}
+                                            style={{
+                                                opacity: request.status !== "Pending" ? 0.5 : 1,
+                                                cursor: request.status !== "Pending" ? "not-allowed" : "pointer"
+                                            }}
+                                        >
+                                            <FaCheck /> Accept
+                                        </button>
+
+                                        <button
+                                            className="reject-btn"
+                                            onClick={() => {
+                                                setSelectedRequest(request);
+                                                setShowRejectPopup(true);
+                                            }}
+                                            disabled={request.status !== "Pending"}
+                                            style={{
+                                                opacity: request.status !== "Pending" ? 0.5 : 1,
+                                                cursor: request.status !== "Pending" ? "not-allowed" : "pointer"
+                                            }}
+                                        >
+                                            <FaTimes /> Reject
+                                        </button>
+
+                                        <button
+                                            className="delete-btn"
+                                            onClick={() => confirmDelete(request)}
+                                        >
+                                            <FaTrash /> Delete
+                                        </button>
                                     </div>
+
                                 </div>
                             ))
                         ) : (

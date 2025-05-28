@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
@@ -24,11 +24,7 @@ function ClientPaymentList() {
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username") || "User";
 
-    useEffect(() => {
-        if (userId) fetchClientPayments();
-    }, [userId]);
-
-    const fetchClientPayments = async () => {
+    const fetchClientPayments = useCallback(async () => {
         setIsLoading(true);
         try {
             const res = await fetch("http://localhost:8080/api/projects/user/" + userId);
@@ -48,7 +44,14 @@ function ClientPaymentList() {
         } finally {
             setIsLoading(false);
         }
-    };
+
+    }, [userId]);
+    useEffect(() => {
+        if (userId) fetchClientPayments();
+    }, [userId, fetchClientPayments]);
+
+
+
 
     useEffect(() => {
         const lower = searchQuery.toLowerCase();
@@ -111,13 +114,13 @@ function ClientPaymentList() {
 
                     }).render("#paypal-button-container");
 
-                    clearInterval(interval); // ✅ Stop checking once PayPal is ready
+                    clearInterval(interval);
                 }
-            }, 300); // Check every 300ms
+            }, 300);
 
-            return () => clearInterval(interval); // Cleanup on component unmount
+            return () => clearInterval(interval);
         }
-    }, [showPayPal, selectedPayment]);
+    }, [showPayPal, selectedPayment, fetchClientPayments]);
 
     const showToastMessage = (message) => {
         setToastMessage(message);
@@ -132,7 +135,7 @@ function ClientPaymentList() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     return (

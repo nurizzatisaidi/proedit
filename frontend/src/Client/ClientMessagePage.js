@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebaseConfig";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -25,18 +25,7 @@ function ClientMessagePage() {
 
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        const fetch = async () => await fetchChatList();
-        fetch();
-    }, []);
-
-    useEffect(() => {
-        const fetch = async () => await fetchMessages();
-        if (chatId) fetch();
-    }, [chatId]);
-
-
-    const fetchChatList = async () => {
+    const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
@@ -47,9 +36,9 @@ function ClientMessagePage() {
         } finally {
             setIsChatListLoading(false);
         }
-    };
+    }, [userId]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         setIsMessageLoading(true);
         try {
             const response = await fetch(`http://localhost:8080/api/messages/chat/${chatId}`);
@@ -60,7 +49,17 @@ function ClientMessagePage() {
         } finally {
             setIsMessageLoading(false);
         }
-    };
+    }, [chatId]);
+
+    useEffect(() => {
+        const fetch = async () => await fetchChatList();
+        fetch();
+    }, [fetchChatList]);
+
+    useEffect(() => {
+        const fetch = async () => await fetchMessages();
+        if (chatId) fetch();
+    }, [chatId, fetchMessages]);
 
     const handleCombinedSend = async () => {
         if (!newMessage.trim() && !selectedFile) return;
@@ -146,7 +145,7 @@ function ClientMessagePage() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     const activeChat = useMemo(

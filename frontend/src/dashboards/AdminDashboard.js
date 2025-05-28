@@ -112,12 +112,16 @@ function AdminDashboard() {
 
             setRequests(req);
 
-            const sortedNotif = notif.sort((a, b) => {
-                const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
-                const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
-                return bTime - aTime;
-            });
-            setNotifications(sortedNotif.slice(0, 5));
+            const unreadNotif = notif
+                .filter(n => !n.read)
+                .sort((a, b) => {
+                    const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                    const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                    return bTime - aTime;
+                });
+
+            setNotifications(unreadNotif.slice(0, 5));
+
         } catch (err) {
             console.error("Error loading dashboard data", err);
         }

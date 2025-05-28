@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFolder, FaBell } from 'react-icons/fa';
+import { FaComments, FaHome, FaFolder, FaBell, FaTasks } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -42,6 +42,10 @@ function EditorChatList() {
 
     const handleChat = (chatId) => {
         navigate(`/editor-chat/${chatId}`);
+    };
+
+    const handleTaskBoard = (projectId) => {
+        navigate(`/editor-project-board/${projectId}`);
     };
 
     const menuItems = [
@@ -91,6 +95,9 @@ function EditorChatList() {
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
                                             <FaComments /> Chat
+                                        </button>
+                                        <button className="board-btn" onClick={() => handleTaskBoard(chat.projectId)}>
+                                            <FaTasks /> Board
                                         </button>
                                     </div>
                                 </div>

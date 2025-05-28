@@ -22,13 +22,13 @@ function AdminProjectPage() {
     const [clients, setClients] = useState([]);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [projectToDelete, setProjectToDelete] = useState(null);
-    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [showInvoicePopup, setShowInvoicePopup] = useState(false);
     const [lineItems, setLineItems] = useState([]);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [privateDrive, setPrivateDrive] = useState("");
 
-    const [selectedPaymentProject, setSelectedPaymentProject] = useState(null);
+    const [selectedInvoiceProject, setSelectedInvoiceProject] = useState(null);
 
 
     const [formData, setFormData] = useState({
@@ -159,25 +159,25 @@ function AdminProjectPage() {
 
     const totalAmount = lineItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
-    const handleIssuePayment = (project) => {
-        setSelectedPaymentProject(project);
+    const handleIssueInvoice = (project) => {
+        setSelectedInvoiceProject(project);
         setLineItems([]); // Reset for new project
         setPrivateDrive(project.privateDrive || "");
-        setShowPaymentPopup(true);
+        setShowInvoicePopup(true);
     };
 
-    const handleSubmitPayment = async () => {
+    const handleSubmitInvoice = async () => {
         const description = lineItems
             .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
             .join("\n");
 
         const payload = {
-            projectId: selectedPaymentProject.projectId,
-            projectTitle: selectedPaymentProject.title,
-            clientId: selectedPaymentProject.userId,
-            clientUsername: selectedPaymentProject.username,
-            editorId: selectedPaymentProject.editorId,
-            editorUsername: selectedPaymentProject.editorUsername,
+            projectId: selectedInvoiceProject.projectId,
+            projectTitle: selectedInvoiceProject.title,
+            clientId: selectedInvoiceProject.userId,
+            clientUsername: selectedInvoiceProject.username,
+            editorId: selectedInvoiceProject.editorId,
+            editorUsername: selectedInvoiceProject.editorUsername,
             amount: totalAmount,
             description: description,
             privateDrive: privateDrive,
@@ -194,13 +194,13 @@ function AdminProjectPage() {
             });
 
             if (res.ok) {
-                showToastMessage("Payment issued successfully!");
-                setShowPaymentPopup(false);
+                showToastMessage("Invoice issued successfully!");
+                setShowInvoicePopup(false);
             } else {
-                showToastMessage("Failed to issue payment.");
+                showToastMessage("Failed to issue Invoice.");
             }
         } catch (err) {
-            console.error("Error creating payment:", err);
+            console.error("Error creating Invoice:", err);
             alert("An error occurred.");
         }
     };
@@ -275,8 +275,8 @@ function AdminProjectPage() {
     };
 
     const displayStatus = (project) => {
-        if (project.payments && Array.isArray(project.payments)) {
-            const hasPendingPayment = project.payments.some(p => p.status === "pending_client_payment");
+        if (project.invoice && Array.isArray(project.invoice)) {
+            const hasPendingPayment = project.invoice.some(p => p.status === "pending_client_payment");
             if (hasPendingPayment) {
                 return "Pending Payment";
             }
@@ -354,7 +354,7 @@ function AdminProjectPage() {
                                         onClick={() => window.location.href = `/admin-projects/${project.projectId}/progress`}
                                     ><FaTasks />Board
                                     </button>
-                                    <button className="payment-btn" onClick={() => handleIssuePayment(project)}><FaMoneyBill /> Issue Payment</button>
+                                    <button className="payment-btn" onClick={() => handleIssueInvoice(project)}><FaMoneyBill /> Issue Invoice</button>
 
                                     <button className="delete-btn" onClick={() => confirmDeleteProject(project)}><FaTrash /> Delete</button>
                                 </div>
@@ -571,16 +571,16 @@ function AdminProjectPage() {
                 </div>
             )}
 
-            {/* Isuue Payment for Project */}
-            {showPaymentPopup && selectedPaymentProject && (
+            {/* Isuue Invoice for Project */}
+            {showInvoicePopup && selectedInvoiceProject && (
                 <div className="popup-overlay">
                     <div className="popup-content issue-payment-popup">
-                        <h2>Issue Payment</h2>
+                        <h2>Issue Invoice</h2>
 
                         <div className="request-details">
-                            <div className="detail-row"><span>Project:</span> {selectedPaymentProject.title}</div>
-                            <div className="detail-row"><span>Client:</span> {selectedPaymentProject.username}</div>
-                            <div className="detail-row"><span>Editor:</span> {selectedPaymentProject.editorUsername}</div>
+                            <div className="detail-row"><span>Project:</span> {selectedInvoiceProject.title}</div>
+                            <div className="detail-row"><span>Client:</span> {selectedInvoiceProject.username}</div>
+                            <div className="detail-row"><span>Editor:</span> {selectedInvoiceProject.editorUsername}</div>
                         </div>
 
                         <h4 style={{ marginTop: "15px", marginLeft: "8px" }}>Breakdown</h4>
@@ -641,8 +641,8 @@ function AdminProjectPage() {
                         </div>
 
                         <div className="popup-buttons">
-                            <button className="cancel-btn" onClick={() => setShowPaymentPopup(false)}>Cancel</button>
-                            <button className="submit-btn" onClick={handleSubmitPayment}>Submit</button>
+                            <button className="cancel-btn" onClick={() => setShowInvoicePopup(false)}>Cancel</button>
+                            <button className="submit-btn" onClick={handleSubmitInvoice}>Submit</button>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,8 @@ function ProfilePage() {
     const role = localStorage.getItem("role");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [user, setUser] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -23,7 +25,6 @@ function ProfilePage() {
         phoneNumber: "",
         photoUrl: ""
     });
-
 
     const fetchUserProfile = useCallback(async () => {
         try {
@@ -72,19 +73,27 @@ function ProfilePage() {
             });
 
             if (res.ok) {
-                alert("Profile updated successfully!");
+                showToastMessage("Profile updated successfully!");
                 localStorage.setItem("username", formData.name);
                 localStorage.setItem("profilePic", formData.photoUrl);
                 fetchUserProfile();
             } else {
-                alert("Failed to update profile.");
+                showToastMessage("Fail to update profile.");
+
             }
         } catch (err) {
             console.error("Update error:", err);
         }
     };
 
-    // 🎯 Sidebar based on role
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+
+    // Sidebar based on role
     let menuItems = [];
     if (role === "admin") {
         menuItems = [
@@ -192,6 +201,14 @@ function ProfilePage() {
                         <button className="save-btn" onClick={handleSave}>Save</button>
                     </div>
                 </div>
+
+                {/* Show Toast Message */}
+                {showToast && (
+                    <div className="custom-toast">
+                        {toastMessage}
+                    </div>
+                )}
+
             </main>
         </div>
     );

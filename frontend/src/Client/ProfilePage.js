@@ -113,18 +113,10 @@ function ProfilePage() {
             { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
             { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
             { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-            { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+            { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
         ];
     }
 
-    const resolvedProfilePic =
-        formData.photoUrl?.trim() !== ""
-            ? formData.photoUrl
-            : localStorage.getItem("profilePic")?.trim() !== "" &&
-                localStorage.getItem("profilePic") !== "null" &&
-                localStorage.getItem("profilePic") !== "undefined"
-                ? localStorage.getItem("profilePic")
-                : DEFAULT_PROFILE_PIC;
 
     return (
         <div className="dashboard-container">
@@ -140,9 +132,15 @@ function ProfilePage() {
                         <div className="profile-pic-wrapper">
                             <img
                                 className="profile-pic"
-                                src={resolvedProfilePic}
+                                src={formData.photoUrl?.trim() ? formData.photoUrl : "/default_avatar.png"}
                                 alt="Profile"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/default_avatar.png";
+                                }}
                             />
+
+
                             <label htmlFor="photoUpload" className="upload-icon">
                                 <FaPlusCircle />
                             </label>

@@ -22,7 +22,7 @@ function UserDashboard() {
 
     useEffect(() => {
         if (userId) {
-            // ✅ Safely fetch and parse
+            // Safely fetch and parse
             fetch(`http://localhost:8080/api/requests/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setRequests)
@@ -35,8 +35,19 @@ function UserDashboard() {
 
             fetch(`http://localhost:8080/api/notifications/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
-                .then(setNotifications)
+                .then((data) => {
+                    const unread = data
+                        .filter(n => !n.read)
+                        .sort((a, b) => {
+                            const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                            const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                            return bTime - aTime;
+                        })
+                        .slice(0, 5);
+                    setNotifications(unread);
+                })
                 .catch(() => setNotifications([]));
+
 
             fetch(`http://localhost:8080/api/chats/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
@@ -54,7 +65,7 @@ function UserDashboard() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     return (
@@ -64,7 +75,7 @@ function UserDashboard() {
                 <Header username={username} />
 
                 <div className="content-scroll">
-                    {/* ✅ Top Collaboration Banner */}
+                    {/* Top Collaboration Banner */}
                     <div className="create-banner enhanced-banner">
                         <img src="/StartRequest.png" alt="Start Collaboration" className="banner-icon" />
                         <div className="banner-content">
@@ -75,8 +86,7 @@ function UserDashboard() {
                         </div>
                     </div>
 
-
-                    {/* ✅ Stats Row */}
+                    {/* Stats Row */}
                     <div className="stats-row">
                         <div className="stat-card light-blue">
                             <h4>Total Projects</h4>
@@ -88,7 +98,7 @@ function UserDashboard() {
                         </div>
                     </div>
 
-                    {/* ✅ Ongoing Projects Section */}
+                    {/* Ongoing Projects Section */}
                     <div className="dashboard-section">
                         <h4>Ongoing Projects</h4>
                         {ongoing.length === 0 ? (
@@ -106,7 +116,7 @@ function UserDashboard() {
                         )}
                     </div>
 
-                    {/* ✅ Notifications Section */}
+                    {/* Notifications Section */}
                     <div className="dashboard-section">
                         <h4>Notifications</h4>
                         {notifications.length === 0 ? (
@@ -140,9 +150,7 @@ function UserDashboard() {
                         )}
                     </div>
 
-
-
-                    {/* ✅ Active Chats Section */}
+                    {/* Active Chats Section */}
                     <div className="dashboard-section">
                         <h4>Active Chats</h4>
                         {chats.length === 0 ? (

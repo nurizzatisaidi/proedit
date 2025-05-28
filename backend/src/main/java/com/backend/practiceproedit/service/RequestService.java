@@ -14,7 +14,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.backend.practiceproedit.model.Notification;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -36,27 +36,36 @@ public class RequestService {
     public String createRequest(Request request) throws ExecutionException, InterruptedException {
         Firestore db = firebaseService.getFirestore();
 
-        // Generating a uniwue requestId
         String requestId = UUID.randomUUID().toString();
         request.setRequestId(requestId);
         request.setStatus("Pending");
         request.setCreatedAt(Timestamp.now());
 
-        // Get the username from Firestore based on their userId
         String username = firebaseService.getUsernameById(request.getUserId());
         request.setUsername(username);
 
-        // Create a field for admin review
         request.setAdminComment(null);
         request.setAssignedEditor(null);
         request.setAssignedEditorUsername(null);
         request.setRejectionReason(null);
 
-        // Saving the request in Firestore under 'requests' collection
         DocumentReference docRef = db.collection("requests").document(requestId);
         ApiFuture<com.google.cloud.firestore.WriteResult> result = docRef.set(request);
-
         result.get();
+
+        // Send notification to all admins
+        List<String> adminUserIds = firebaseService.getAllUserIdsByRole("admin");
+        for (String adminId : adminUserIds) {
+            Notification notification = new Notification(
+                    adminId,
+                    "request",
+                    "New request submitted by " + username,
+                    requestId,
+                    false,
+                    Timestamp.now());
+            notificationService.createNotification(notification);
+        }
+
         return requestId;
     }
 
@@ -66,7 +75,7 @@ public class RequestService {
 
         System.out.println("Fetching requests for userId: " + userId);
 
-        // ✅ Query Firestore collection for requests matching userId
+        // Query Firestore collection for requests matching userId
         Query query = db.collection("requests").whereEqualTo("userId", userId);
         ApiFuture<QuerySnapshot> future = query.get();
         QuerySnapshot snapshot = future.get();
@@ -75,7 +84,7 @@ public class RequestService {
 
         List<Request> requests = new ArrayList<>();
         for (QueryDocumentSnapshot document : snapshot.getDocuments()) {
-            System.out.println("Document data: " + document.getData()); // ✅ Debugging
+            System.out.println("Document data: " + document.getData());
             requests.add(document.toObject(Request.class));
         }
         return requests;

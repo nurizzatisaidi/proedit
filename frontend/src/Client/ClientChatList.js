@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave } from 'react-icons/fa';
+import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave, FaTasks } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -64,7 +64,7 @@ function ClientChatList() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     const filteredChats = chats.filter(chat =>
@@ -110,6 +110,12 @@ function ClientChatList() {
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
                                             <FaComments /> Chat
+                                        </button>
+                                        <button
+                                            className="board-btn"
+                                            onClick={() => window.location.href = `/client-projects/${chat.projectId}/progress`}
+                                        >
+                                            <FaTasks /> Task Board
                                         </button>
                                     </div>
                                 </div>

@@ -19,6 +19,8 @@ function RequestPage() {
     const [requestToDelete, setRequestToDelete] = useState(null);
     const [filterStatus, setFilterStatus] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
+    const [showWarningPopup, setShowWarningPopup] = useState(false);
+    const [warningMessage, setWarningMessage] = useState("");
     const hasShownNoRequestsAlert = useRef(false);
 
     const [formData, setFormData] = useState({
@@ -121,13 +123,15 @@ function RequestPage() {
     });
 
     const confirmDeleteRequest = (request) => {
-        if (request.status === "Accepted") {
-            alert("You cannot delete an accepted request.");
+        if (request.status !== "Pending") {
+            setWarningMessage("You can only delete a request that is still pending.");
+            setShowWarningPopup(true);
             return;
         }
         setRequestToDelete(request);
         setShowDeletePopup(true);
     };
+
 
     const handleDeleteConfirmed = async () => {
         try {
@@ -168,7 +172,7 @@ function RequestPage() {
         { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
         { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
         { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
-        { name: "Notifications", icon: <FaBell />, path: "/user-notifications" },
+        { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
     return (
@@ -229,9 +233,14 @@ function RequestPage() {
                                         <button className="view-btn" onClick={() => handleViewRequest(request)}>
                                             <FaEye /> View
                                         </button>
-                                        <button className="delete-btn" onClick={() => confirmDeleteRequest(request)}>
+                                        <button
+                                            className="delete-btn"
+                                            style={{ opacity: request.status === "Pending" ? 1 : 0.5, cursor: "pointer" }}
+                                            onClick={() => confirmDeleteRequest(request)}
+                                        >
                                             <FaTrash /> Delete
                                         </button>
+
 
                                     </div>
                                 </div>
@@ -329,6 +338,9 @@ function RequestPage() {
                                 <p><span>Created At:</span> {selectedRequest.createdAt ? new Date(selectedRequest.createdAt.seconds * 1000).toLocaleString() : "N/A"}</p>
                             </div>
                             <div className="detail-row">
+                                <p><span>Status:</span> {selectedRequest.status}</p>
+                            </div>
+                            <div className="detail-row">
                                 <p><span>Notes:</span> {selectedRequest.notes || "No notes provided"}</p>
                             </div>
                             <div className="detail-row">
@@ -338,6 +350,24 @@ function RequestPage() {
                                         : "Not shared"}
                                 </p>
                             </div>
+
+                            {/* ✅ Conditionally render accepted/rejected info */}
+                            {selectedRequest.status === "Accepted" && (
+                                <>
+                                    <div className="detail-row">
+                                        <p><span>Assigned Editor:</span> {selectedRequest.assignedEditorUsername || selectedRequest.assignedEditor}</p>
+                                    </div>
+                                    <div className="detail-row">
+                                        <p><span>Admin Comment:</span> {selectedRequest.adminComment || "No comment provided"}</p>
+                                    </div>
+                                </>
+                            )}
+
+                            {selectedRequest.status === "Rejected" && (
+                                <div className="detail-row">
+                                    <p><span>Rejection Reason:</span> {selectedRequest.rejectionReason || "No reason provided"}</p>
+                                </div>
+                            )}
                         </div>
 
                         <div className="button-group">
@@ -346,6 +376,7 @@ function RequestPage() {
                     </div>
                 </div>
             )}
+
 
             {/* Delete Request Popup */}
             {showDeletePopup && (
@@ -359,12 +390,27 @@ function RequestPage() {
                     </div>
                 </div>
             )}
+
             {/* Toast Message Popup */}
             {showToast && (
                 <div className="custom-toast">
                     {toastMessage}
                 </div>
             )}
+
+            {/* Warning Delete Popup */}
+            {showWarningPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h3>Action Not Allowed</h3>
+                        <p>{warningMessage}</p>
+                        <div className="popup-buttons">
+                            <button className="cancel-btn" onClick={() => setShowWarningPopup(false)}>OK</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

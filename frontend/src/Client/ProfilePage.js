@@ -11,8 +11,6 @@ import {
 } from "react-icons/fa";
 import "../styles/ProfilePage.css";
 
-const DEFAULT_PROFILE_PIC = "/default_avatar.png";
-
 function ProfilePage() {
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("role");

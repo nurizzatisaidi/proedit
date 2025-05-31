@@ -22,6 +22,11 @@ function EditorMessagePage() {
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
 
+    const [isStructured, setIsStructured] = useState(false);
+    const [messageTitle, setMessageTitle] = useState("");
+    const [messagePoints, setMessagePoints] = useState([""]);
+
+
     const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
@@ -56,16 +61,35 @@ function EditorMessagePage() {
     }, [chatId, fetchMessages]);
 
     const handleSendMessage = async () => {
-        if (!newMessage.trim() && !selectedFile) return;
+        const hasText = isStructured
+            ? messageTitle.trim() || messagePoints.some(point => point.trim())
+            : newMessage.trim();
+
+        if (!hasText && !selectedFile) return;
+
         setIsSending(true);
 
         try {
-            let contentToSend = newMessage;
+            let contentToSend = "";
 
+            // Handle structured message
+            if (isStructured) {
+                const bulletList = messagePoints
+                    .filter(point => point.trim() !== "")
+                    .map(point => `• ${point.trim()}`)
+                    .join("\n");
+
+                contentToSend = `📝 <strong>${messageTitle.trim()}</strong>\n${bulletList}`;
+
+            } else {
+                contentToSend = newMessage;
+            }
+
+            // Handle file upload if present
             if (selectedFile) {
                 const fileRef = ref(storage, `chat_attachments/${chatId}/${Date.now()}_${selectedFile.name}`);
                 await uploadBytes(fileRef, selectedFile);
-                contentToSend = await getDownloadURL(fileRef);
+                contentToSend = await getDownloadURL(fileRef); // File replaces message content
             }
 
             const optimisticMessage = {
@@ -78,6 +102,8 @@ function EditorMessagePage() {
             setMessages(prev => [...prev, optimisticMessage]);
             setNewMessage("");
             setSelectedFile(null);
+            setMessageTitle(""); // reset structured inputs
+            setMessagePoints([""]);
 
             const payload = {
                 chatId,
@@ -100,6 +126,17 @@ function EditorMessagePage() {
             setIsSending(false);
         }
     };
+
+    const formatMessage = (content) => {
+        if (!content) return "";
+        return content
+            .replace(/\n/g, '<br/>') // Line breaks
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // optional: markdown support
+            .replace(/<strong>(.*?)<\/strong>/g, '<div style="text-align:left; font-weight:bold;">$1</div>');
+    };
+
+
+
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -177,7 +214,9 @@ function EditorMessagePage() {
                                         {msg.senderId !== userId && (
                                             <strong className="sender-name">{msg.senderUsername}</strong>
                                         )}
-                                        <p>{msg.content}</p>
+                                        <p dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+
+
                                         <span className="timestamp">
                                             {msg.timestamp?.seconds
                                                 ? new Date(msg.timestamp.seconds * 1000).toLocaleString([], {
@@ -197,13 +236,51 @@ function EditorMessagePage() {
                         </div>
 
                         <div className="chat-input">
-                            <input
-                                type="text"
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder={selectedFile ? `📎 ${selectedFile.name}` : "Type a message or attach a file..."}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                            />
+                            {isStructured ? (
+                                <div className="structured-form">
+                                    <input
+                                        type="text"
+                                        placeholder="Title (e.g., Editing Progress Update)"
+                                        value={messageTitle}
+                                        onChange={(e) => setMessageTitle(e.target.value)}
+                                        className="structured-title-input"
+                                    />
+
+                                    <div className="structured-points">
+                                        {messagePoints.map((point, index) => (
+                                            <input
+                                                key={index}
+                                                type="text"
+                                                placeholder={`Point ${index + 1}`}
+                                                value={point}
+                                                onChange={(e) => {
+                                                    const updated = [...messagePoints];
+                                                    updated[index] = e.target.value;
+                                                    setMessagePoints(updated);
+                                                }}
+                                                className="structured-point-input"
+                                            />
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className="add-point-btn"
+                                            onClick={() => setMessagePoints([...messagePoints, ""])}
+                                        >
+                                            + Add Point
+                                        </button>
+                                    </div>
+                                </div>
+
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    placeholder={selectedFile ? `📎 ${selectedFile.name}` : "Type a message or attach a file..."}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                />
+                            )}
+
                             <button onClick={handleSendMessage} disabled={isSending}>
                                 {isSending ? "Sending..." : "Send"}
                             </button>
@@ -220,6 +297,14 @@ function EditorMessagePage() {
                                     style={{ display: 'none' }}
                                 />
                             </label>
+                            <button
+                                className={`toggle-structured-btn ${isStructured ? 'active' : ''}`}
+                                onClick={() => setIsStructured(!isStructured)}
+                                title="Toggle Structured Update"
+                            >
+                                📝
+                            </button>
+
                         </div>
 
                     </div>

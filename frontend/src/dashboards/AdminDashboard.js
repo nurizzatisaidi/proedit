@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import "../styles/AdminDashboard.css";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
     FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaMoneyBillWave
 } from "react-icons/fa";
@@ -241,8 +242,8 @@ function AdminDashboard() {
                             </div>
                         </div>
                     </div>
-
                 </div>
+                <Footer />
             </main>
         </div>
     );

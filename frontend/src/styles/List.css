@@ -1,15 +1,6 @@
-/* .list-section {
-    padding: 20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-} */
-
 .main-content {
     height: 100vh;
-    /* Ensure it fills the screen */
     overflow-y: auto;
-    /* Allow vertical scrolling */
     padding: 1rem;
     box-sizing: border-box;
 }
@@ -17,7 +8,6 @@
 .list-section {
     overflow-y: auto;
     max-height: calc(100vh - 150px);
-    /* adjust to fit below header/top bar */
     padding-bottom: 2rem;
 }
 
@@ -29,7 +19,6 @@
     align-items: center;
     margin-bottom: 20px;
     padding: 0 20px;
-    /* Optional: spacing on left/right */
 }
 
 .top-bar h1 {
@@ -148,13 +137,11 @@
 
 .status-badge.pending_client_payment {
     background-color: #f0ad4e;
-    /* orange */
     color: white;
 }
 
 .status-badge.paid {
     background-color: #5cb85c;
-    /* green */
     color: white;
 }
 
@@ -366,8 +353,6 @@
     color: black;
 }
 
-
-
 .form-note {
     width: 500px;
     margin-left: 5%;
@@ -534,7 +519,6 @@
     font-weight: bold;
     animation: fadeInOut 3s ease-in-out;
 }
-
 
 .no-message {
     display: flex;

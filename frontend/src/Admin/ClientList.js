@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header"; // Import the reusable Header component
+import Header from "../components/Header";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -17,9 +17,7 @@ function ClientList() {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
-
     const [editedClient, setEditedClient] = useState({ userId: "", name: "", email: "", password: "" });
-
     const [newClient, setNewClient] = useState({ name: "", email: "", password: "" });
 
     useEffect(() => {
@@ -58,18 +56,6 @@ function ClientList() {
         }
     };
 
-    // const handleDeleteClient = async (id) => {
-    //     if (!window.confirm("Are you sure you want to delete this client?")) return;
-    //     try {
-    //         await axios.delete(`http://localhost:8080/users/${id}`);
-    //         alert("Client deleted successfully!");
-    //         fetchClients();
-    //     } catch (error) {
-    //         console.error("Error deleting client:", error);
-    //         alert("Failed to delete client.");
-    //     }
-    // };
-
     const handleEditClient = (client) => {
         setEditedClient({
             userId: client.userId,
@@ -99,7 +85,7 @@ function ClientList() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // Hide after 3 seconds
+        }, 3000);
     };
 
     const filteredClients = clients.filter((client) =>
@@ -122,7 +108,7 @@ function ClientList() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
-                <Header username={username} /> {/* Add the reusable Header component */}
+                <Header username={username} />
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>User List</h1>

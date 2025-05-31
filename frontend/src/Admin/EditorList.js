@@ -56,7 +56,6 @@ function EditorList() {
         }
     };
 
-
     const confirmDeleteEditor = async () => {
         try {
             await axios.delete(`http://localhost:8080/users/editors/${editorToDelete.userId}`);
@@ -70,8 +69,6 @@ function EditorList() {
             setShowDeletePopup(false);
         }
     };
-
-
 
     const handleDeleteEditor = (editor) => {
         setEditorToDelete(editor);
@@ -106,15 +103,13 @@ function EditorList() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // auto hide after 3s
+        }, 3000);
     };
 
     const filteredEditors = editors.filter((editor) =>
         editor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         editor.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
@@ -282,11 +277,7 @@ function EditorList() {
                     {toastMessage}
                 </div>
             )}
-
-
         </div>
-
-
     );
 }
 

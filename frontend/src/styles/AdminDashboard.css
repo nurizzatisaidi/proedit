@@ -44,7 +44,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -107,6 +107,10 @@
     background-color: #fff3e0;
 }
 
+.light-yellow {
+    background-color: #ffc7dd;
+}
+
 .editor-card h4,
 .editor-card p {
     color: #006400;
@@ -115,6 +119,11 @@
 .client-card h4,
 .client-card p {
     color: #4B0082;
+}
+
+.payment-card h4,
+.payment-card p {
+    color: #b14075;
 }
 
 .dashboard-section {
@@ -148,4 +157,136 @@
 
 .card.clickable:hover {
     background-color: #f5f5f5;
+}
+
+.notification-list {
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 10px;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.view-all-btn {
+    background-color: #004285;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.view-all-btn:hover {
+    background-color: #003366;
+}
+
+.filter-dropdown {
+    background-color: #6c88a8;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.chart-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    flex-grow: 1;
+}
+
+.chart-half {
+    flex: 1 1 48%;
+}
+
+.chart-full {
+    flex: 1 1 100%;
+}
+
+.bar-chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-top: 10px;
+    height: 100%;
+}
+
+.chart-half.bar-chart-container {
+    min-height: 380px;
+}
+
+.bar-chart-area {
+    flex: 1;
+    height: 300px;
+    max-height: 300px;
+}
+
+.chart-title {
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.chart-legend-spacer {
+    height: 10px;
+}
+
+.pie-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pie-chart-wrapper {
+    padding-top: 10px;
+}
+
+.chart-card.chart-half .pie-chart-wrapper {
+    height: 260px;
+}
+
+.pie-filter-dropdown {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 130px;
+    transition: background-color 0.2s ease;
+}
+
+.line-filter-dropdown {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 160px;
+    transition: background-color 0.2s ease;
 }

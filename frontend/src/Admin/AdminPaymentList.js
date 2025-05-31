@@ -376,8 +376,6 @@ function AdminPaymentList() {
 
                 )}
 
-
-
                 {/* Toast Message */}
                 {showToast && (
                     <div className="custom-toast">

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
-import { signInWithGoogle } from './firebaseConfig'; // Import the Firebase utility
+import { signInWithGoogle } from './firebaseConfig';
 import './styles/login.css';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,7 +19,7 @@ function Login() {
                 password,
             });
 
-            console.log("Login Response:", response.data); // Debugging
+            console.log("Login Response:", response.data);
 
             if (response.data.role === "admin") {
                 localStorage.setItem("username", response.data.name);
@@ -40,7 +40,7 @@ function Login() {
                 localStorage.setItem("profilePic", response.data.photoUrl || "");
                 navigate("/editor-dashboard"); // Redirect to editor dashboard
             } else {
-                setMessage(response.data.message || "Login failed."); // Show error message
+                setMessage(response.data.message || "Login failed.");
             }
         } catch (error) {
             console.error("Login Error:", error.response || error.message);
@@ -80,7 +80,7 @@ function Login() {
             } else if (response.data.role === "editor") {
                 navigate("/editor-dashboard");
             } else {
-                navigate("/user-dashboard"); // default to client
+                navigate("/user-dashboard");
             }
 
             setMessage(`Welcome, ${response.data.name}!`);

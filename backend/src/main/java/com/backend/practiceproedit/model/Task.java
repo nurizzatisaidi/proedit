@@ -12,7 +12,7 @@ public class Task {
     private String status; // todo, inprogress, done
     private Date createdAt;
 
-    @Transient // optional if you want to make it clearer
+    @Transient
     private String projectTitle;
 
     public Task() {

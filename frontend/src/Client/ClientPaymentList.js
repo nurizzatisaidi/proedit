@@ -18,9 +18,7 @@ function ClientPaymentList() {
     const [showToast, setShowToast] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(null);
-
     const [showPayPal, setShowPayPal] = useState(false);
-
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username") || "User";
 
@@ -49,9 +47,6 @@ function ClientPaymentList() {
     useEffect(() => {
         if (userId) fetchClientPayments();
     }, [userId, fetchClientPayments]);
-
-
-
 
     useEffect(() => {
         const lower = searchQuery.toLowerCase();
@@ -127,7 +122,6 @@ function ClientPaymentList() {
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
     };
-
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -223,8 +217,6 @@ function ClientPaymentList() {
                                                 Download Invoice
                                             </a>
                                         )}
-
-
                                     </div>
                                 </div>
                             ))

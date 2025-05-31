@@ -28,8 +28,6 @@ function AdminMessagePage() {
         fetchChatList();
     }, []);
 
-
-
     const fetchChatList = async () => {
         setIsChatListLoading(true);
         try {
@@ -135,6 +133,7 @@ function AdminMessagePage() {
             <main className="main-content">
                 <Header username={username} />
                 <div className="chat-layout-container">
+
                     {/* Left Chat List */}
                     <div className="chat-list-panel">
                         <h3>All Group Chats</h3>

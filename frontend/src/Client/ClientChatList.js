@@ -42,8 +42,6 @@ function ClientChatList() {
         fetchChats();
     }, [fetchChats]);
 
-
-
     const navigate = useNavigate();
 
     const handleChat = (chatId) => {

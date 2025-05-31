@@ -15,8 +15,7 @@ function ClientNotificationList() {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const navigate = useNavigate();
-
-    const userId = localStorage.getItem("userId"); // assumes userId is stored on login
+    const userId = localStorage.getItem("userId");
 
     const fetchNotifications = useCallback(async () => {
         try {
@@ -67,7 +66,6 @@ function ClientNotificationList() {
             navigate("/user-payments");
         }
     };
-
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -121,5 +119,4 @@ function ClientNotificationList() {
         </div>
     );
 }
-
 export default ClientNotificationList;

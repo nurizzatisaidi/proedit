@@ -23,7 +23,6 @@ function AdminRequestPage() {
     const [requestToDelete, setRequestToDelete] = useState(null);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
-
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
@@ -126,7 +125,6 @@ function AdminRequestPage() {
             alert("Please provide a reason for rejection.");
             return;
         }
-
         try {
             const response = await fetch(`http://localhost:8080/api/requests/process/${selectedRequest.requestId}`, {
                 method: "POST",
@@ -346,8 +344,6 @@ function AdminRequestPage() {
                     </div>
                 </div>
             )}
-
-
 
             {/* Accept Request Popup */}
             {showAcceptPopup && (

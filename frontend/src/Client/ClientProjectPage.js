@@ -21,7 +21,6 @@ function ClientProjectPage() {
     const [paymentMap, setPaymentMap] = useState({});
     const hasShownNoProjectsAlert = useRef(false);
 
-
     const fetchProjects = useCallback(async () => {
         setIsLoading(true);
         const userId = localStorage.getItem("userId");
@@ -29,7 +28,6 @@ function ClientProjectPage() {
             alert("User ID not found. Please log in again.");
             return;
         }
-
         try {
             const response = await fetch(`http://localhost:8080/api/projects/user/${userId}`);
             if (response.ok) {
@@ -75,9 +73,6 @@ function ClientProjectPage() {
         fetchProjects();
     }, [fetchProjects]);
 
-
-
-
     const handleViewProject = (project) => {
         setSelectedProject(project);
         setShowViewPopup(true);
@@ -93,8 +88,6 @@ function ClientProjectPage() {
         }
     };
 
-
-
     const filteredProjects = projects.filter((project) => {
         const matchesTitle = project.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === "All" || project.status === statusFilter;
@@ -108,7 +101,6 @@ function ClientProjectPage() {
             setShowToast(false);
         }, 3000);
     };
-
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -283,7 +275,6 @@ function ClientProjectPage() {
                     </div>
                 </div>
             )}
-
 
             {/* Toast Message Popup */}
             {showToast && (

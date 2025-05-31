@@ -175,4 +175,16 @@ public class PaymentController {
         }
     }
 
+    // Get the unpaid total for each clients
+    @GetMapping("/unpaid-total/{clientId}")
+    public ResponseEntity<Double> getUnpaidTotalByClient(@PathVariable String clientId) {
+        try {
+            double total = paymentService.getUnpaidTotalByClient(clientId);
+            return ResponseEntity.ok(total);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(0.0);
+        }
+    }
+
 }

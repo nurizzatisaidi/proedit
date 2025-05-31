@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaHome, FaFolder, FaComments, FaBell } from "react-icons/fa";
 import "../styles/TaskBoard.css";
 import "../styles/List.css";
@@ -176,6 +177,7 @@ const EditorDashboard = () => {
                         </div>
                     </DragDropContext>
                 </section>
+                <Footer />
             </main>
         </div>
     );

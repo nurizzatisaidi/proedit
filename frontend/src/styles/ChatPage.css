@@ -79,13 +79,12 @@
 .chat-header {
     border-bottom: 1px solid #ddd;
     padding: 0.5rem 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.2rem;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
 }
-
 
 .chat-header .spinner {
     width: 24px;
@@ -102,7 +101,6 @@
     min-height: 0;
 }
 
-
 .chat-message {
     max-width: 70%;
     padding: 10px;
@@ -114,6 +112,11 @@
     position: relative;
     margin: 8px 0;
     background-color: #e5e7eb;
+}
+
+.chat-message p {
+    margin: 0;
+    text-align: left;
 }
 
 .own-message {
@@ -226,6 +229,101 @@
     height: 50px;
     animation: spin 1s linear infinite;
     margin: 40px auto;
+}
+
+.faq-suggestions {
+    padding: 6px 12px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    font-size: 12px;
+}
+
+.faq-title {
+    margin: 0 0 4px;
+    font-weight: 500;
+    font-size: 13px;
+    color: #333;
+}
+
+.faq-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.faq-buttons button {
+    background-color: #f0f4ff;
+    color: #004080;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.faq-buttons button:hover {
+    background-color: #d8e9ff;
+}
+
+.structured-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+
+.structured-title-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.structured-points {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.structured-point-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.add-point-btn {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 6px 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+.toggle-structured-btn {
+    background: #2563eb;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-structured-btn.active {
+    background-color: #a4b9ed;
+    color: white;
 }
 
 

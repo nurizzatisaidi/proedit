@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/UserDashboard.css";
+import { Pie } from "react-chartjs-2";
+import { calculateRequestStatusData } from "../utils/clientChartUtils";
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 function UserDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -11,7 +23,9 @@ function UserDashboard() {
     const [requests, setRequests] = useState([]);
     const [projects, setProjects] = useState([]);
     const [notifications, setNotifications] = useState([]);
+    const [totalUnpaidAmount, setTotalUnpaidAmount] = useState(0);
     const [chats, setChats] = useState([]);
+
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");
@@ -51,11 +65,19 @@ function UserDashboard() {
                 .then(res => res.ok ? res.json() : [])
                 .then(setChats)
                 .catch(() => setChats([]));
+
+            fetch(`http://localhost:8080/api/payments/unpaid-total/${userId}`)
+                .then(res => res.json())
+                .then(data => setTotalUnpaidAmount(data))
+                .catch(() => setTotalUnpaidAmount(0));
         }
     }, [userId]);
 
     const ongoing = projects.filter(p => p.status !== "Completed Payment");
     const pending = requests.filter(r => r.status === "Pending");
+
+    const requestStatusPieData = calculateRequestStatusData(requests);
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
@@ -93,6 +115,10 @@ function UserDashboard() {
                         <div className="stat-card light-orange">
                             <h4>Pending Requests</h4>
                             <p>{pending.length}</p>
+                        </div>
+                        <div className="stat-card light-pink">
+                            <h4>Outstanding Payments</h4>
+                            <p>RM {totalUnpaidAmount.toFixed(2)}</p>
                         </div>
                     </div>
 
@@ -165,7 +191,21 @@ function UserDashboard() {
                             ))
                         )}
                     </div>
+
+                    {/* Request Status Pie Chart */}
+                    <div className="dashboard-section">
+                        <h4>Analytics Graphs</h4>
+                        <div className="chart-card chart-full">
+                            <h5 className="chart-title">Request Status Overview</h5>
+                            <div className="chart-center-wrapper">
+                                <Pie data={requestStatusPieData} options={{ maintainAspectRatio: false }} />
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
+                <Footer />
 
             </main>
         </div>

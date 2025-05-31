@@ -22,7 +22,6 @@ function UserDashboard() {
 
     useEffect(() => {
         if (userId) {
-            // Safely fetch and parse
             fetch(`http://localhost:8080/api/requests/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setRequests)
@@ -47,7 +46,6 @@ function UserDashboard() {
                     setNotifications(unread);
                 })
                 .catch(() => setNotifications([]));
-
 
             fetch(`http://localhost:8080/api/chats/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])

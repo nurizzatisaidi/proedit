@@ -24,6 +24,15 @@ function ClientMessagePage() {
 
     const messagesEndRef = useRef(null);
 
+    const suggestedQuestions = [
+        "What is the current status of my project?",
+        "Can I revise the video title?",
+        "When will the editing be done?",
+        "How do I make payment?",
+        "Can I provide more feedback?"
+    ];
+
+
     const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
@@ -129,6 +138,21 @@ function ClientMessagePage() {
         }
     };
 
+    const formatMessage = (content) => {
+        if (!content) return "";
+
+        // Only format if it's a structured message
+        if (content.includes("📝") && content.includes("•")) {
+            return content
+                .replace("📝", "📝") // optional: preserve icon
+                .replace(/📝\s*(.*?)\n/, (_, title) => `<div style="font-weight:bold; text-align:left;">📝 ${title}</div>`)
+                .replace(/\n/g, "<br/>"); // line breaks for bullet points
+        }
+
+        return content;
+    };
+
+
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -206,13 +230,14 @@ function ClientMessagePage() {
                                         {msg.senderId !== userId && (
                                             <strong className="sender-name">{msg.senderUsername}</strong>
                                         )}
-                                        <p>
-                                            {msg.content.startsWith("https://firebasestorage") ? (
-                                                msg.content.match(/\.(jpeg|jpg|gif|png)$/)
-                                                    ? <img src={msg.content} alt="attachment" style={{ maxWidth: "200px" }} />
-                                                    : <a href={msg.content} target="_blank" rel="noopener noreferrer">View File</a>
-                                            ) : msg.content}
-                                        </p>
+                                        <p dangerouslySetInnerHTML={{
+                                            __html: msg.content.startsWith("https://firebasestorage")
+                                                ? msg.content.match(/\.(jpeg|jpg|gif|png)$/)
+                                                    ? `<img src="${msg.content}" alt="attachment" style="max-width:200px;" />`
+                                                    : `<a href="${msg.content}" target="_blank" rel="noopener noreferrer">View File</a>`
+                                                : formatMessage(msg.content)
+                                        }} />
+
 
                                         <span className="timestamp">
                                             {msg.timestamp?.seconds
@@ -230,6 +255,18 @@ function ClientMessagePage() {
                                 ))
                             )}
                             <div ref={messagesEndRef} />
+                        </div>
+
+                        {/* Frequest Suggested Question */}
+                        <div className="faq-suggestions">
+                            <p className="faq-title">Quick Questions:</p>
+                            <div className="faq-buttons">
+                                {suggestedQuestions.map((q, idx) => (
+                                    <button key={idx} onClick={() => setNewMessage(q)}>
+                                        {q}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="chat-input">

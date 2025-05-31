@@ -365,7 +365,6 @@ body {
     flex-direction: column;
 }
 
-
 .muted {
     color: #888;
     font-size: 0.9rem;
@@ -378,4 +377,40 @@ body {
 
 .card.clickable:hover {
     background-color: #f2f7ff;
+}
+
+.light-pink {
+    background-color: #ffe6e6;
+}
+
+.light-pink h4,
+.light-pink p {
+    color: #b14075;
+}
+
+.chart-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.chart-full {
+    width: 100%;
+    /* 👈 Full width like Active Chats card */
+}
+
+.chart-center-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
 }

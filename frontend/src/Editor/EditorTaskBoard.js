@@ -127,7 +127,6 @@ const EditorTaskBoard = () => {
         setTimeout(() => setShowToast(false), 3000);
     };
 
-
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
         { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },

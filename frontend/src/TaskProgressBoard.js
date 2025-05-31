@@ -65,7 +65,7 @@ const TaskProgressBoard = () => {
             const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
             const data = await res.json();
             setProjectTitle(data.title || "Untitled Project");
-            setProjectDetails(data); // store full project object
+            setProjectDetails(data);
         } catch (err) {
             console.error("Error fetching project title:", err);
         }
@@ -92,7 +92,7 @@ const TaskProgressBoard = () => {
     const showToastWithTimeout = (message) => {
         setToastMessage(message);
         setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000); // hide after 3 seconds
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     useEffect(() => {
@@ -209,8 +209,6 @@ const TaskProgressBoard = () => {
                                 </div>
                             ) : null}
                         </div>
-
-
 
                     </div>
 
@@ -331,7 +329,6 @@ const TaskProgressBoard = () => {
                                 <div className="detail-row"><span>Project:</span> {paymentDetails.projectTitle}</div>
                                 <div className="detail-row"><span>Issued By:</span> {paymentDetails.clientUsername}</div>
                                 <div className="detail-row"><span>Editor:</span> {paymentDetails.editorUsername}</div>
-                                {/* Convert Firestore timestamp if needed */}
                                 <div className="detail-row">
                                     <span>Issued On:</span>{" "}
                                     {paymentDetails.createdAt?.seconds

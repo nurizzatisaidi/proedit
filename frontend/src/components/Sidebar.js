@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Sidebar.css'; // Import the shared Sidebar styles here
+import '../styles/Sidebar.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaCog } from 'react-icons/fa';
 
@@ -7,7 +7,6 @@ const Sidebar = ({ isOpen, toggleSidebar, menuItems }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Add "Settings" dynamically to the menuItems array
     const completeMenuItems = [
         ...menuItems,
         { name: 'Settings', icon: <FaCog className="menu-icon" />, path: '/settings' },
@@ -33,7 +32,7 @@ const Sidebar = ({ isOpen, toggleSidebar, menuItems }) => {
                         className={`menu-item ${location.pathname === path ? 'active' : ''}`}
                         onClick={() => navigate(path)}
                     >
-                        {React.cloneElement(icon, { className: 'menu-icon' })} {/* Add className directly to the icon */}
+                        {React.cloneElement(icon, { className: 'menu-icon' })}
                         {isOpen && <span>{name}</span>}
                     </li>
                 ))}

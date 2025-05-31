@@ -10,10 +10,8 @@ import "../styles/ChatPage.css";
 function EditorMessagePage() {
     const { chatId } = useParams();
     const navigate = useNavigate();
-
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
-
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [chatList, setChatList] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -103,7 +101,6 @@ function EditorMessagePage() {
         }
     };
 
-
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -170,7 +167,6 @@ function EditorMessagePage() {
                                 </>
                             )}
                         </div>
-
 
                         <div className="messages-container">
                             {isMessageLoading ? (

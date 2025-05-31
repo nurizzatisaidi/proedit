@@ -5,7 +5,6 @@ import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
-
 function AdminProjectPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
@@ -29,8 +28,6 @@ function AdminProjectPage() {
     const [privateDrive, setPrivateDrive] = useState("");
 
     const [selectedInvoiceProject, setSelectedInvoiceProject] = useState(null);
-
-
     const [formData, setFormData] = useState({
         title: "",
         videoType: "",
@@ -53,9 +50,8 @@ function AdminProjectPage() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // auto hide after 3s
+        }, 3000);
     };
-
 
     const fetchAllProjects = async () => {
         setIsLoading(true);
@@ -105,26 +101,6 @@ function AdminProjectPage() {
         setShowEditPopup(true);
     };
 
-    // const handleDelete = async (projectId) => {
-    //     if (window.confirm("Are you sure you want to delete this project and the related request?")) {
-    //         try {
-    //             const deleteResponse = await fetch(`http://localhost:8080/api/projects/delete/${projectId}`, {
-    //                 method: "DELETE",
-    //             });
-
-    //             if (deleteResponse.ok) {
-    //                 alert("Project and related request deleted successfully.");
-    //                 setProjects(projects.filter(project => project.projectId !== projectId)); // Update UI
-    //             } else {
-    //                 throw new Error("Failed to delete project and related request.");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error during deletion: ", error);
-    //             alert("Error during deletion process. Check logs for more details.");
-    //         }
-    //     }
-    // };
-
     const confirmDeleteProject = (project) => {
         setProjectToDelete(project);
         setShowDeletePopup(true);
@@ -161,7 +137,7 @@ function AdminProjectPage() {
 
     const handleIssueInvoice = (project) => {
         setSelectedInvoiceProject(project);
-        setLineItems([]); // Reset for new project
+        setLineItems([]);
         setPrivateDrive(project.privateDrive || "");
         setShowInvoicePopup(true);
     };
@@ -204,7 +180,6 @@ function AdminProjectPage() {
             alert("An error occurred.");
         }
     };
-
 
     const handleCreateProject = async (e) => {
         e.preventDefault();

@@ -41,7 +41,6 @@ public class RequestController {
                 return ResponseEntity.status(404).body(null);
             }
 
-            // ✅ Print what is being returned
             System.out.println("Sending JSON Response: " + requests);
 
             return ResponseEntity.ok(requests);
@@ -86,14 +85,14 @@ public class RequestController {
             String editorId = payload.get("editorId"); // Might be null for rejection
             String adminUserId = payload.get("adminUserId"); // Retrieve the adminUserId from payload
 
-            // ✅ Debugging logs
+            // Debugging logs
             System.out.println("Processing requestId: " + requestId);
             System.out.println("Status: " + status);
             System.out.println("Comment: " + comment);
             System.out.println("EditorId: " + editorId);
             System.out.println("AdminId: " + adminUserId);
 
-            // ✅ Call RequestService to handle processing
+            // Call RequestService to handle processing
             requestService.processRequest(requestId, status, comment, editorId, adminUserId);
 
             return ResponseEntity.ok("Request updated successfully");

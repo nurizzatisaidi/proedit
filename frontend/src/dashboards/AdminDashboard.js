@@ -13,24 +13,27 @@ import {
     CategoryScale,
     LinearScale,
     BarElement,
+    PointElement,
+    LineElement
 } from "chart.js";
-import { Pie, Bar } from "react-chartjs-2";
+import { Pie, Bar, Line } from "react-chartjs-2";
+import { calculateStatusBarData, calculateRequestPieData, calculateEarningsLineData } from "../utils/adminChartUtils";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
-
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement,
+    LineElement);
 
 function AdminDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("");
     const [adminId, setAdminId] = useState("");
-
     const [projects, setProjects] = useState([]);
     const [editors, setEditors] = useState([]);
     const [clients, setClients] = useState([]);
     const [requests, setRequests] = useState([]);
     const [productivityFilter, setProductivityFilter] = useState("week");
-    const [filteredRequestCounts, setFilteredRequestCounts] = useState({});
-
+    const [earningFilter, setEarningFilter] = useState("week");
+    const [earnings, setEarnings] = useState(0);
+    const [payments, setPayments] = useState([]);
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
@@ -40,7 +43,6 @@ function AdminDashboard() {
         if (storedId) setAdminId(storedId);
     }, []);
 
-    // Stable fetchAllData so it doesn't warn in CI
     const fetchAllData = useCallback(async () => {
         const urls = {
             projects: "http://localhost:8080/api/projects/with-payment-status",
@@ -63,53 +65,10 @@ function AdminDashboard() {
                 safeFetch(urls.requests),
                 safeFetch(urls.notifications)
             ]);
+
             setProjects(proj);
             setEditors(edit);
             setClients(cli);
-
-            const now = new Date();
-            const getTimeBoundary = (filter) => {
-                const d = new Date(now);
-                if (filter === "week") d.setDate(d.getDate() - 7);
-                else if (filter === "month") d.setMonth(d.getMonth() - 1);
-                else if (filter === "year") d.setFullYear(d.getFullYear() - 1);
-                return d;
-            };
-
-            const boundaryDate = getTimeBoundary(productivityFilter);
-
-            const filteredRequests = req.filter(r => {
-                let requestDate;
-                if (r.createdAt?.seconds) {
-                    requestDate = new Date(r.createdAt.seconds * 1000);
-                } else if (r.createdAt?._seconds) {
-                    requestDate = new Date(r.createdAt._seconds * 1000);
-                } else {
-                    requestDate = new Date(r.createdAt);
-                }
-                return requestDate >= boundaryDate;
-            });
-
-            let assignedCount = 0;
-            let unassignedCount = 0;
-            let rejectedCount = 0;
-
-            filteredRequests.forEach(r => {
-                if (r.status === "Rejected") {
-                    rejectedCount++;
-                } else if (r.assignedEditorUsername) {
-                    assignedCount++;
-                } else {
-                    unassignedCount++;
-                }
-            });
-
-            setFilteredRequestCounts({
-                assigned: assignedCount,
-                unassigned: unassignedCount,
-                rejected: rejectedCount
-            });
-
             setRequests(req);
 
             const unreadNotif = notif
@@ -125,92 +84,32 @@ function AdminDashboard() {
         } catch (err) {
             console.error("Error loading dashboard data", err);
         }
-    }, [adminId, productivityFilter]); // Must include all dependencies used inside the function
+    }, [adminId]);
 
     useEffect(() => {
         if (adminId) {
             fetchAllData();
-        }
-    }, [adminId, productivityFilter, fetchAllData]);
 
+            fetch("http://localhost:8080/api/payments/total-earnings")
+                .then(res => res.json())
+                .then(data => setEarnings(data.toFixed(2)))
+                .catch(err => console.error("Error fetching earnings:", err));
+
+            fetch("http://localhost:8080/api/payments/all-projects-payments")
+                .then(res => res.json())
+                .then(data => setPayments(data))
+                .catch(err => console.error("Error fetching payments:", err));
+        }
+    }, [adminId, fetchAllData]);
+
+    const earningsLineData = calculateEarningsLineData(payments, earningFilter);
 
     const pendingRequests = requests.filter(r => r.status === "Pending");
     const completed = projects.filter(p => p.status === "Completed Payment").length;
     const inProgress = projects.length - completed;
 
-
-    const statusCounts = {
-        "In Progress": 0,
-        "To Review": 0,
-        "Completed - Pending Payment": 0,
-        "Completed Payment": 0
-    };
-
-    projects.forEach(p => {
-        if (p.status === "In Progress") {
-            statusCounts["In Progress"]++;
-        }
-
-        if (p.status === "To Review") {
-            statusCounts["To Review"]++;
-        }
-
-
-        if (p.status === "Completed - Pending Payment") {
-            statusCounts["Completed - Pending Payment"]++;
-        }
-
-        if (p.status === "Completed Payment") {
-            statusCounts["Completed Payment"]++;
-        }
-    });
-
-
-
-
-
-    const statusBarData = {
-        labels: ["Project Status"],
-        datasets: [
-            {
-                label: "In Progress",
-                data: [statusCounts["In Progress"]],
-                backgroundColor: "#d6d727",
-            },
-            {
-                label: "To Review",
-                data: [statusCounts["To Review"]],
-                backgroundColor: "#92cad1",
-            },
-            {
-                label: "Completed - Pending Payment",
-                data: [statusCounts["Completed - Pending Payment"]],
-                backgroundColor: "#e9724d",
-            },
-            {
-                label: "Completed Payment",
-                data: [statusCounts["Completed Payment"]],
-                backgroundColor: "#79ccb3",
-            },
-        ],
-    };
-
-
-    const requestPieData = {
-        labels: ["Assigned", "Unassigned", "Rejected"],
-        datasets: [
-            {
-                label: "Request Distribution",
-                data: [
-                    filteredRequestCounts.assigned || 0,
-                    filteredRequestCounts.unassigned || 0,
-                    filteredRequestCounts.rejected || 0
-                ],
-                backgroundColor: ["#b0d7e1", "#f1802d", "#e74c3c"],
-            },
-        ],
-    };
-
+    const { pieChartData } = calculateRequestPieData(requests, productivityFilter);
+    const statusBarData = calculateStatusBarData(projects);
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
@@ -234,74 +133,116 @@ function AdminDashboard() {
                         <div className="stat-card light-green editor-card"><h4>Editors</h4><p>{editors.length}</p></div>
                         <div className="stat-card light-purple client-card"><h4>Clients</h4><p>{clients.length}</p></div>
                         <div className="stat-card light-orange"><h4>Pending Requests</h4><p>{pendingRequests.length}</p></div>
+                        <div className="stat-card light-yellow payment-card">
+                            <h4>Total Earnings</h4>
+                            <p>RM {earnings}</p>
+                        </div>
+
                     </div>
 
                     <div className="dashboard-section">
-                        <h4>Recent Notifications</h4>
+                        <div className="notifications-header">
+                            <h4>Recent Notifications</h4>
+                            <button className="view-all-btn" onClick={() => window.location.href = "/admin-notifications"}>
+                                View All
+                            </button>
+                        </div>
                         {notifications.length === 0 ? (
                             <p className="muted">No recent activity</p>
                         ) : (
-                            notifications.map((n, i) => {
-                                const handleNotificationClick = () => {
-                                    if (n.type === "chat" && n.relatedId) {
-                                        window.location.href = `/admin-chat/${n.relatedId}`;
-                                    } else if (n.type === "request") {
-                                        window.location.href = "/admin-requests";
-                                    } else if (n.type === "task" && n.relatedId) {
-                                        window.location.href = `/admin-projects`;
-                                    } else if (n.type === "payment" && n.relatedId) {
-                                        window.location.href = `/admin-payments`; // Or specific project view if applicable
-                                    } else {
-                                        console.log("No navigation for this type.");
-                                    }
-                                };
+                            <div className="notification-list">
+                                {notifications.map((n, i) => {
+                                    const handleNotificationClick = () => {
+                                        if (n.type === "chat" && n.relatedId) {
+                                            window.location.href = `/admin-chat/${n.relatedId}`;
+                                        } else if (n.type === "request") {
+                                            window.location.href = "/admin-requests";
+                                        } else if (n.type === "task" && n.relatedId) {
+                                            window.location.href = `/admin-projects`;
+                                        } else if (n.type === "payment" && n.relatedId) {
+                                            window.location.href = `/admin-payments`;
+                                        }
+                                    };
 
-                                return (
-                                    <div key={i} className="card clickable" onClick={handleNotificationClick}>
-                                        <p>{n.message}</p>
-                                        <small className="tag">{n.type}</small><br />
-                                        <small style={{ color: "#777" }}>
-                                            {new Date((n.timestamp?.seconds || n.timestamp?._seconds || 0) * 1000).toLocaleString()}
-                                        </small>
-
-                                    </div>
-                                );
-                            })
-
+                                    return (
+                                        <div key={i} className="card clickable" onClick={handleNotificationClick}>
+                                            <p>{n.message}</p>
+                                            <small className="tag">{n.type}</small><br />
+                                            <small style={{ color: "#777" }}>
+                                                {new Date((n.timestamp?.seconds || n.timestamp?._seconds || 0) * 1000).toLocaleString()}
+                                            </small>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         )}
                     </div>
 
                     <div className="dashboard-section">
-                        <h4>Request Processing Summary</h4>
-                        <div className="filter-row">
-                            <label>Filter by:</label>
-                            <select
-                                value={productivityFilter}
-                                onChange={(e) => {
-                                    setProductivityFilter(e.target.value);
-                                }}
-                            >
-                                <option value="week">Past Week</option>
-                                <option value="month">Past Month</option>
-                                <option value="year">Past Year</option>
-                            </select>
-                        </div>
-                        <div style={{ maxWidth: "320px", margin: "0 auto" }}>
-                            <Pie data={requestPieData} />
+                        <h4>Analytics Overview</h4>
+                        <div className="chart-grid">
 
-                        </div>
-                    </div>
+                            {/* Pie Chart */}
+                            <div className="chart-card chart-half">
+                                <div className="card-header pie-card-header">
+                                    <h5 className="chart-title">Request Processing Summary</h5>
+                                    <div className="filter-row">
+                                        <label>Filter by:</label>
+                                        <select
+                                            className="pie-filter-dropdown"
+                                            value={productivityFilter}
+                                            onChange={(e) => setProductivityFilter(e.target.value)}
+                                        >
+                                            <option value="week">Past Week</option>
+                                            <option value="month">Past Month</option>
+                                            <option value="year">Past Year</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="pie-chart-wrapper">
+                                    <div style={{ maxWidth: "100%", height: "260px" }}>
+                                        <Pie data={pieChartData} options={{ maintainAspectRatio: false }} />
+                                    </div>
+                                </div>
+                            </div>
 
+                            {/* Bar Chart */}
+                            <div className="chart-card chart-half bar-chart-container">
+                                <div className="bar-chart-wrapper">
+                                    <h5 className="chart-title">Project Status</h5>
+                                    <div className="chart-legend-spacer"></div>
+                                    <div className="bar-chart-area">
+                                        <Bar
+                                            data={statusBarData}
+                                            options={{ maintainAspectRatio: false }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div className="dashboard-section">
-                        <h4>Projects Status</h4>
-                        <div style={{ maxWidth: "750px", margin: "0 auto" }}>
-                            <Bar data={statusBarData} />
+                            {/* Line Chart */}
+                            <div className="chart-card chart-full">
+                                <div className="card-header">
+                                    <h5>Income Over Time</h5>
+                                    <div className="filter-row">
+                                        <label>Filter by:</label>
+                                        <select
+                                            className="line-filter-dropdown"
+                                            value={earningFilter}
+                                            onChange={(e) => setEarningFilter(e.target.value)}
+                                        >
+                                            <option value="week">Past Week</option>
+                                            <option value="month">Past Month</option>
+                                            <option value="year">Past Year</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <Line data={earningsLineData} />
+                            </div>
                         </div>
                     </div>
 
                 </div>
-
             </main>
         </div>
     );

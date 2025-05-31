@@ -13,11 +13,8 @@ const EditorDashboard = () => {
     const [projectCount, setProjectCount] = useState(0);
     const [tasks, setTasks] = useState({ todo: [], inprogress: [], done: [] });
     const [selectedProjectId, setSelectedProjectId] = useState("all");
-
     const [projects, setProjects] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
-
-
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
         todo: "To Do",
@@ -37,13 +34,12 @@ const EditorDashboard = () => {
         try {
             const res = await fetch(`http://localhost:8080/api/projects/editor/${editorId}/tasks`);
             const data = await res.json();
-            setAllTasks(data); // Keep all tasks for filtering
+            setAllTasks(data);
             updateFilteredTasks(data, selectedProjectId);
         } catch (err) {
             console.error("Error fetching tasks:", err);
         }
     }, [editorId, selectedProjectId]);
-
 
     const updateFilteredTasks = (taskList, projectId) => {
         const filtered = projectId === "all"
@@ -57,7 +53,6 @@ const EditorDashboard = () => {
         });
         setTasks(grouped);
     };
-
 
     const fetchEditorProjects = useCallback(async () => {
         if (!editorId) return;
@@ -79,16 +74,13 @@ const EditorDashboard = () => {
         const movedTask = tasks[source.droppableId][source.index];
         const updatedTasks = { ...tasks };
 
-        // Remove from source
         updatedTasks[source.droppableId].splice(source.index, 1);
 
-        // Update status & insert into destination
         movedTask.status = destination.droppableId;
         updatedTasks[destination.droppableId].splice(destination.index, 0, movedTask);
 
         setTasks(updatedTasks);
 
-        // 🔁 Sync to backend
         await fetch(`http://localhost:8080/api/projects/${movedTask.projectId}/tasks/${movedTask.taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -105,7 +97,7 @@ const EditorDashboard = () => {
 
     useEffect(() => {
         fetchTasksForEditor();
-        fetchEditorProjects(); // ✅ use it here
+        fetchEditorProjects();
     }, [fetchTasksForEditor, fetchEditorProjects]);
 
 

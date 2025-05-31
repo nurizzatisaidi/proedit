@@ -142,8 +142,6 @@ function RequestPage() {
             if (response.ok) {
                 showToastMessage("Request Deleted Successfully!");
                 setShowDeletePopup(false);
-
-                // 🔥 Optimistically update UI without needing to fetch again
                 setRequests((prevRequests) =>
                     prevRequests.filter((r) => r.requestId !== requestToDelete.requestId)
                 );
@@ -162,7 +160,7 @@ function RequestPage() {
         setShowToast(true);
         setTimeout(() => {
             setShowToast(false);
-        }, 3000); // hide after 3 seconds
+        }, 3000);
     };
 
 
@@ -208,8 +206,6 @@ function RequestPage() {
                             />
                         </div>
                     </div>
-
-
 
                     <div className="list">
                         {isLoading ? (
@@ -351,7 +347,7 @@ function RequestPage() {
                                 </p>
                             </div>
 
-                            {/* ✅ Conditionally render accepted/rejected info */}
+                            {/* Conditionally render accepted/rejected info */}
                             {selectedRequest.status === "Accepted" && (
                                 <>
                                     <div className="detail-row">
@@ -376,7 +372,6 @@ function RequestPage() {
                     </div>
                 </div>
             )}
-
 
             {/* Delete Request Popup */}
             {showDeletePopup && (

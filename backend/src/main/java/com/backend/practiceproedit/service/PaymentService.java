@@ -215,4 +215,27 @@ public class PaymentService {
         return out.toByteArray();
     }
 
+    // Overall total earnings
+    public double getTotalEarnings() throws Exception {
+        Firestore db = FirestoreClient.getFirestore();
+        double total = 0.0;
+
+        ApiFuture<QuerySnapshot> projectsSnap = db.collection("projects").get();
+        for (DocumentSnapshot projectDoc : projectsSnap.get().getDocuments()) {
+            CollectionReference paymentsRef = projectDoc.getReference().collection("payments");
+            List<QueryDocumentSnapshot> payments = paymentsRef.get().get().getDocuments();
+
+            for (QueryDocumentSnapshot paymentDoc : payments) {
+                String status = paymentDoc.getString("status");
+                Double amount = paymentDoc.getDouble("amount");
+
+                if ("paid".equalsIgnoreCase(status) && amount != null) {
+                    total += amount;
+                }
+            }
+        }
+
+        return total;
+    }
+
 }

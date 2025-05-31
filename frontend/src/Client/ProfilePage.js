@@ -92,8 +92,6 @@ function ProfilePage() {
         setTimeout(() => setShowToast(false), 3000);
     };
 
-
-    // Sidebar based on role
     let menuItems = [];
     if (role === "admin") {
         menuItems = [
@@ -123,7 +121,6 @@ function ProfilePage() {
             { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
         ];
     }
-
 
     return (
         <div className="dashboard-container">

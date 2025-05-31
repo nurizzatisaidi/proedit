@@ -13,12 +13,11 @@ function ClientMessagePage() {
 
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
-
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [chatList, setChatList] = useState([]);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
-    const [isChatListLoading, setIsChatListLoading] = useState(true); // 🔄 loading flag
+    const [isChatListLoading, setIsChatListLoading] = useState(true);
     const [isMessageLoading, setIsMessageLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSending, setIsSending] = useState(false);
@@ -66,7 +65,6 @@ function ClientMessagePage() {
         setIsSending(true);
 
         try {
-            // If file selected
             if (selectedFile) {
                 const fileRef = ref(storage, `chat_attachments/${chatId}/${Date.now()}_${selectedFile.name}`);
                 await uploadBytes(fileRef, selectedFile);
@@ -79,7 +77,7 @@ function ClientMessagePage() {
                     timestamp: { seconds: Math.floor(Date.now() / 1000) }
                 };
 
-                setMessages(prev => [...prev, optimisticMessage]); // ✅ instant feedback
+                setMessages(prev => [...prev, optimisticMessage]);
 
                 const payload = {
                     chatId,
@@ -130,8 +128,6 @@ function ClientMessagePage() {
             setIsSending(false);
         }
     };
-
-
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -201,9 +197,6 @@ function ClientMessagePage() {
                                 </>
                             )}
                         </div>
-
-
-
                         <div className="messages-container">
                             {isMessageLoading ? (
                                 <div className="spinner" />
@@ -270,10 +263,6 @@ function ClientMessagePage() {
                                 />
                             </label>
                         </div>
-
-
-
-
                     </div>
                 </div>
             </main>

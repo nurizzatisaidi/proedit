@@ -137,7 +137,7 @@ public class PaymentController {
 
             paymentRef.update(updates).get();
 
-            // ✅ Check and update project status if all payments are paid
+            // Check and update project status if all payments are paid
             projectService.updateProjectStatusIfAllPaymentsPaid(projectId);
 
             return ResponseEntity.ok("Payment confirmed.");
@@ -160,6 +160,18 @@ public class PaymentController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    // Get the total earnings from paid projects
+    @GetMapping("/total-earnings")
+    public ResponseEntity<Double> getTotalEarnings() {
+        try {
+            double total = paymentService.getTotalEarnings();
+            return ResponseEntity.ok(total);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(0.0);
         }
     }
 

@@ -32,7 +32,6 @@ const Header = () => {
         return storedPic;
     }
 
-
     useEffect(() => {
         const interval = setInterval(() => {
             const updatedPic = getStoredProfilePic();
@@ -124,7 +123,7 @@ const Header = () => {
                 </div>
             </header>
 
-            {/* 🔒 Logout Confirmation */}
+            {/* Logout Confirmation */}
             {showLogoutPopup && (
                 <div className="logout-popup">
                     <div className="popup-content">

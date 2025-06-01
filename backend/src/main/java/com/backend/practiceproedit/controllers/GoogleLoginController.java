@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseToken;
 
 @RestController
 @RequestMapping("/google-login")
-@CrossOrigin(origins = "http://localhost:3000")
+// @CrossOrigin(origins = "http://localhost:3000")
 public class GoogleLoginController {
 
     @Autowired

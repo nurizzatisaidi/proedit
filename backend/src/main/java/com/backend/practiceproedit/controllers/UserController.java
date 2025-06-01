@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
+// @CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
 @RestController
 
 @RequestMapping("/users")

@@ -6,6 +6,7 @@ import { signInWithGoogle } from './firebaseConfig';
 import './styles/login.css';
 
 function Login() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -14,7 +15,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8080/login", {
+            const response = await axios.post(`${BASE_URL}/login`, {
                 email,
                 password,
             });
@@ -64,7 +65,7 @@ function Login() {
                 photoUrl: user.photoURL,
             };
 
-            const response = await axios.post('http://localhost:8080/google-login', userData);
+            const response = await axios.post(`${BASE_URL}/google-login`, userData);
 
             console.log("Backend response:", response.data);
 

@@ -15,7 +15,9 @@ import com.backend.practiceproedit.service.LoginService;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "http://localhost:3000")
+// @CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://proedit-399a8.web.app")
+
 public class LoginController {
 
     @Autowired

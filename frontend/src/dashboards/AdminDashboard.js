@@ -86,7 +86,7 @@ function AdminDashboard() {
         } catch (err) {
             console.error("Error loading dashboard data", err);
         }
-    }, [adminId]);
+    }, [adminId, BASE_URL]);
 
     useEffect(() => {
         if (adminId) {
@@ -102,7 +102,7 @@ function AdminDashboard() {
                 .then(data => setPayments(data))
                 .catch(err => console.error("Error fetching payments:", err));
         }
-    }, [adminId, fetchAllData]);
+    }, [adminId, fetchAllData, BASE_URL]);
 
     const earningsLineData = calculateEarningsLineData(payments, earningFilter);
 

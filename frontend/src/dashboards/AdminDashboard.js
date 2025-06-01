@@ -24,6 +24,7 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
     LineElement);
 
 function AdminDashboard() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("");
     const [adminId, setAdminId] = useState("");
@@ -46,11 +47,11 @@ function AdminDashboard() {
 
     const fetchAllData = useCallback(async () => {
         const urls = {
-            projects: "http://localhost:8080/api/projects/with-payment-status",
-            editors: "http://localhost:8080/users/editors",
-            clients: "http://localhost:8080/users/clients",
-            requests: "http://localhost:8080/api/requests/all",
-            notifications: `http://localhost:8080/api/notifications/user/${adminId}`
+            projects: `${BASE_URL}/api/projects/with-payment-status`,
+            editors: `${BASE_URL}/users/editors`,
+            clients: `${BASE_URL}/users/clients`,
+            requests: `${BASE_URL}/api/requests/all`,
+            notifications: `${BASE_URL}/api/notifications/user/${adminId}`
         };
 
         try {
@@ -91,12 +92,12 @@ function AdminDashboard() {
         if (adminId) {
             fetchAllData();
 
-            fetch("http://localhost:8080/api/payments/total-earnings")
+            fetch(`${BASE_URL}/api/payments/total-earnings`)
                 .then(res => res.json())
                 .then(data => setEarnings(data.toFixed(2)))
                 .catch(err => console.error("Error fetching earnings:", err));
 
-            fetch("http://localhost:8080/api/payments/all-projects-payments")
+            fetch(`${BASE_URL}/api/payments/all-projects-payments`)
                 .then(res => res.json())
                 .then(data => setPayments(data))
                 .catch(err => console.error("Error fetching payments:", err));

@@ -13,7 +13,7 @@ import com.google.cloud.firestore.Firestore;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
+// @CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
 @RestController
 public class ExampleController {
 

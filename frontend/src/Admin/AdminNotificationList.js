@@ -10,6 +10,7 @@ import {
 import "../styles/List.css";
 
 function AdminNotificationList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [notifications, setNotifications] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("Admin");
@@ -21,13 +22,13 @@ function AdminNotificationList() {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/notifications/user/${userId}`);
+            const response = await axios.get(`${BASE_URL}/api/notifications/user/${userId}`);
             const sorted = response.data.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
             setNotifications(sorted);
         } catch (error) {
             console.error("Failed to fetch notifications", error);
         }
-    }, [userId]);
+    }, [BASE_URL, userId]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");
@@ -37,7 +38,7 @@ function AdminNotificationList() {
 
     const markAsRead = async (notificationId) => {
         try {
-            await axios.put(`http://localhost:8080/api/notifications/mark-read/${notificationId}`);
+            await axios.put(`${BASE_URL}/api/notifications/mark-read/${notificationId}`);
             fetchNotifications();
         } catch (error) {
             console.error("Failed to mark as read", error);
@@ -46,7 +47,7 @@ function AdminNotificationList() {
 
     const deleteNotification = async (notificationId) => {
         try {
-            await axios.delete(`http://localhost:8080/api/notifications/${notificationId}`);
+            await axios.delete(`${BASE_URL}/api/notifications/${notificationId}`);
             showToastMessage("Notification deleted.");
             fetchNotifications();
         } catch (error) {

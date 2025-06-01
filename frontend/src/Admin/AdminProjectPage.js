@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave } from "react-icons/fa";
@@ -6,6 +6,7 @@ import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
 function AdminProjectPage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState([]);
@@ -36,15 +37,6 @@ function AdminProjectPage() {
         notes: "",
     });
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) setUsername(storedName);
-        fetchAllProjects();
-        fetchEditors();
-        fetchClients();
-
-    }, []);
-
     const showToastMessage = (message) => {
         setToastMessage(message);
         setShowToast(true);
@@ -53,10 +45,10 @@ function AdminProjectPage() {
         }, 3000);
     };
 
-    const fetchAllProjects = async () => {
+    const fetchAllProjects = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("http://localhost:8080/api/projects/all");
+            const response = await fetch(`${BASE_URL}/api/projects/all`);
             if (!response.ok) throw new Error("Failed to fetch projects");
             const data = await response.json();
             setProjects(data);
@@ -65,31 +57,40 @@ function AdminProjectPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
 
-    const fetchEditors = async () => {
+    const fetchEditors = useCallback(async () => {
         try {
-            const response = await fetch("http://localhost:8080/users/editors");
+            const response = await fetch(`${BASE_URL}/users/editors`);
             const data = await response.json();
             setEditors(data);
         } catch (error) {
             console.error("Failed to fetch editors:", error);
         }
-    };
+    }, [BASE_URL]);
 
-    const fetchClients = async () => {
+    const fetchClients = useCallback(async () => {
         try {
-            const response = await fetch("http://localhost:8080/users/clients");
+            const response = await fetch(`${BASE_URL}/users/clients`);
             const data = await response.json();
             setClients(data);
         } catch (error) {
             console.error("Failed to fetch clients:", error);
         }
-    };
+    }, [BASE_URL]);
 
     useEffect(() => {
         fetchClients();
-    }, []);
+    }, [fetchClients]);
+
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchAllProjects();
+        fetchEditors();
+        fetchClients();
+    }, [fetchAllProjects, fetchEditors, fetchClients]);
 
     const handleView = (project) => {
         setSelectedProject(project);
@@ -108,7 +109,7 @@ function AdminProjectPage() {
 
     const handleDeleteConfirmed = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/projects/delete/${projectToDelete.projectId}`, {
+            const response = await fetch(`${BASE_URL}/api/projects/delete/${projectToDelete.projectId}`, {
                 method: "DELETE",
             });
 
@@ -161,7 +162,7 @@ function AdminProjectPage() {
         };
 
         try {
-            const res = await fetch("http://localhost:8080/api/payments/create", {
+            const res = await fetch(`${BASE_URL}/api/payments/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -185,7 +186,7 @@ function AdminProjectPage() {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:8080/api/projects/create", {
+            const response = await fetch(`${BASE_URL}/api/projects/create`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -230,7 +231,7 @@ function AdminProjectPage() {
 
     const handleUpdateProject = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/projects/update/${editFormData.projectId}`, {
+            const response = await fetch(`${BASE_URL}/api/projects/update/${editFormData.projectId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(editFormData),

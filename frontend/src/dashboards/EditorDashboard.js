@@ -3,6 +3,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import "../styles/AdminDashboard.css";
+
 import { FaHome, FaFolder, FaComments, FaBell } from "react-icons/fa";
 import "../styles/TaskBoard.css";
 import "../styles/List.css";
@@ -16,6 +18,7 @@ const EditorDashboard = () => {
     const [selectedProjectId, setSelectedProjectId] = useState("all");
     const [projects, setProjects] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const statuses = ["todo", "inprogress", "done"];
     const statusLabels = {
         todo: "To Do",
@@ -27,8 +30,27 @@ const EditorDashboard = () => {
         const storedUsername = localStorage.getItem("username");
         const storedEditorId = localStorage.getItem("userId");
         if (storedUsername) setUsername(storedUsername);
-        if (storedEditorId) setEditorId(storedEditorId);
+        if (storedEditorId) {
+            setEditorId(storedEditorId);
+
+            // Fetch notifications
+            fetch(`http://localhost:8080/api/notifications/user/${storedEditorId}`)
+                .then(res => res.ok ? res.json() : [])
+                .then((data) => {
+                    const recentUnread = data
+                        .filter(n => !n.read)
+                        .sort((a, b) => {
+                            const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                            const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                            return bTime - aTime;
+                        })
+                        .slice(0, 5);
+                    setNotifications(recentUnread);
+                })
+                .catch(() => setNotifications([]));
+        }
     }, []);
+
 
     const fetchTasksForEditor = useCallback(async () => {
         if (!editorId) return;
@@ -101,6 +123,25 @@ const EditorDashboard = () => {
         fetchEditorProjects();
     }, [fetchTasksForEditor, fetchEditorProjects]);
 
+    useEffect(() => {
+        if (!editorId) return;
+
+        fetch(`http://localhost:8080/api/notifications/user/${editorId}`)
+            .then(res => res.ok ? res.json() : [])
+            .then((data) => {
+                const recentUnread = data
+                    .filter(n => !n.read)
+                    .sort((a, b) => {
+                        const aTime = a.timestamp?.seconds || a.timestamp?._seconds || 0;
+                        const bTime = b.timestamp?.seconds || b.timestamp?._seconds || 0;
+                        return bTime - aTime;
+                    })
+                    .slice(0, 5);
+                setNotifications(recentUnread);
+            })
+            .catch(() => setNotifications([]));
+    }, [editorId]);
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
@@ -129,6 +170,46 @@ const EditorDashboard = () => {
                             <p>{incompleteTaskCount}</p>
                         </div>
                     </div>
+
+                    {/* Notifications Section */}
+                    <div className="dashboard-section">
+                        <div className="notifications-header">
+                            <h4>Recent Notifications</h4>
+                            <button className="view-all-btn" onClick={() => window.location.href = "/editor-notifications"}>
+                                View All
+                            </button>
+                        </div>
+                        {notifications.length === 0 ? (
+                            <p className="muted">No recent activity</p>
+                        ) : (
+                            <div className="notification-list">
+                                {notifications.map((n, i) => {
+                                    const handleNotificationClick = () => {
+                                        if (n.type === "chat" && n.relatedId) {
+                                            window.location.href = `/editor-chat/${n.relatedId}`;
+                                        } else if (n.type === "request") {
+                                            window.location.href = "/editor-projects";
+                                        } else if (n.type === "task" && n.relatedId) {
+                                            window.location.href = `/editor-project-board/${n.relatedId}`;
+                                        }
+                                    };
+
+                                    return (
+                                        <div key={i} className="card clickable" onClick={handleNotificationClick}>
+                                            <p>{n.message}</p>
+                                            <small className="tag">{n.type}</small><br />
+                                            <small style={{ color: "#777" }}>
+                                                {new Date((n.timestamp?.seconds || n.timestamp?._seconds || 0) * 1000).toLocaleString()}
+                                            </small>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+
+
 
                     <div className="project-title-header">
                         <label>Filter by Project:</label>

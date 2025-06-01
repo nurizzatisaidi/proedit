@@ -206,7 +206,6 @@ function UserDashboard() {
 
                 </div>
                 <Footer />
-
             </main>
         </div>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
@@ -8,6 +8,7 @@ import "../styles/List.css";
 import "../styles/ChatList.css";
 
 function AdminChatList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [chats, setChats] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -15,18 +16,10 @@ function AdminChatList() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) {
-            setUsername(storedName);
-        }
-        fetchAllChats();
-    }, []);
-
-    const fetchAllChats = async () => {
+    const fetchAllChats = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("http://localhost:8080/api/chats/all");
+            const response = await fetch(`${BASE_URL}/api/chats/all`);
             if (!response.ok) throw new Error("Failed to fetch chats");
             const data = await response.json();
             setChats(data);
@@ -35,7 +28,15 @@ function AdminChatList() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) {
+            setUsername(storedName);
+        }
+        fetchAllChats();
+    }, [fetchAllChats]);
 
     const handleChat = (chatId) => {
         navigate(`/admin-chat/${chatId}`);

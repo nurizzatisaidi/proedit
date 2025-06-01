@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -6,6 +6,7 @@ import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlu
 import "../styles/List.css";
 
 function EditorList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [editors, setEditors] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [username, setUsername] = useState("Admin");
@@ -20,23 +21,23 @@ function EditorList() {
     const [showToast, setShowToast] = useState(false);
     const [newEditor, setNewEditor] = useState({ name: "", email: "", password: "" });
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) setUsername(storedName);
-        fetchEditors();
-    }, []);
-
-    const fetchEditors = async () => {
+    const fetchEditors = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get("http://localhost:8080/users/editors");
+            const response = await axios.get(`${BASE_URL}/users/editors`);
             setEditors(response.data);
         } catch (error) {
             console.error("Error fetching editors:", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchEditors();
+    }, [fetchEditors]);
 
     const handleAddEditor = async (e) => {
         e.preventDefault();
@@ -45,7 +46,7 @@ function EditorList() {
             return;
         }
         try {
-            await axios.post("http://localhost:8080/users/register-editor", newEditor);
+            await axios.post(`${BASE_URL}/users/register-editor`, newEditor);
             showToastMessage("Editor added successfully!");
             setNewEditor({ name: "", email: "", password: "" });
             setShowAddPopup(false);
@@ -58,7 +59,7 @@ function EditorList() {
 
     const confirmDeleteEditor = async () => {
         try {
-            await axios.delete(`http://localhost:8080/users/editors/${editorToDelete.userId}`);
+            await axios.delete(`${BASE_URL}/users/editors/${editorToDelete.userId}`);
             showToastMessage("Editor deleted successfully!");
             setShowDeletePopup(false);
             setEditorToDelete(null);
@@ -88,7 +89,7 @@ function EditorList() {
     const submitEditEditor = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/users/update-profile/${editedEditor.userId}`, editedEditor);
+            await axios.put(`${BASE_URL}/users/update-profile/${editedEditor.userId}`, editedEditor);
             showToastMessage("Editor updated successfully!");
             setShowEditPopup(false);
             fetchEditors();

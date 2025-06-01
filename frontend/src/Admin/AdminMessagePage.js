@@ -8,12 +8,11 @@ import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPap
 import "../styles/ChatPage.css";
 
 function AdminMessagePage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { chatId } = useParams();
     const navigate = useNavigate();
-
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
-
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [chatList, setChatList] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -24,14 +23,10 @@ function AdminMessagePage() {
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        fetchChatList();
-    }, []);
-
-    const fetchChatList = async () => {
+    const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/chats/all`);
+            const response = await fetch(`${BASE_URL}/api/chats/all`);
             const data = await response.json();
             setChatList(data);
         } catch (err) {
@@ -39,12 +34,17 @@ function AdminMessagePage() {
         } finally {
             setIsChatListLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        fetchChatList();
+    }, [fetchChatList]);
+
 
     const fetchMessages = useCallback(async () => {
         setIsMessageLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/messages/chat/${chatId}`);
+            const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
             setMessages(data.messages || []);
         } catch (error) {
@@ -52,7 +52,7 @@ function AdminMessagePage() {
         } finally {
             setIsMessageLoading(false);
         }
-    }, [chatId]);
+    }, [BASE_URL, chatId]);
 
     useEffect(() => {
         if (chatId) fetchMessages();
@@ -90,7 +90,7 @@ function AdminMessagePage() {
                 content: contentToSend,
             };
 
-            await fetch("http://localhost:8080/api/messages/send", {
+            await fetch(`${BASE_URL}/api/messages/send`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),

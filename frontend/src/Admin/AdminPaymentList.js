@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
@@ -8,6 +8,7 @@ import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
 function AdminPaymentList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
@@ -24,14 +25,10 @@ function AdminPaymentList() {
 
     const username = localStorage.getItem("username") || "Admin";
 
-    useEffect(() => {
-        fetchAllPayments();
-    }, []);
-
-    const fetchAllPayments = async () => {
+    const fetchAllPayments = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("http://localhost:8080/api/payments/all-projects-payments");
+            const response = await fetch(`${BASE_URL}/api/payments/all-projects-payments`);
             const data = await response.json();
             if (Array.isArray(data)) {
                 setPayments(data);
@@ -44,12 +41,16 @@ function AdminPaymentList() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        fetchAllPayments();
+    }, [fetchAllPayments]);
 
     const deletePayment = async (payment) => {
 
         try {
-            const response = await fetch(`http://localhost:8080/api/payments/${payment.projectId}/${payment.paymentId}`, {
+            const response = await fetch(`${BASE_URL}/api/payments/${payment.projectId}/${payment.paymentId}`, {
                 method: "DELETE",
             });
 
@@ -345,7 +346,7 @@ function AdminPaymentList() {
                                         const description = breakdownRows.map(item => `${item.label}: RM ${parseFloat(item.amount).toFixed(2)}`).join("\n");
 
                                         try {
-                                            const response = await fetch(`http://localhost:8080/api/payments/${selectedPayment.projectId}/${selectedPayment.paymentId}`, {
+                                            const response = await fetch(`${BASE_URL}/api/payments/${selectedPayment.projectId}/${selectedPayment.paymentId}`, {
                                                 method: "PUT",
                                                 headers: { "Content-Type": "application/json" },
                                                 body: JSON.stringify({

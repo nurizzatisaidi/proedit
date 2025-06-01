@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -6,6 +6,7 @@ import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlu
 import "../styles/List.css";
 
 function ClientList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [clients, setClients] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [username, setUsername] = useState("Admin");
@@ -20,23 +21,23 @@ function ClientList() {
     const [editedClient, setEditedClient] = useState({ userId: "", name: "", email: "", password: "" });
     const [newClient, setNewClient] = useState({ name: "", email: "", password: "" });
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) setUsername(storedName);
-        fetchClients();
-    }, []);
-
-    const fetchClients = async () => {
+    const fetchClients = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get("http://localhost:8080/users?role=user");
+            const response = await axios.get(`${BASE_URL}/users?role=user`);
             setClients(response.data);
         } catch (error) {
             console.error("Error fetching clients:", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchClients();
+    }, [fetchClients]);
 
     const handleAddClient = async (e) => {
         e.preventDefault();
@@ -45,7 +46,7 @@ function ClientList() {
             return;
         }
         try {
-            await axios.post("http://localhost:8080/users/register", newClient);
+            await axios.post(`${BASE_URL}/users/register`, newClient);
             showToastMessage("Client added successfully!");
             setNewClient({ name: "", email: "", password: "" });
             setShowAddPopup(false);
@@ -69,7 +70,7 @@ function ClientList() {
     const submitEditClient = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/users/update-profile/${editedClient.userId}`, editedClient);
+            await axios.put(`${BASE_URL}/users/update-profile/${editedClient.userId}`, editedClient);
             showToastMessage("Client updated successfully!");
             setShowEditPopup(false);
             fetchClients();
@@ -216,7 +217,7 @@ function ClientList() {
                                 className="reject-btn"
                                 onClick={async () => {
                                     try {
-                                        await axios.delete(`http://localhost:8080/users/${selectedClient.userId}`);
+                                        await axios.delete(`${BASE_URL}/users/${selectedClient.userId}`);
                                         showToastMessage("Client deleted successfully!");
                                         setShowDeletePopup(false);
                                         fetchClients();

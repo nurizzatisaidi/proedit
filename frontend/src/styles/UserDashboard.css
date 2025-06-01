@@ -352,6 +352,17 @@ body {
     text-align: left;
 }
 
+.dashboard-section .card.clickable {
+    margin-bottom: 10px;
+}
+
+.dashboard-section .notification-scroll {
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+
 .card {
     background: white;
     padding: 1rem;

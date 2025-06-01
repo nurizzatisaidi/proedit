@@ -39,14 +39,16 @@ public class FirebaseService {
     @PostConstruct
     public void initializeFirebase() {
         try {
-            FileInputStream serviceAccount = new FileInputStream("serviceAccountKey.json");
+            // FileInputStream serviceAccount = new
+            // FileInputStream("serviceAccountKey.json");
+            FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_key.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://proedit-399a8-default-rtdb.firebaseio.com")
                     .build();
 
-            if (FirebaseApp.getApps().isEmpty()) { // ✅ Prevent duplicate initialization
+            if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
             }
             this.db = FirestoreClient.getFirestore();
@@ -81,7 +83,7 @@ public class FirebaseService {
             user.put("userId", uid);
             user.put("name", name);
             user.put("email", email);
-            user.put("password", hashedPassword); // ✅ Store hashed password
+            user.put("password", hashedPassword);
             user.put("role", "user");
 
             db.collection("users").document(uid).set(user);
@@ -131,7 +133,7 @@ public class FirebaseService {
             List<User> users = new ArrayList<>();
             for (QueryDocumentSnapshot document : documents) {
                 User user = document.toObject(User.class);
-                user.setUserId(document.getId()); // Set the Firestore document ID as the userId
+                user.setUserId(document.getId());
                 users.add(user);
             }
             return users;
@@ -188,7 +190,7 @@ public class FirebaseService {
             editor.put("password", hashedPassword);
             editor.put("role", "editor");
 
-            // ✅ Save in both users and editors collections
+            // Save in both users and editors collections
             db.collection("users").document(uid).set(editor);
             db.collection("editors").document(uid).set(editor);
 
@@ -293,7 +295,7 @@ public class FirebaseService {
 
         List<String> userIds = new ArrayList<>();
         for (DocumentSnapshot document : future.get().getDocuments()) {
-            userIds.add(document.getId()); // doc ID is userId
+            userIds.add(document.getId());
         }
         return userIds;
     }

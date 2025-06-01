@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash, FaEye, FaUser, FaUsers, FaCheck, FaTimes, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
 function AdminRequestPage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [requests, setRequests] = useState([]);
@@ -25,24 +26,17 @@ function AdminRequestPage() {
     const [showToast, setShowToast] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        if (storedName) setUsername(storedName);
-        fetchRequests();
-        fetchEditors();
-    }, []);
-
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("http://localhost:8080/api/requests/all");
+            const response = await fetch(`${BASE_URL}/api/requests/all`);
             if (response.ok) {
                 let data = await response.json();
                 console.log("Fetched data:", data);
 
                 const updatedRequests = await Promise.all(
                     data.map(async (request) => {
-                        const userResponse = await fetch(`http://localhost:8080/api/users/${request.userId}`);
+                        const userResponse = await fetch(`${BASE_URL}/api/users/${request.userId}`);
                         if (userResponse.ok) {
                             const userData = await userResponse.json();
                             return { ...request, username: userData.name };
@@ -60,12 +54,12 @@ function AdminRequestPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
 
     // Get the editors dropdown list
-    const fetchEditors = async () => {
+    const fetchEditors = useCallback(async () => {
         try {
-            const response = await fetch("http://localhost:8080/users/editors");
+            const response = await fetch(`${BASE_URL}/users/editors`);
 
             if (!response.ok) {
                 throw new Error(`Failed to fetch editors: ${response.statusText}`);
@@ -83,7 +77,14 @@ function AdminRequestPage() {
             console.error("Error fetching editors:", error);
             alert("Failed to load editors. Please check the API connection.");
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        if (storedName) setUsername(storedName);
+        fetchRequests();
+        fetchEditors();
+    }, [fetchRequests, fetchEditors]);
 
     // Handling Accepted Request
     const handleAcceptRequest = async () => {
@@ -95,7 +96,7 @@ function AdminRequestPage() {
 
 
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/process/${selectedRequest.requestId}`, {
+            const response = await fetch(`${BASE_URL}/api/requests/process/${selectedRequest.requestId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -126,7 +127,7 @@ function AdminRequestPage() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/process/${selectedRequest.requestId}`, {
+            const response = await fetch(`${BASE_URL}/api/requests/process/${selectedRequest.requestId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -160,7 +161,7 @@ function AdminRequestPage() {
 
     const handleDeleteConfirmed = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/delete/${requestToDelete.requestId}`, {
+            const response = await fetch(`${BASE_URL}/api/requests/delete/${requestToDelete.requestId}`, {
                 method: "DELETE",
             });
 

@@ -17,6 +17,7 @@ function ClientNotificationList() {
     const [toastMessage, setToastMessage] = useState("");
     const navigate = useNavigate();
     const userId = localStorage.getItem("userId");
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchNotifications = useCallback(async () => {
         try {
@@ -25,6 +26,8 @@ function ClientNotificationList() {
             setNotifications(sorted);
         } catch (error) {
             console.error("Failed to fetch notifications", error);
+        } finally {
+            setIsLoading(false); // <-- Stop spinner
         }
     }, [userId, BASE_URL]);
 
@@ -89,7 +92,12 @@ function ClientNotificationList() {
                     </div>
 
                     <div className="list">
-                        {notifications.length === 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading notifications...</p>
+                            </div>
+                        ) : notifications.length === 0 ? (
                             <p>No notifications found.</p>
                         ) : (
                             notifications.map((notif) => (

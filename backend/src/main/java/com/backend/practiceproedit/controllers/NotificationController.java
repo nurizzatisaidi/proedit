@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping("/api/notifications")
 // @CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://proedit-399a8.web.app")
 public class NotificationController {
 
     @Autowired

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/register")
+@CrossOrigin(origins = "https://proedit-399a8.web.app")
 // @CrossOrigin(origins = "http://localhost:3000")
 public class RegisterController {
 

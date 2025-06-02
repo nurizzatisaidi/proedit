@@ -215,7 +215,7 @@ function AdminRequestPage() {
                 <section className="list-section">
                     <div className="top-bar">
                         <h1>All User Requests</h1>
-                        <select className="filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
+                        <select className="project-filter-dropdown" onChange={(e) => setFilterStatus(e.target.value)}>
                             <option value="All">All</option>
                             <option value="Pending">Pending</option>
                             <option value="Accepted">Accepted</option>

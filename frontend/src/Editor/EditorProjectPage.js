@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaHome, FaFolder, FaComments, FaBell, FaEye, FaTasks } from "react-icons/fa";
 import "../styles/List.css";
 
 function EditorProjectsPage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState([]);
@@ -14,19 +15,10 @@ function EditorProjectsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("username");
-        const storedId = localStorage.getItem("userId");
-        console.log("Stored userId:", storedId);
-
-        if (storedName) setUsername(storedName);
-        if (storedId) fetchProjects(storedId);
-    }, []);
-
-    const fetchProjects = async (editorId) => {
+    const fetchProjects = useCallback(async (editorId) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/projects/editor/${editorId}`);
+            const response = await fetch(`${BASE_URL}/api/projects/editor/${editorId}`);
             if (!response.ok) throw new Error("Failed to fetch projects");
             const data = await response.json();
             setProjects(data);
@@ -35,7 +27,16 @@ function EditorProjectsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [BASE_URL]);
+
+    useEffect(() => {
+        const storedName = localStorage.getItem("username");
+        const storedId = localStorage.getItem("userId");
+        console.log("Stored userId:", storedId);
+
+        if (storedName) setUsername(storedName);
+        if (storedId) fetchProjects(storedId);
+    }, [fetchProjects]);
 
     const handleView = (project) => {
         setSelectedProject(project);
@@ -46,9 +47,9 @@ function EditorProjectsPage() {
         window.location.href = `/editor-project-board/${projectId}`;
     };
 
-    const handleChat = async (projectId) => {
+    const handleChat = useCallback(async (projectId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/chats/project/${projectId}`);
+            const response = await fetch(`${BASE_URL}/api/chats/project/${projectId}`);
             if (!response.ok) throw new Error("Chat not found");
 
             const chat = await response.json();
@@ -59,7 +60,7 @@ function EditorProjectsPage() {
             console.error("Error getting chat by projectId:", error);
             alert("Chat not found for this project.");
         }
-    };
+    }, [BASE_URL]);
 
 
     const menuItems = [

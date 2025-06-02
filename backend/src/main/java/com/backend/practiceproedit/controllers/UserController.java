@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 // @CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
 @RestController
-
+@CrossOrigin(origins = "https://proedit-399a8.web.app")
 @RequestMapping("/users")
 public class UserController {
     @Autowired

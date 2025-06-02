@@ -21,6 +21,8 @@ function ClientPaymentList() {
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [showPayPal, setShowPayPal] = useState(false);
     const userId = localStorage.getItem("userId");
+    console.log("Client userId:", userId);
+
     const username = localStorage.getItem("username") || "User";
 
     const fetchClientPayments = useCallback(async () => {
@@ -31,7 +33,7 @@ function ClientPaymentList() {
             const allPayments = [];
 
             for (const project of projects) {
-                const paymentRes = await fetch(`${BASE_URL}/payments/project/${project.projectId}/all`);
+                const paymentRes = await fetch(`${BASE_URL}/api/payments/project/${project.projectId}/all`);
                 if (paymentRes.ok) {
                     const paymentsData = await paymentRes.json();
                     allPayments.push(...paymentsData);

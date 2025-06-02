@@ -9,6 +9,7 @@ import "../styles/TaskBoard.css";
 import "../styles/List.css";
 
 const EditorTaskBoard = () => {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { projectId } = useParams();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [editingTask, setEditingTask] = useState(null);
@@ -31,7 +32,7 @@ const EditorTaskBoard = () => {
 
     const fetchTasks = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/${projectId}/tasks`);
+            const res = await fetch(`${BASE_URL}/api/projects/${projectId}/tasks`);
             const data = await res.json();
             const grouped = { todo: [], inprogress: [], done: [] };
             data.forEach(task => {
@@ -42,17 +43,17 @@ const EditorTaskBoard = () => {
         } catch (err) {
             console.error("Error fetching tasks:", err);
         }
-    }, [projectId]);
+    }, [projectId, BASE_URL]);
 
     const fetchProjectTitle = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
+            const res = await fetch(`${BASE_URL}/api/projects/${projectId}`);
             const data = await res.json();
             setProjectTitle(data.title || "Untitled Project");
         } catch (err) {
             console.error("Error fetching project title:", err);
         }
-    }, [projectId]);
+    }, [projectId, BASE_URL]);
 
 
     const isProjectDone = Object.values(tasks).flat().length > 0 &&
@@ -76,14 +77,14 @@ const EditorTaskBoard = () => {
 
         setTasks(updatedTasks);
 
-        await fetch(`http://localhost:8080/api/projects/${projectId}/tasks/${movedTask.taskId}`, {
+        await fetch(`${BASE_URL}/api/projects/${projectId}/tasks/${movedTask.taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(movedTask)
         });
     };
 
-    const handleCreateTask = async () => {
+    const handleCreateTask = useCallback(async () => {
         if (!newTask.title || !newTask.dueDate) {
             alert("Please enter task title and due date.");
             return;
@@ -95,7 +96,7 @@ const EditorTaskBoard = () => {
             dueDate: new Date(newTask.dueDate)
         };
 
-        await fetch(`http://localhost:8080/api/projects/${projectId}/tasks`, {
+        await fetch(`${BASE_URL}/api/projects/${projectId}/tasks`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(taskData)
@@ -105,11 +106,11 @@ const EditorTaskBoard = () => {
         setShowPopup(false);
         fetchTasks();
         showToastMessage("Task created successfully!");
-    };
+    }, [fetchTasks, BASE_URL, newTask, projectId]);
 
-    const confirmDeleteTask = async () => {
+    const confirmDeleteTask = useCallback(async () => {
         try {
-            await fetch(`http://localhost:8080/api/projects/${projectId}/tasks/${taskToDelete.taskId}`, {
+            await fetch(`${BASE_URL}/api/projects/${projectId}/tasks/${taskToDelete.taskId}`, {
                 method: "DELETE",
             });
             setTaskToDelete(null);
@@ -119,7 +120,7 @@ const EditorTaskBoard = () => {
             showToastMessage("Error deleting task");
             console.error(err);
         }
-    };
+    }, [fetchTasks, BASE_URL, projectId, taskToDelete]);
 
     const showToastMessage = (message) => {
         setToastMessage(message);
@@ -246,7 +247,7 @@ const EditorTaskBoard = () => {
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
                                 try {
-                                    await fetch(`http://localhost:8080/api/projects/${projectId}/tasks/${editingTask.taskId}`, {
+                                    await fetch(`${BASE_URL}/api/projects/${projectId}/tasks/${editingTask.taskId}`, {
                                         method: "PUT",
                                         headers: { "Content-Type": "application/json" },
                                         body: JSON.stringify({
@@ -316,7 +317,7 @@ const EditorTaskBoard = () => {
                             className="submit-complete-btn"
                             onClick={async () => {
                                 try {
-                                    const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
+                                    const res = await fetch(`${BASE_URL}/api/projects/${projectId}`);
                                     const data = await res.json();
 
                                     if (data.status === "To Review") {
@@ -324,7 +325,7 @@ const EditorTaskBoard = () => {
                                         return;
                                     }
 
-                                    const updateRes = await fetch(`http://localhost:8080/api/projects/update-status/${projectId}`, {
+                                    const updateRes = await fetch(`${BASE_URL}/api/projects/update-status/${projectId}`, {
                                         method: "PUT",
                                         headers: { "Content-Type": "application/json" },
                                         body: JSON.stringify({ status: "To Review" }),

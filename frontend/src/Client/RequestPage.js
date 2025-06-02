@@ -6,6 +6,7 @@ import "../styles/RequestPage.css";
 import "../styles/List.css";
 
 function RequestPage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [showRequestPopup, setShowRequestPopup] = useState(false);
@@ -40,7 +41,7 @@ function RequestPage() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/user/${userId}`);
+            const response = await fetch(`${BASE_URL}/api/requests/user/${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log("Fetched Requests:", data);
@@ -58,7 +59,8 @@ function RequestPage() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [BASE_URL]);
+
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");
@@ -81,7 +83,7 @@ function RequestPage() {
         setShowViewPopup(true);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
 
         // Get userId from LocalStorage
@@ -95,7 +97,7 @@ function RequestPage() {
         const requestData = { ...formData, userId };
 
         try {
-            const response = await fetch("http://localhost:8080/api/requests/create", {
+            const response = await fetch(`${BASE_URL}/api/requests/create`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestData),
@@ -114,7 +116,7 @@ function RequestPage() {
             console.error("Error submitting request: ", error);
             alert("Error submitting request.");
         }
-    };
+    }, [fetchRequests, BASE_URL, formData]);
 
     const filteredRequests = requests.filter((req) => {
         const matchesStatus = filterStatus === "All" || req.status === filterStatus;
@@ -122,7 +124,7 @@ function RequestPage() {
         return matchesStatus && matchesSearch;
     });
 
-    const confirmDeleteRequest = (request) => {
+    const confirmDeleteRequest = useCallback((request) => {
         if (request.status !== "Pending") {
             setWarningMessage("You can only delete a request that is still pending.");
             setShowWarningPopup(true);
@@ -130,12 +132,12 @@ function RequestPage() {
         }
         setRequestToDelete(request);
         setShowDeletePopup(true);
-    };
+    }, []);
 
 
-    const handleDeleteConfirmed = async () => {
+    const handleDeleteConfirmed = useCallback(async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/requests/delete/${requestToDelete.requestId}`, {
+            const response = await fetch(`${BASE_URL}/api/requests/delete/${requestToDelete.requestId}`, {
                 method: "DELETE",
             });
 
@@ -152,7 +154,7 @@ function RequestPage() {
             console.error("Error deleting request: ", error);
             alert("Error deleting request.");
         }
-    };
+    }, [requestToDelete, setRequests, BASE_URL]);
 
 
     const showToastMessage = (message) => {

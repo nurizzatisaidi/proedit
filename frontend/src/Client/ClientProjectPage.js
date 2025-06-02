@@ -6,6 +6,7 @@ import "../styles/ProjectPage.css";
 import "../styles/List.css";
 
 function ClientProjectPage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [showViewPopup, setShowViewPopup] = useState(false);
@@ -29,7 +30,7 @@ function ClientProjectPage() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/api/projects/user/${userId}`);
+            const response = await fetch(`${BASE_URL}/api/projects/user/${userId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log("Fetched Projects:", data);
@@ -37,7 +38,7 @@ function ClientProjectPage() {
 
                 for (const project of data) {
                     try {
-                        const res = await fetch(`http://localhost:8080/api/payments/project/${project.projectId}/latest`);
+                        const res = await fetch(`${BASE_URL}/api/payments/project/${project.projectId}/latest`);
                         if (res.ok) {
                             const paymentData = await res.json();
                             setPaymentMap(prev => ({ ...prev, [project.projectId]: paymentData }));
@@ -62,7 +63,7 @@ function ClientProjectPage() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [BASE_URL]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");

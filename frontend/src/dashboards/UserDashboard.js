@@ -17,6 +17,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 function UserDashboard() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState("");
@@ -36,17 +37,17 @@ function UserDashboard() {
 
     useEffect(() => {
         if (userId) {
-            fetch(`http://localhost:8080/api/requests/user/${userId}`)
+            fetch(`${BASE_URL}/api/requests/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setRequests)
                 .catch(() => setRequests([]));
 
-            fetch(`http://localhost:8080/api/projects/user/${userId}`)
+            fetch(`${BASE_URL}/api/projects/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setProjects)
                 .catch(() => setProjects([]));
 
-            fetch(`http://localhost:8080/api/notifications/user/${userId}`)
+            fetch(`${BASE_URL}/api/notifications/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then((data) => {
                     const unread = data
@@ -61,17 +62,17 @@ function UserDashboard() {
                 })
                 .catch(() => setNotifications([]));
 
-            fetch(`http://localhost:8080/api/chats/user/${userId}`)
+            fetch(`${BASE_URL}/api/chats/user/${userId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then(setChats)
                 .catch(() => setChats([]));
 
-            fetch(`http://localhost:8080/api/payments/unpaid-total/${userId}`)
+            fetch(`${BASE_URL}/api/payments/unpaid-total/${userId}`)
                 .then(res => res.json())
                 .then(data => setTotalUnpaidAmount(data))
                 .catch(() => setTotalUnpaidAmount(0));
         }
-    }, [userId]);
+    }, [userId, BASE_URL]);
 
     const ongoing = projects.filter(p => p.status !== "Completed Payment");
     const pending = requests.filter(r => r.status === "Pending");

@@ -8,6 +8,7 @@ import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
 function ClientPaymentList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
@@ -25,12 +26,12 @@ function ClientPaymentList() {
     const fetchClientPayments = useCallback(async () => {
         setIsLoading(true);
         try {
-            const res = await fetch("http://localhost:8080/api/projects/user/" + userId);
+            const res = await fetch(`${BASE_URL}/api/projects/user/` + userId);
             const projects = await res.json();
             const allPayments = [];
 
             for (const project of projects) {
-                const paymentRes = await fetch(`http://localhost:8080/api/payments/project/${project.projectId}/all`);
+                const paymentRes = await fetch(`${BASE_URL}/payments/project/${project.projectId}/all`);
                 if (paymentRes.ok) {
                     const paymentsData = await paymentRes.json();
                     allPayments.push(...paymentsData);
@@ -43,7 +44,8 @@ function ClientPaymentList() {
             setIsLoading(false);
         }
 
-    }, [userId]);
+    }, [userId, BASE_URL]);
+
     useEffect(() => {
         if (userId) fetchClientPayments();
     }, [userId, fetchClientPayments]);
@@ -83,7 +85,7 @@ function ClientPaymentList() {
                             const order = await actions.order.capture();
                             const transactionId = order.id;
 
-                            const res = await fetch(`http://localhost:8080/api/payments/confirm`, {
+                            const res = await fetch(`${BASE_URL}/api/payments/confirm`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
@@ -115,7 +117,7 @@ function ClientPaymentList() {
 
             return () => clearInterval(interval);
         }
-    }, [showPayPal, selectedPayment, fetchClientPayments]);
+    }, [showPayPal, selectedPayment, fetchClientPayments, BASE_URL]);
 
     const showToastMessage = (message) => {
         setToastMessage(message);
@@ -209,7 +211,7 @@ function ClientPaymentList() {
 
                                         {payment.status === "paid" && (
                                             <a
-                                                href={`http://localhost:8080/api/payments/invoice/${payment.projectId}/${payment.paymentId}`}
+                                                href={`${BASE_URL}/api/payments/invoice/${payment.projectId}/${payment.paymentId}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="payment-btn"

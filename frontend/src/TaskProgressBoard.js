@@ -7,6 +7,7 @@ import "./styles/TaskBoard.css";
 import "./styles/List.css";
 
 const TaskProgressBoard = () => {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { projectId } = useParams();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const username = localStorage.getItem("username") || "User";
@@ -41,7 +42,7 @@ const TaskProgressBoard = () => {
 
     const fetchTasks = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/${projectId}/tasks`);
+            const res = await fetch(`${BASE_URL}/api/projects/${projectId}/tasks`);
             const data = await res.json();
 
             const allDone = data.every(task => task.status?.toLowerCase() === "done");
@@ -57,23 +58,23 @@ const TaskProgressBoard = () => {
         } catch (err) {
             console.error("Error fetching tasks:", err);
         }
-    }, [projectId]);
+    }, [projectId, BASE_URL]);
 
 
     const fetchProjectTitle = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/${projectId}`);
+            const res = await fetch(`${BASE_URL}/api/projects/${projectId}`);
             const data = await res.json();
             setProjectTitle(data.title || "Untitled Project");
             setProjectDetails(data);
         } catch (err) {
             console.error("Error fetching project title:", err);
         }
-    }, [projectId]);
+    }, [projectId, BASE_URL]);
 
     const checkPaymentExists = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/payments/project/${projectId}/latest`);
+            const res = await fetch(`${BASE_URL}/api/payments/project/${projectId}/latest`);
 
             if (res.ok) {
                 const data = await res.json();
@@ -87,7 +88,7 @@ const TaskProgressBoard = () => {
             console.error("Error checking payment:", err);
             setPaymentExists(false);
         }
-    }, [projectId]);
+    }, [projectId, BASE_URL]);
 
     const showToastWithTimeout = (message) => {
         setToastMessage(message);
@@ -122,7 +123,7 @@ const TaskProgressBoard = () => {
         { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         const formattedDescription = lineItems
             .map(item => `${item.label}: RM ${parseFloat(item.amount || 0).toFixed(2)}`)
             .join("\n");
@@ -140,7 +141,7 @@ const TaskProgressBoard = () => {
         };
 
         try {
-            const res = await fetch("http://localhost:8080/api/payments/create", {
+            const res = await fetch(`${BASE_URL}/api/payments/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -158,7 +159,18 @@ const TaskProgressBoard = () => {
             console.error("Error creating payment:", err);
             alert("An error occurred.");
         }
-    };
+    }, [
+        lineItems,
+        privateDrive,
+        projectDetails.projectId,
+        projectDetails.title,
+        projectDetails.userId,
+        projectDetails.username,
+        projectDetails.editorId,
+        projectDetails.editorUsername,
+        totalAmount,
+        BASE_URL
+    ]);
 
 
     return (

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import './styles/register.css';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
 function Register() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +15,7 @@ function Register() {
     const [showTermsPopup, setShowTermsPopup] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
 
         if (!acceptTerms) {
@@ -28,7 +29,7 @@ function Register() {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/users/register", {
+            const response = await fetch(`${BASE_URL}/users/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -51,9 +52,7 @@ function Register() {
             console.error("Error registering user:", error);
             setMessage("Error registering user.");
         }
-    };
-
-
+    }, [acceptTerms, confirmPassword, email, name, navigate, password, BASE_URL]);
 
     const redirectToLogin = () => {
         navigate('/'); // Redirect to the login page

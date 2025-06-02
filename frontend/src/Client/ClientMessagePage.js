@@ -10,7 +10,7 @@ import "../styles/ChatPage.css";
 function ClientMessagePage() {
     const { chatId } = useParams();
     const navigate = useNavigate();
-
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -36,7 +36,7 @@ function ClientMessagePage() {
     const fetchChatList = useCallback(async () => {
         setIsChatListLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
+            const response = await fetch(`${BASE_URL}/api/chats/user/${userId}`);
             const data = await response.json();
             setChatList(data);
         } catch (err) {
@@ -44,12 +44,12 @@ function ClientMessagePage() {
         } finally {
             setIsChatListLoading(false);
         }
-    }, [userId]);
+    }, [userId, BASE_URL]);
 
     const fetchMessages = useCallback(async () => {
         setIsMessageLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/messages/chat/${chatId}`);
+            const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
             setMessages(data.messages || []);
         } catch (error) {
@@ -57,7 +57,7 @@ function ClientMessagePage() {
         } finally {
             setIsMessageLoading(false);
         }
-    }, [chatId]);
+    }, [chatId, BASE_URL]);
 
     useEffect(() => {
         const fetch = async () => await fetchChatList();
@@ -96,7 +96,7 @@ function ClientMessagePage() {
                     content: fileUrl,
                 };
 
-                await fetch("http://localhost:8080/api/messages/send", {
+                await fetch(`${BASE_URL}/api/messages/send`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
@@ -124,7 +124,7 @@ function ClientMessagePage() {
                 content: optimisticMessage.content,
             };
 
-            await fetch("http://localhost:8080/api/messages/send", {
+            await fetch(`${BASE_URL}/api/messages/send`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),

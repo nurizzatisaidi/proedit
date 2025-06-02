@@ -8,10 +8,13 @@ import { FaHome, FaFolder, FaComments, FaBell, FaPaperclip } from 'react-icons/f
 import "../styles/ChatPage.css";
 
 function EditorMessagePage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { chatId } = useParams();
     const navigate = useNavigate();
-    const userId = localStorage.getItem("userId");
-    const username = localStorage.getItem("username");
+    // const userId = localStorage.getItem("userId");
+    const [userId, setUserId] = useState("");
+    // const username = localStorage.getItem("username");
+    const [username, setUsername] = useState("");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [chatList, setChatList] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -27,10 +30,24 @@ function EditorMessagePage() {
     const [messagePoints, setMessagePoints] = useState([""]);
 
 
+    // const fetchChatList = useCallback(async () => {
+    //     setIsChatListLoading(true);
+    //     try {
+    //         const response = await fetch(`${BASE_URL}/api/chats/user/${userId}`);
+    //         const data = await response.json();
+    //         setChatList(data);
+    //     } catch (err) {
+    //         console.error("Failed to load chat list", err);
+    //     } finally {
+    //         setIsChatListLoading(false);
+    //     }
+    // }, [userId, BASE_URL]);
+
     const fetchChatList = useCallback(async () => {
+        if (!userId) return; // prevent null API call
         setIsChatListLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
+            const response = await fetch(`${BASE_URL}/api/chats/user/${userId}`);
             const data = await response.json();
             setChatList(data);
         } catch (err) {
@@ -38,12 +55,27 @@ function EditorMessagePage() {
         } finally {
             setIsChatListLoading(false);
         }
-    }, [userId]);
+    }, [userId, BASE_URL]);
+
+
+    // const fetchMessages = useCallback(async () => {
+    //     setIsMessageLoading(true);
+    //     try {
+    //         const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
+    //         const data = await response.json();
+    //         setMessages(data.messages || []);
+    //     } catch (error) {
+    //         console.error("Error fetching chat messages: ", error);
+    //     } finally {
+    //         setIsMessageLoading(false);
+    //     }
+    // }, [chatId, BASE_URL]);
 
     const fetchMessages = useCallback(async () => {
+        if (!chatId) return;
         setIsMessageLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/messages/chat/${chatId}`);
+            const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
             setMessages(data.messages || []);
         } catch (error) {
@@ -51,16 +83,26 @@ function EditorMessagePage() {
         } finally {
             setIsMessageLoading(false);
         }
-    }, [chatId]);
+    }, [chatId, BASE_URL]);
+
+
     useEffect(() => {
         fetchChatList();
     }, [fetchChatList]);
 
     useEffect(() => {
+        const storedUserId = localStorage.getItem("userId");
+        const storedUsername = localStorage.getItem("username");
+        if (storedUserId) setUserId(storedUserId);
+        if (storedUsername) setUsername(storedUsername);
+    }, []);
+
+
+    useEffect(() => {
         if (chatId) fetchMessages();
     }, [chatId, fetchMessages]);
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = useCallback(async () => {
         const hasText = isStructured
             ? messageTitle.trim() || messagePoints.some(point => point.trim())
             : newMessage.trim();
@@ -113,7 +155,7 @@ function EditorMessagePage() {
                 content: contentToSend,
             };
 
-            await fetch("http://localhost:8080/api/messages/send", {
+            await fetch(`${BASE_URL}/api/messages/send`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -125,7 +167,8 @@ function EditorMessagePage() {
         } finally {
             setIsSending(false);
         }
-    };
+    }, [BASE_URL, chatId, fetchMessages, isStructured, messageTitle, messagePoints, newMessage, selectedFile, userId, username]);
+
 
     const formatMessage = (content) => {
         if (!content) return "";

@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/requests")
+@CrossOrigin(origins = "https://proedit-399a8.web.app")
 // @CrossOrigin(origins = "http://localhost:3000")
 
 public class RequestController {

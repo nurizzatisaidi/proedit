@@ -10,6 +10,7 @@ import "../styles/TaskBoard.css";
 import "../styles/List.css";
 
 const EditorDashboard = () => {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("Editor");
     const [editorId, setEditorId] = useState("");
@@ -34,7 +35,7 @@ const EditorDashboard = () => {
             setEditorId(storedEditorId);
 
             // Fetch notifications
-            fetch(`http://localhost:8080/api/notifications/user/${storedEditorId}`)
+            fetch(`${BASE_URL}/api/notifications/user/${storedEditorId}`)
                 .then(res => res.ok ? res.json() : [])
                 .then((data) => {
                     const recentUnread = data
@@ -49,20 +50,20 @@ const EditorDashboard = () => {
                 })
                 .catch(() => setNotifications([]));
         }
-    }, []);
+    }, [BASE_URL]);
 
 
     const fetchTasksForEditor = useCallback(async () => {
         if (!editorId) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/editor/${editorId}/tasks`);
+            const res = await fetch(`${BASE_URL}/api/projects/editor/${editorId}/tasks`);
             const data = await res.json();
             setAllTasks(data);
             updateFilteredTasks(data, selectedProjectId);
         } catch (err) {
             console.error("Error fetching tasks:", err);
         }
-    }, [editorId, selectedProjectId]);
+    }, [editorId, selectedProjectId, BASE_URL]);
 
     const updateFilteredTasks = (taskList, projectId) => {
         const filtered = projectId === "all"
@@ -80,17 +81,17 @@ const EditorDashboard = () => {
     const fetchEditorProjects = useCallback(async () => {
         if (!editorId) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/projects/editor/${editorId}`);
+            const res = await fetch(`${BASE_URL}/api/projects/editor/${editorId}`);
             const data = await res.json();
             setProjects(data);
             setProjectCount(data.length);
         } catch (err) {
             console.error("Error fetching projects:", err);
         }
-    }, [editorId]);
+    }, [editorId, BASE_URL]);
 
 
-    const handleDragEnd = async (result) => {
+    const handleDragEnd = useCallback(async (result) => {
         const { source, destination } = result;
         if (!destination || source.droppableId === destination.droppableId) return;
 
@@ -104,12 +105,12 @@ const EditorDashboard = () => {
 
         setTasks(updatedTasks);
 
-        await fetch(`http://localhost:8080/api/projects/${movedTask.projectId}/tasks/${movedTask.taskId}`, {
+        await fetch(`${BASE_URL}/api/projects/${movedTask.projectId}/tasks/${movedTask.taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(movedTask)
         });
-    };
+    }, [tasks, BASE_URL]);
 
     const handleProjectFilterChange = (e) => {
         const value = e.target.value;
@@ -126,7 +127,7 @@ const EditorDashboard = () => {
     useEffect(() => {
         if (!editorId) return;
 
-        fetch(`http://localhost:8080/api/notifications/user/${editorId}`)
+        fetch(`${BASE_URL}/api/notifications/user/${editorId}`)
             .then(res => res.ok ? res.json() : [])
             .then((data) => {
                 const recentUnread = data
@@ -140,7 +141,7 @@ const EditorDashboard = () => {
                 setNotifications(recentUnread);
             })
             .catch(() => setNotifications([]));
-    }, [editorId]);
+    }, [editorId, BASE_URL]);
 
 
     const menuItems = [

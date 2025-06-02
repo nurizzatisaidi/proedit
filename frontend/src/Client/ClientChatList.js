@@ -7,6 +7,7 @@ import "../styles/List.css";
 import "../styles/ChatList.css";
 
 function ClientChatList() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [chats, setChats] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -19,7 +20,7 @@ function ClientChatList() {
     const fetchChats = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/chats/user/${userId}`);
+            const response = await fetch(`${BASE_URL}/api/chats/user/${userId}`);
             if (!response.ok) throw new Error('Failed to fetch chats');
             const data = await response.json();
             setChats(data);
@@ -32,7 +33,7 @@ function ClientChatList() {
         } finally {
             setIsLoading(false);
         }
-    }, [userId]);
+    }, [userId, BASE_URL]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("username");

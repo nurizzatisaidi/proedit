@@ -12,6 +12,7 @@ import {
 import "../styles/ProfilePage.css";
 
 function ProfilePage() {
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("role");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -28,7 +29,7 @@ function ProfilePage() {
 
     const fetchUserProfile = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/users/${userId}`);
+            const res = await fetch(`${BASE_URL}/users/${userId}`);
             const data = await res.json();
             setUser(data);
             setFormData({
@@ -42,7 +43,7 @@ function ProfilePage() {
         } catch (err) {
             console.error("Error fetching user:", err);
         }
-    }, [userId]);
+    }, [userId, BASE_URL]);
 
     useEffect(() => {
         fetchUserProfile();
@@ -66,7 +67,7 @@ function ProfilePage() {
 
     const handleSave = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/users/update-profile/${userId}`, {
+            const res = await fetch(`${BASE_URL}/users/update-profile/${userId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

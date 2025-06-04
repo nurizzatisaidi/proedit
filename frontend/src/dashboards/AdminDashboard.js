@@ -155,14 +155,16 @@ function AdminDashboard() {
                             <div className="notification-list">
                                 {notifications.map((n, i) => {
                                     const handleNotificationClick = () => {
-                                        if (n.type === "chat" && n.relatedId) {
+                                        if (n.message?.toLowerCase().includes("submitted for review")) {
+                                            window.location.href = "/admin-projects";
+                                        } else if (n.type === "chat" && n.relatedId) {
                                             window.location.href = `/admin-chat/${n.relatedId}`;
                                         } else if (n.type === "request") {
                                             window.location.href = "/admin-requests";
                                         } else if (n.type === "task" && n.relatedId) {
-                                            window.location.href = `/admin-projects`;
+                                            window.location.href = "/admin-projects";
                                         } else if (n.type === "payment" && n.relatedId) {
-                                            window.location.href = `/admin-payments`;
+                                            window.location.href = "/admin-payments";
                                         }
                                     };
 
@@ -211,7 +213,7 @@ function AdminDashboard() {
                             {/* Bar Chart */}
                             <div className="chart-card chart-half bar-chart-container">
                                 <div className="bar-chart-wrapper">
-                                    <h5 className="chart-title">Project Status</h5>
+                                    <h5 className="chart-title">Current Project Status</h5>
                                     <div className="chart-legend-spacer"></div>
                                     <div className="bar-chart-area">
                                         <Bar
@@ -225,7 +227,7 @@ function AdminDashboard() {
                             {/* Line Chart */}
                             <div className="chart-card chart-full">
                                 <div className="card-header">
-                                    <h5>Income Over Time</h5>
+                                    <h5 className="chart-title">Income Over Time</h5>
                                     <div className="filter-row">
                                         <label>Filter by:</label>
                                         <select

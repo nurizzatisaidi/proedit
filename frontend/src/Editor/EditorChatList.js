@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-
+import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { FaComments, FaHome, FaFolder, FaBell, FaTasks } from 'react-icons/fa';
@@ -106,6 +106,7 @@ function EditorChatList() {
                         </div>
                     )}
                 </section>
+                <Footer />
             </main>
         </div>
     );

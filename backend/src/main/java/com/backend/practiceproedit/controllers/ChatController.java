@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping("/api/chats")
 // @CrossOrigin(origins = "http://localhost:3000")
-@CrossOrigin(origins = "https://proedit-399a8.web.app")
+// @CrossOrigin(origins = "https://proedit-399a8.web.app")
 public class ChatController {
 
     @Autowired

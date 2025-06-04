@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FaHome, FaFolder, FaComments, FaBell, FaPlus } from "react-icons/fa";
 import "../styles/TaskBoard.css";
@@ -351,6 +352,7 @@ const EditorTaskBoard = () => {
                 {showToast && (
                     <div className="custom-toast">{toastMessage}</div>
                 )}
+                <Footer />
             </main>
         </div>
     );

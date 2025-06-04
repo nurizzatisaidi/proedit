@@ -28,9 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class FirebaseService {
+
+    @Value("${firebase.credentials.path}")
+    private String firebaseCredentialsPath;
+
+    @Value("${firebase.database.url}")
+    private String firebaseDatabaseUrl;
 
     private Firestore db;
     private final Map<String, String> usernameCache = new HashMap<>();
@@ -41,11 +48,14 @@ public class FirebaseService {
         try {
             // FileInputStream serviceAccount = new
             // FileInputStream("serviceAccountKey.json");
-            FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_key.json");
+            // FileInputStream serviceAccount = new
+            // FileInputStream("/etc/secrets/firebase_key.json");
+            FileInputStream serviceAccount = new FileInputStream(firebaseCredentialsPath);
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://proedit-399a8-default-rtdb.firebaseio.com")
+                    // .setDatabaseUrl("https://proedit-399a8-default-rtdb.firebaseio.com")
+                    .setDatabaseUrl(firebaseDatabaseUrl)
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {

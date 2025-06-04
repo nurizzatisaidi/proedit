@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
     FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaMoneyBillWave, FaEye, FaWallet
 } from "react-icons/fa";
@@ -279,7 +280,7 @@ function ClientPaymentList() {
                         {toastMessage}
                     </div>
                 )}
-
+                <Footer />
             </main>
         </div>
     );

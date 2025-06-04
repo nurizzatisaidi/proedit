@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave } from "react-icons/fa";
+import Footer from "../components/Footer";
+import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave, FaRobot } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
 
@@ -27,6 +28,10 @@ function AdminProjectPage() {
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [privateDrive, setPrivateDrive] = useState("");
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const suggestionsRef = useRef(null);
+
 
     const [selectedInvoiceProject, setSelectedInvoiceProject] = useState(null);
     const [formData, setFormData] = useState({
@@ -260,6 +265,43 @@ function AdminProjectPage() {
         return project.status || "Status Unknown";
     };
 
+    const fetchAiSuggestions = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/requests/suggest-title`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: formData.title,
+                    videoType: formData.videoType,
+                    notes: formData.notes
+                }),
+            });
+
+            if (response.ok) {
+                const suggestions = await response.json();
+                setAiSuggestions(suggestions);
+                setShowSuggestions(true);
+            } else {
+                alert("Failed to fetch AI suggestions.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error contacting AI service.");
+        }
+    };
+
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
         { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
@@ -339,6 +381,7 @@ function AdminProjectPage() {
                     </div>
 
                 </section>
+                <Footer />
             </main>
 
             {/* View Project Details Popup */}
@@ -397,10 +440,45 @@ function AdminProjectPage() {
                     <div className="popup-content">
                         <h2>Create New Project</h2>
                         <form onSubmit={handleCreateProject}>
-                            <div className="form-group">
-                                <label>Title:</label>
-                                <input type="text" name="title" value={formData.title} onChange={handleChange} required />
+                            <div className="form-group-title">
+                                <label className="form-label">Title:</label>
+                                <div style={{ position: "relative", width: "100%" }}>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={formData.title}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    <FaRobot
+                                        className="ai-icon"
+                                        title="AI Title Suggestion"
+                                        onClick={fetchAiSuggestions}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                </div>
                             </div>
+
+                            {showSuggestions && aiSuggestions.length > 0 && (
+                                <div className="suggestions-box" ref={suggestionsRef}>
+                                    <ul className="suggestion-list">
+                                        {aiSuggestions.map((suggestion, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => {
+                                                    const cleanTitle = suggestion.replace(/^"|"$/g, '');
+                                                    setFormData({ ...formData, title: cleanTitle });
+                                                    setShowSuggestions(false);
+                                                }}
+                                            >
+                                                {suggestion}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+
 
                             <div className="form-group">
                                 <label>Video Type:</label>

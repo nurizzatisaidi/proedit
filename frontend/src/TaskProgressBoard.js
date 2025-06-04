@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { FaHome, FaFolder, FaComments, FaBell, FaFileAlt, FaUser, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import "./styles/TaskBoard.css";
 import "./styles/List.css";
@@ -23,6 +24,7 @@ const TaskProgressBoard = () => {
     const [showToast, setShowToast] = useState(false);
     const [showClientPaymentPopup, setShowClientPaymentPopup] = useState(false);
     const [paymentDetails, setPaymentDetails] = useState(null);
+    const [showPayPal, setShowPayPal] = useState(false);
     const [lineItems, setLineItems] = useState([]);
 
     const addLineItem = () => {
@@ -103,6 +105,63 @@ const TaskProgressBoard = () => {
             checkPaymentExists();
         }
     }, [fetchTasks, fetchProjectTitle, checkPaymentExists, role]);
+
+    useEffect(() => {
+        if (showPayPal && paymentDetails) {
+            const interval = setInterval(() => {
+                if (window.paypal) {
+                    const container = document.getElementById("paypal-button-taskprogress");
+                    if (container) container.innerHTML = "";
+
+                    window.paypal.Buttons({
+                        createOrder: (data, actions) => {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    description: paymentDetails.description || "Project Payment",
+                                    amount: {
+                                        currency_code: "MYR",
+                                        value: parseFloat(paymentDetails.amount).toFixed(2),
+                                    }
+                                }]
+                            });
+                        },
+                        onApprove: async (data, actions) => {
+                            const order = await actions.order.capture();
+                            const transactionId = order.id;
+
+                            // Confirm payment with backend
+                            const res = await fetch(`${BASE_URL}/api/payments/confirm`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    paymentId: paymentDetails.paymentId,
+                                    projectId: paymentDetails.projectId,
+                                    paypalTransactionId: transactionId,
+                                }),
+                            });
+
+                            if (res.ok) {
+                                alert("Payment successful!");
+                                setShowPayPal(false);
+                                checkPaymentExists(); // refresh payment status
+                            } else {
+                                alert("Failed to confirm payment.");
+                            }
+                        },
+                        onError: (err) => {
+                            console.error("PayPal error:", err);
+                            alert("Error processing PayPal payment.");
+                        }
+                    }).render("#paypal-button-taskprogress");
+
+                    clearInterval(interval);
+                }
+            }, 300);
+
+            return () => clearInterval(interval);
+        }
+    }, [showPayPal, paymentDetails, BASE_URL, checkPaymentExists]);
+
 
 
     const menuItems = role === "admin" ? [
@@ -360,17 +419,31 @@ const TaskProgressBoard = () => {
 
                             <div className="popup-buttons">
                                 <button className="cancel-btn" onClick={() => setShowClientPaymentPopup(false)}>Cancel</button>
-                                <button className="submit-btn" onClick={() => {
-                                    alert("Redirecting to PayPal...");
-                                    setShowClientPaymentPopup(false);
-                                }}>
+                                <button
+                                    className="submit-btn"
+                                    onClick={() => {
+                                        setShowClientPaymentPopup(false);
+                                        setShowPayPal(true);
+                                    }}
+                                >
                                     Continue Payment
                                 </button>
+
                             </div>
                         </div>
                     </div>
                 )}
 
+                {/* Show paypal popup */}
+                {showPayPal && paymentDetails && (
+                    <div className="popup-overlay">
+                        <div className="popup-content">
+                            <h2>Complete Your Payment</h2>
+                            <div id="paypal-button-taskprogress"></div>
+                            <button className="cancel-btn" onClick={() => setShowPayPal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Payment is not available yet */}
                 {showToast && (
@@ -378,6 +451,7 @@ const TaskProgressBoard = () => {
                         {toastMessage}
                     </div>
                 )}
+                <Footer />
             </main>
         </div>
     );

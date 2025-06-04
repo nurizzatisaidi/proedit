@@ -29,7 +29,8 @@ function ClientMessagePage() {
         "Can I revise the video title?",
         "When will the editing be done?",
         "How do I make payment?",
-        "Can I provide more feedback?"
+        "What is the payment process?",
+        "Can I provide more feedback?",
     ];
 
 

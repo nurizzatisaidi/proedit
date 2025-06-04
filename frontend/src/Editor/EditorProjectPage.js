@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaHome, FaFolder, FaComments, FaBell, FaEye, FaTasks } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -147,6 +148,7 @@ function EditorProjectsPage() {
                         )}
                     </div>
                 </section>
+                <Footer />
             </main>
 
             {showViewPopup && selectedProject && (

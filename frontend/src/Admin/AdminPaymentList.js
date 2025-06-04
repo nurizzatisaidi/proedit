@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
     FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaTrash, FaMoneyBillWave, FaEdit
 } from "react-icons/fa";
@@ -384,7 +385,7 @@ function AdminPaymentList() {
                     </div>
                 )}
 
-
+                <Footer />
             </main>
         </div>
     );

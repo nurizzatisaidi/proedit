@@ -3,6 +3,7 @@
     overflow-y: auto;
     padding: 1rem;
     box-sizing: border-box;
+
 }
 
 .list-section {
@@ -49,7 +50,7 @@
 
 .list {
     overflow-y: auto;
-    max-height: 60vh;
+    max-height: 80vh;
     padding-right: 8px;
 }
 
@@ -331,12 +332,15 @@
     text-align: left;
 }
 
+
+
 .form-group select {
     color: black;
     background-color: white;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+
 }
 
 .form-group input {

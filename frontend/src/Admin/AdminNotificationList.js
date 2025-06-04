@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
     FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash,
     FaUser, FaUsers, FaMoneyBillWave
@@ -15,18 +16,22 @@ function AdminNotificationList() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [username, setUsername] = useState("Admin");
     const [showToast, setShowToast] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [toastMessage, setToastMessage] = useState("");
     const navigate = useNavigate();
 
     const userId = localStorage.getItem("userId");
 
     const fetchNotifications = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${BASE_URL}/api/notifications/user/${userId}`);
             const sorted = response.data.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds);
             setNotifications(sorted);
         } catch (error) {
             console.error("Failed to fetch notifications", error);
+        } finally {
+            setIsLoading(false); // <-- Stop spinner
         }
     }, [BASE_URL, userId]);
 
@@ -95,7 +100,12 @@ function AdminNotificationList() {
                     </div>
 
                     <div className="list">
-                        {notifications.length === 0 ? (
+                        {isLoading ? (
+                            <div style={{ textAlign: "center" }}>
+                                <div className="spinner"></div>
+                                <p>Loading notifications...</p>
+                            </div>
+                        ) : notifications.length === 0 ? (
                             <p>No notifications found.</p>
                         ) : (
                             notifications.map((notif) => (
@@ -121,6 +131,7 @@ function AdminNotificationList() {
                         )}
                     </div>
                 </section>
+                <Footer />
             </main>
 
             {showToast && (

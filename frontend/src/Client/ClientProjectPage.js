@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaEye, FaTasks, FaMoneyBill, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/ProjectPage.css";
 import "../styles/List.css";
@@ -195,6 +196,7 @@ function ClientProjectPage() {
                     </div>
 
                 </section>
+                <Footer />
             </main>
 
             {/* View Request Popup */}

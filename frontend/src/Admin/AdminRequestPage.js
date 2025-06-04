@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash, FaEye, FaUser, FaUsers, FaCheck, FaTimes, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -303,6 +304,7 @@ function AdminRequestPage() {
                         )}
                     </div>
                 </section>
+                <Footer />
             </main>
 
             {/* View Request Popup */}
@@ -429,6 +431,7 @@ function AdminRequestPage() {
 
 
         </div>
+
     );
 }
 

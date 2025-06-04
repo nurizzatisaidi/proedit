@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaMoneyBillWave, FaTasks } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
@@ -122,6 +123,7 @@ function ClientChatList() {
                         </div>
                     )}
                 </section>
+                <Footer />
             </main>
 
             {showToast && (

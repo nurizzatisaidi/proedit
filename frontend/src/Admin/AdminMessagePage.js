@@ -127,6 +127,19 @@ function AdminMessagePage() {
         [chatList, chatId]
     );
 
+    const formatMessage = (content) => {
+        if (!content) return "";
+
+        // Only format if it's a structured message
+        if (content.includes("📝") && content.includes("•")) {
+            return content
+                .replace(/📝\s*(.*?)\n/, (_, title) => `<div style="font-weight:bold; text-align:left;">📝 ${title}</div>`)
+                .replace(/\n/g, "<br/>"); 
+        }
+
+        return content;
+    };
+
     return (
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
@@ -186,7 +199,16 @@ function AdminMessagePage() {
                                         {msg.senderId !== userId && (
                                             <strong className="sender-name">{msg.senderUsername}</strong>
                                         )}
-                                        <p>{msg.content}</p>
+                                        <p
+                                            dangerouslySetInnerHTML={{
+                                                __html: msg.content.startsWith("https://firebasestorage")
+                                                    ? msg.content.match(/\.(jpeg|jpg|gif|png)$/)
+                                                        ? `<img src="${msg.content}" alt="attachment" style="max-width:200px;" />`
+                                                        : `<a href="${msg.content}" target="_blank" rel="noopener noreferrer">View File</a>`
+                                                    : formatMessage(msg.content)
+                                            }}
+                                        />
+
                                         <span className="timestamp">
                                             {msg.timestamp?.seconds
                                                 ? new Date(msg.timestamp.seconds * 1000).toLocaleString([], {

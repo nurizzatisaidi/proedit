@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaUser, FaUsers, FaPlus, FaEdit, FaTrash, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -169,6 +170,7 @@ function EditorList() {
                         )}
                     </div>
                 </section>
+                <Footer />
             </main>
 
             {/* Create New Editor Popup */}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash, FaMoneyBillWave } from "react-icons/fa";
+import Footer from "../components/Footer";
+import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash, FaMoneyBillWave, FaRobot } from "react-icons/fa";
 import "../styles/RequestPage.css";
 import "../styles/List.css";
 
@@ -23,6 +24,9 @@ function RequestPage() {
     const [showWarningPopup, setShowWarningPopup] = useState(false);
     const [warningMessage, setWarningMessage] = useState("");
     const hasShownNoRequestsAlert = useRef(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const suggestionsRef = useRef(null);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -157,6 +161,45 @@ function RequestPage() {
     }, [requestToDelete, setRequests, BASE_URL]);
 
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const fetchAiSuggestions = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/requests/suggest-title`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: formData.title,
+                    videoType: formData.videoType,
+                    notes: formData.notes,
+                }),
+            });
+
+
+            if (response.ok) {
+                const suggestions = await response.json();
+                setAiSuggestions(suggestions);
+                setShowSuggestions(true);
+            } else {
+                alert("Failed to fetch AI suggestions.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error contacting AI service.");
+        }
+    };
+
+
+
     const showToastMessage = (message) => {
         setToastMessage(message);
         setShowToast(true);
@@ -257,10 +300,46 @@ function RequestPage() {
                                 <h2>Create New Request</h2>
                                 <form onSubmit={handleSubmit}>
 
-                                    <div className="form-group">
+                                    <div className="form-group-title">
                                         <label className="form-label">Title:</label>
-                                        <input type="text" name="title" value={formData.title} onChange={handleChange} required />
+                                        <div style={{ position: "relative", width: "100%" }}>
+                                            <input
+                                                type="text"
+                                                name="title"
+                                                value={formData.title}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            <FaRobot
+                                                className="ai-icon"
+                                                title="AI Title Suggestion"
+                                                onClick={fetchAiSuggestions}
+                                                style={{ cursor: "pointer" }}
+                                            />
+                                        </div>
                                     </div>
+
+                                    {/* Suggestions Popup */}
+                                    {showSuggestions && aiSuggestions.length > 0 && (
+                                        <div className="suggestions-box" ref={suggestionsRef}>
+                                            <ul className="suggestion-list">
+                                                {aiSuggestions.map((suggestion, index) => (
+                                                    <li
+                                                        key={index}
+                                                        onClick={() => {
+                                                            const cleanTitle = suggestion.replace(/^"|"$/g, '');
+                                                            setFormData({ ...formData, title: cleanTitle });
+                                                            setShowSuggestions(false);
+                                                        }}
+
+                                                    >
+                                                        {suggestion}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
 
                                     <div className="form-group">
                                         <label className="form-label">Video Type:</label>
@@ -311,6 +390,7 @@ function RequestPage() {
                     )}
 
                 </section>
+                <Footer />
             </main>
 
             {/* View Request Popup */}

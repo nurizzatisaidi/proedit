@@ -9,16 +9,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.ExecutionException;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import com.backend.practiceproedit.service.APIService;
 
 @RestController
 @RequestMapping("api/requests")
-@CrossOrigin(origins = "https://proedit-399a8.web.app")
+// @CrossOrigin(origins = "https://proedit-399a8.web.app")
 // @CrossOrigin(origins = "http://localhost:3000")
 
 public class RequestController {
 
     @Autowired
     private RequestService requestService;
+
+    @Autowired
+    private APIService apiService;
 
     // Creating a new request
     @PostMapping("/create")
@@ -102,4 +108,17 @@ public class RequestController {
             return ResponseEntity.status(500).body("Error processing request: " + e.getMessage());
         }
     }
+
+    @PostMapping("/suggest-title")
+    public ResponseEntity<List<String>> suggestTitle(@RequestBody Map<String, String> body) {
+        try {
+            String result = apiService.generateTitle(body); // Pass all form inputs
+            List<String> suggestions = Arrays.asList(result.split("\\|\\|\\|"));
+            return ResponseEntity.ok(suggestions);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonList("Error generating title: " + e.getMessage()));
+        }
+    }
+
 }

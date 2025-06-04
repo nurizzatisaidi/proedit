@@ -3,8 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
-    FaHome, FaFolder, FaComments, FaBell, FaMoneyBillWave, FaTrash
+    FaHome, FaFolder, FaComments, FaBell, FaTrash
 } from "react-icons/fa";
 import "../styles/List.css";
 
@@ -74,8 +75,7 @@ function EditorNotificationList() {
         { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
         { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
         { name: "Chat", icon: <FaComments />, path: "/editor-chat-list" },
-        { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
-        { name: "Payments", icon: <FaMoneyBillWave />, path: "/editor-payments" },
+        { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" }
     ];
 
     return (
@@ -123,6 +123,7 @@ function EditorNotificationList() {
                 {showToast && (
                     <div className="custom-toast">{toastMessage}</div>
                 )}
+                <Footer />
             </main>
         </div>
     );

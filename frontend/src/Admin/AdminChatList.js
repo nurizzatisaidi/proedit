@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaUser, FaUsers, FaMoneyBillWave } from 'react-icons/fa';
+import Footer from "../components/Footer";
+import { FaComments, FaHome, FaFileAlt, FaFolder, FaBell, FaUser, FaUsers, FaMoneyBillWave, FaTasks } from 'react-icons/fa';
 import "../styles/List.css";
 import "../styles/ChatList.css";
 
@@ -94,12 +95,19 @@ function AdminChatList() {
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
                                             <FaComments /> Chat
                                         </button>
+                                        <button
+                                            className="board-btn"
+                                            onClick={() => window.location.href = `/admin-projects/${chat.projectId}/progress`}
+                                        >
+                                            <FaTasks /> Board
+                                        </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </section>
+                <Footer />
             </main>
         </div>
     );

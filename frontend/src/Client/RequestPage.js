@@ -108,7 +108,7 @@ function RequestPage() {
             });
 
             if (response.ok) {
-                showToastMessage("Request Accepted Successfully!");
+                showToastMessage("Request Submitted Successfully!");
                 setShowRequestPopup(false);
                 setFormData({ title: "", videoType: "", duration: "", sharedDrive: "", notes: "" });
 

@@ -89,10 +89,15 @@ function AdminRequestPage() {
 
     // Handling Accepted Request
     const handleAcceptRequest = async () => {
-        if (!adminComment || !assignedEditor) {
-            alert("Please provide a comment and select an editor.");
+        if (!adminComment.trim()) {
+            showToastMessage("Please enter an admin comment.");
             return;
         }
+        if (!assignedEditor) {
+            showToastMessage("Please select an editor.");
+            return;
+        }
+
         const adminUserId = localStorage.getItem("userId");
 
 
@@ -123,8 +128,8 @@ function AdminRequestPage() {
 
     // Handling Rejected Request
     const handleRejectRequest = async () => {
-        if (!rejectionReason) {
-            alert("Please provide a reason for rejection.");
+        if (!rejectionReason.trim()) {
+            showToastMessage("Please enter a reason for rejection.");
             return;
         }
         try {

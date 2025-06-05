@@ -49,6 +49,10 @@ public class RequestService {
         request.setAssignedEditorUsername(null);
         request.setRejectionReason(null);
 
+        // Validation to check duration is greater than 0
+        if (request.getDuration() <= 0) {
+            throw new IllegalArgumentException("Preferred duration must be greater than 0 minutes.");
+        }
         DocumentReference docRef = db.collection("requests").document(requestId);
         ApiFuture<com.google.cloud.firestore.WriteResult> result = docRef.set(request);
         result.get();

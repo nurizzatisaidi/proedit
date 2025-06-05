@@ -10,7 +10,7 @@ public class Request {
     private String username;
     private String title;
     private String videoType;
-    private int duration;
+    private double duration;
     private String sharedDrive;
     private String notes;
     private String status;
@@ -28,7 +28,7 @@ public class Request {
     public Request() {
     }
 
-    public Request(String requestId, String userId, String username, String title, String videoType, int duration,
+    public Request(String requestId, String userId, String username, String title, String videoType, double duration,
             String sharedDrive,
             String notes, String status, Timestamp createdAt) {
         this.requestId = requestId;
@@ -83,11 +83,11 @@ public class Request {
         this.videoType = videoType;
     }
 
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 

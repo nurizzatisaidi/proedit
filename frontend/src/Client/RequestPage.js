@@ -108,7 +108,7 @@ function RequestPage() {
             });
 
             if (response.ok) {
-                showToastMessage("Request Submitted Successfully!");
+                showToastMessage("Your request has been submitted");
                 setShowRequestPopup(false);
                 setFormData({ title: "", videoType: "", duration: "", sharedDrive: "", notes: "" });
 
@@ -146,7 +146,7 @@ function RequestPage() {
             });
 
             if (response.ok) {
-                showToastMessage("Request Deleted Successfully!");
+                showToastMessage("Your request has been deleted");
                 setShowDeletePopup(false);
                 setRequests((prevRequests) =>
                     prevRequests.filter((r) => r.requestId !== requestToDelete.requestId)

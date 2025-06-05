@@ -26,6 +26,17 @@ jobs:
         working-directory: backend
         run: mvn clean install
 
+        # ✅ Inject application.properties for CI use only
+      - name: Inject application.properties for CI build
+        run: |
+          mkdir -p backend/src/main/resources
+          echo "${{ secrets.SPRING_APP_PROPERTIES }}" > backend/src/main/resources/application.properties
+
+      # ✅ Backend Build (now works because properties are injected)
+      - name: Build Backend
+        working-directory: backend
+        run: mvn clean instal
+
       # Frontend
       - name: Set up Node.js
         uses: actions/setup-node@v3

@@ -22,10 +22,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build Backend
-        working-directory: backend
-        run: mvn clean install
-
         # ✅ Inject application.properties for CI use only
       - name: Inject application.properties for CI build
         run: |
@@ -35,7 +31,7 @@ jobs:
       # ✅ Backend Build (now works because properties are injected)
       - name: Build Backend
         working-directory: backend
-        run: mvn clean instal
+        run: mvn clean install
 
       # Frontend
       - name: Set up Node.js

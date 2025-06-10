@@ -134,10 +134,15 @@ function AdminMessagePage() {
         if (content.includes("📝") && content.includes("•")) {
             return content
                 .replace(/📝\s*(.*?)\n/, (_, title) => `<div style="font-weight:bold; text-align:left;">📝 ${title}</div>`)
-                .replace(/\n/g, "<br/>"); 
+                .replace(/\n/g, "<br/>");
         }
 
         return content;
+    };
+
+    const getOtherParticipantName = (chat) => {
+        if (!chat || !chat.participantUsernames) return "Chat";
+        return chat.participantUsernames.find(name => name !== username) || "Chat";
     };
 
     return (
@@ -161,7 +166,7 @@ function AdminMessagePage() {
                                 >
                                     <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
                                     <div className="chat-user-info">
-                                        <p className="chat-project-title">{chat.projectTitle}</p>
+                                        <p className="chat-project-title">{getOtherParticipantName(chat)}</p>
                                         <p className="chat-participants-preview">{chat.participantUsernames?.join(", ")}</p>
                                     </div>
                                 </div>
@@ -176,7 +181,7 @@ function AdminMessagePage() {
                                 <div className="spinner" />
                             ) : (
                                 <>
-                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
+                                    <h2>{getOtherParticipantName(activeChat)}</h2>
                                     {activeChat?.projectId && (
                                         <button
                                             className="taskboard-btn"

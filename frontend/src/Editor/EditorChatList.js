@@ -56,9 +56,17 @@ function EditorChatList() {
         { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
     ];
 
-    const filteredChats = chats.filter(chat =>
-        chat.projectTitle?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredChats = chats.filter(chat => {
+        const lowerSearch = searchQuery.toLowerCase();
+
+        const titleMatch = (chat.projectTitle || "").toLowerCase().includes(lowerSearch);
+        const userMatch = chat.participantUsernames?.some(name =>
+            name.toLowerCase().includes(lowerSearch) && name !== username
+        );
+
+        return titleMatch || userMatch;
+    });
+
 
     return (
         <div className="dashboard-container">
@@ -90,16 +98,24 @@ function EditorChatList() {
                             {filteredChats.map(chat => (
                                 <div key={chat.chatId} className="list-card">
                                     <div className="list-details sleek-card-info">
-                                        <h3 className="list-title">{chat.projectTitle}</h3>
+                                        <h3 className="list-title">
+                                            {chat.projectTitle && chat.projectTitle !== "Untitled Project"
+                                                ? chat.projectTitle
+                                                : chat.participantUsernames.filter(name => name !== username).join(", ") || "Untitled"}
+                                        </h3>
+
                                         <p className="chat-participants">{chat.participantUsernames.join(', ')}</p>
                                     </div>
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
                                             <FaComments /> Chat
                                         </button>
-                                        <button className="board-btn" onClick={() => handleTaskBoard(chat.projectId)}>
-                                            <FaTasks /> Board
-                                        </button>
+                                        {chat.projectId ? (
+                                            <button className="board-btn" onClick={() => handleTaskBoard(chat.projectId)}>
+                                                <FaTasks /> Board
+                                            </button>
+                                        ) : null}
+
                                     </div>
                                 </div>
                             ))}

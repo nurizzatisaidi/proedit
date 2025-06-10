@@ -43,7 +43,9 @@ public class ChatController {
             Map<String, String> usernamesMap = firebaseService.getUsernamesByIds(userIds);
 
             // Batch fetch projects
-            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(projectIds);
+            // Map<String, String> projectTitlesMap =
+            // firebaseService.getProjectTitlesByIds(projectIds);
+            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(new ArrayList<>(projectIds)); // ✅
 
             for (Chat chat : chats) {
                 Map<String, Object> chatMap = new HashMap<>();
@@ -103,9 +105,13 @@ public class ChatController {
                 projectIds.add(chat.getProjectId());
             }
 
-            // Batch fetch usernames and the project titles
+            // Batch fetch users
             Map<String, String> usernamesMap = firebaseService.getUsernamesByIds(userIds);
-            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(projectIds);
+
+            // Batch fetch projects
+            // Map<String, String> projectTitlesMap =
+            // firebaseService.getProjectTitlesByIds(projectIds);
+            Map<String, String> projectTitlesMap = firebaseService.getProjectTitlesByIds(new ArrayList<>(projectIds)); // ✅
 
             for (Chat chat : chats) {
                 Map<String, Object> chatMap = new HashMap<>();

@@ -2,7 +2,9 @@ package com.backend.practiceproedit.model;
 
 import java.util.List;
 import java.util.Arrays;
+import com.google.firebase.database.IgnoreExtraProperties;
 
+@IgnoreExtraProperties
 public class Chat {
     private String chatId;
     private List<String> participantIds;

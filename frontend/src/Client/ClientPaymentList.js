@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import PaypalScriptLoader from "../components/PaypalScriptLoader";
+
 import {
     FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaMoneyBillWave, FaEye, FaWallet
 } from "react-icons/fa";
@@ -141,6 +143,8 @@ function ClientPaymentList() {
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
             <main className="main-content">
+                {/* Paypal Loader */}
+                <PaypalScriptLoader />
                 <Header username={username} />
                 <section className="list-section">
                     <div className="top-bar">

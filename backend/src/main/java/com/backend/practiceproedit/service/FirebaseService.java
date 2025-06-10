@@ -19,6 +19,7 @@ import com.backend.practiceproedit.model.Project;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import com.google.cloud.firestore.Query;
+import com.google.cloud.Timestamp;
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -200,9 +201,11 @@ public class FirebaseService {
             editor.put("password", hashedPassword);
             editor.put("role", "editor");
 
-            // Save in both users and editors collections
             db.collection("users").document(uid).set(editor);
             db.collection("editors").document(uid).set(editor);
+
+            // Create admin-editor chat
+            createAdminEditorChat(uid);
 
             return "Editor registered successfully with ID: " + uid;
         } catch (FirebaseAuthException e) {
@@ -243,20 +246,19 @@ public class FirebaseService {
     }
 
     // Get many project title all at once (Batch Fetching)
-    public Map<String, String> getProjectTitlesByIds(Set<String> projectIds)
-            throws ExecutionException, InterruptedException {
+    public Map<String, String> getProjectTitlesByIds(List<String> projectIds) throws Exception {
+        Firestore db = getFirestore();
         Map<String, String> titles = new HashMap<>();
-        List<ApiFuture<DocumentSnapshot>> futures = new ArrayList<>();
 
         for (String projectId : projectIds) {
-            futures.add(db.collection("projects").document(projectId).get());
-        }
+            if (projectId == null || projectId.trim().isEmpty()) {
+                System.out.println("Warning: Skipping empty or null projectId in chat.");
+                continue; // Skip invalid projectId
+            }
 
-        for (int i = 0; i < futures.size(); i++) {
-            DocumentSnapshot snapshot = futures.get(i).get();
-            if (snapshot.exists()) {
-                String title = snapshot.getString("title");
-                titles.put(snapshot.getId(), title);
+            DocumentSnapshot doc = db.collection("projects").document(projectId).get().get();
+            if (doc.exists()) {
+                titles.put(projectId, doc.getString("title"));
             }
         }
 
@@ -308,6 +310,34 @@ public class FirebaseService {
             userIds.add(document.getId());
         }
         return userIds;
+    }
+
+    // Create new admin editor chat
+    public void createAdminEditorChat(String editorId) throws ExecutionException, InterruptedException {
+        Firestore db = getFirestore();
+
+        // Get all admin user IDs
+        List<String> adminIds = getAllUserIdsByRole("admin");
+
+        for (String adminId : adminIds) {
+            // Check if chat already exists between this admin and editor
+            ApiFuture<QuerySnapshot> future = db.collection("chats")
+                    .whereEqualTo("projectId", "") // This is a general chat, not linked to a project
+                    .whereEqualTo("participantIds", List.of(adminId, editorId))
+                    .get();
+
+            List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+            if (!docs.isEmpty())
+                continue; // Chat already exists
+
+            // Create chat
+            Map<String, Object> chatData = new HashMap<>();
+            chatData.put("projectId", ""); // No project
+            chatData.put("participantIds", List.of(adminId, editorId));
+            chatData.put("createdAt", Timestamp.now());
+
+            db.collection("chats").add(chatData);
+        }
     }
 
 }

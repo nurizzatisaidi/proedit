@@ -29,20 +29,6 @@ function EditorMessagePage() {
     const [messageTitle, setMessageTitle] = useState("");
     const [messagePoints, setMessagePoints] = useState([""]);
 
-
-    // const fetchChatList = useCallback(async () => {
-    //     setIsChatListLoading(true);
-    //     try {
-    //         const response = await fetch(`${BASE_URL}/api/chats/user/${userId}`);
-    //         const data = await response.json();
-    //         setChatList(data);
-    //     } catch (err) {
-    //         console.error("Failed to load chat list", err);
-    //     } finally {
-    //         setIsChatListLoading(false);
-    //     }
-    // }, [userId, BASE_URL]);
-
     const fetchChatList = useCallback(async () => {
         if (!userId) return; // prevent null API call
         setIsChatListLoading(true);
@@ -56,20 +42,6 @@ function EditorMessagePage() {
             setIsChatListLoading(false);
         }
     }, [userId, BASE_URL]);
-
-
-    // const fetchMessages = useCallback(async () => {
-    //     setIsMessageLoading(true);
-    //     try {
-    //         const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
-    //         const data = await response.json();
-    //         setMessages(data.messages || []);
-    //     } catch (error) {
-    //         console.error("Error fetching chat messages: ", error);
-    //     } finally {
-    //         setIsMessageLoading(false);
-    //     }
-    // }, [chatId, BASE_URL]);
 
     const fetchMessages = useCallback(async () => {
         if (!chatId) return;
@@ -179,6 +151,10 @@ function EditorMessagePage() {
     };
 
 
+    const getOtherUserName = (chat) => {
+        const others = chat.participantUsernames?.filter(name => name !== username);
+        return others?.join(", ") || "Chat";
+    };
 
 
     useEffect(() => {
@@ -220,7 +196,7 @@ function EditorMessagePage() {
                                 >
                                     <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
                                     <div className="chat-user-info">
-                                        <p className="chat-project-title">{chat.projectTitle}</p>
+                                        <p className="chat-project-title">{getOtherUserName(chat)}</p>
                                         <p className="chat-participants-preview">{chat.participantUsernames?.join(", ")}</p>
                                     </div>
                                 </div>
@@ -235,7 +211,7 @@ function EditorMessagePage() {
                                 <div className="spinner" />
                             ) : (
                                 <>
-                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
+                                    <h2>{getOtherUserName(activeChat)}</h2>
                                     {activeChat?.projectId && (
                                         <button
                                             className="taskboard-btn"

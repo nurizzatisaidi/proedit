@@ -27,10 +27,13 @@ import ClientPaymentList from './Client/ClientPaymentList';
 import ClientNotificationList from './Client/ClientNotificationList';
 import AdminNotificationList from './Admin/AdminNotificationList';
 import EditorNotificationList from './Editor/EditorNotificationList';
+import ConnectionStatusBanner from './components/ConnectionStatusProvider';
 
 function App() {
   return (
     <Router>
+      {/* This appears globally on all pages */}
+      <ConnectionStatusBanner />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -129,4 +129,25 @@ public class ProjectController {
         }
     }
 
+    // Editor updates google drive and status of a project to To Review
+    @PutMapping("/update-status-drive/{projectId}")
+    public ResponseEntity<Project> updateStatusAndDrive(
+            @PathVariable String projectId,
+            @RequestBody Map<String, String> payload) {
+
+        try {
+            String status = payload.get("status");
+            String privateDrive = payload.get("privateDrive");
+            Project updated = projectService.updateStatusAndDrive(projectId, status, privateDrive);
+
+            if (updated != null) {
+                return ResponseEntity.ok(updated);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

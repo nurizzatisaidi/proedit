@@ -27,7 +27,7 @@ function AdminProjectPage() {
     const [lineItems, setLineItems] = useState([]);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
-    const [privateDrive, setPrivateDrive] = useState("");
+    const [privateDrive] = useState("");
     const [aiSuggestions, setAiSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const suggestionsRef = useRef(null);
@@ -144,7 +144,7 @@ function AdminProjectPage() {
     const handleIssueInvoice = (project) => {
         setSelectedInvoiceProject(project);
         setLineItems([]);
-        setPrivateDrive(project.privateDrive || "");
+        // setPrivateDrive(project.privateDrive || "");
         setShowInvoicePopup(true);
     };
 
@@ -425,6 +425,19 @@ function AdminProjectPage() {
                                         : "Not shared"}
                                 </p>
                             </div>
+
+                            <div className="detail-row">
+                                <p><span>Final Drive:</span>
+                                    {selectedProject.privateDrive && selectedProject.privateDrive.trim() !== "" ? (
+                                        <a href={selectedProject.privateDrive} target="_blank" rel="noopener noreferrer">
+                                            View Final Product
+                                        </a>
+                                    ) : (
+                                        <span style={{ fontStyle: "italic", color: "#777" }}>Not available yet</span>
+                                    )}
+                                </p>
+                            </div>
+
                         </div>
 
                         <div className="center-button">
@@ -684,7 +697,7 @@ function AdminProjectPage() {
 
                         <p style={{ marginTop: "10px", fontWeight: "bold" }}>Total: RM {totalAmount.toFixed(2)}</p>
 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label>Final Drive Link:</label>
                             <input
                                 type="text"
@@ -692,7 +705,7 @@ function AdminProjectPage() {
                                 onChange={(e) => setPrivateDrive(e.target.value)}
                                 placeholder="https://drive.google.com/..."
                             />
-                        </div>
+                        </div> */}
 
                         <div className="popup-buttons">
                             <button className="cancel-btn" onClick={() => setShowInvoicePopup(false)}>Cancel</button>

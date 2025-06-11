@@ -295,4 +295,45 @@ public class ProjectService {
         }
     }
 
+    // Editor updates final drive of a project
+    public Project updateStatusAndDrive(String projectId, String status, String privateDrive)
+            throws ExecutionException, InterruptedException {
+        DocumentReference docRef = db.collection("projects").document(projectId);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+
+        if (document.exists()) {
+            Project existingProject = document.toObject(Project.class);
+
+            if (status != null && !status.isEmpty()) {
+                existingProject.setStatus(status);
+            }
+
+            if (privateDrive != null && !privateDrive.isEmpty()) {
+                existingProject.setPrivateDrive(privateDrive);
+            }
+
+            docRef.set(existingProject);
+
+            // Send notification if status changed to "To Review"
+            if ("To Review".equalsIgnoreCase(status)) {
+                List<String> adminIds = firebaseService.getAllUserIdsByRole("admin");
+                for (String adminId : adminIds) {
+                    Notification notification = new Notification(
+                            adminId,
+                            "project",
+                            "Project '" + existingProject.getTitle() + "' is ready for review.",
+                            projectId,
+                            false,
+                            Timestamp.now());
+                    notificationService.createNotification(notification);
+                }
+            }
+
+            return existingProject;
+        }
+
+        return null;
+    }
+
 }

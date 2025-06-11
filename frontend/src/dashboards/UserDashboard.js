@@ -156,7 +156,7 @@ function UserDashboard() {
                                     } else if (n.type === "task" && n.relatedId) {
                                         window.location.href = `/client-projects/${n.relatedId}/progress`;
                                     } else if (n.type === "payment" && n.relatedId) {
-                                        window.location.href = `/user-projects`;
+                                        window.location.href = `/user-payments`;
                                     }
 
                                 };

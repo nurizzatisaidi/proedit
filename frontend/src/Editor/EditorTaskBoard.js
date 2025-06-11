@@ -17,6 +17,8 @@ const EditorTaskBoard = () => {
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
+    const [showDriveLinkModal, setShowDriveLinkModal] = useState(false);
+    const [finalDriveLink, setFinalDriveLink] = useState("");
     const username = localStorage.getItem("username") || "Editor";
     const [projectTitle, setProjectTitle] = useState("");
 
@@ -316,7 +318,25 @@ const EditorTaskBoard = () => {
                     <div style={{ position: "fixed", bottom: "30px", right: "30px", zIndex: 999 }}>
                         <button
                             className="submit-complete-btn"
-                            onClick={async () => {
+                            onClick={() => setShowDriveLinkModal(true)}
+                        >
+                            Project Completed (To Review)
+                        </button>
+                    </div>
+                )}
+
+
+                {showDriveLinkModal && (
+                    <div className="popup-overlay">
+                        <div className="popup-content">
+                            <h2>Submit Final Drive Link</h2>
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (!finalDriveLink) {
+                                    showToastMessage("Please enter a valid Drive link.");
+                                    return;
+                                }
+
                                 try {
                                     const res = await fetch(`${BASE_URL}/api/projects/${projectId}`);
                                     const data = await res.json();
@@ -326,28 +346,46 @@ const EditorTaskBoard = () => {
                                         return;
                                     }
 
-                                    const updateRes = await fetch(`${BASE_URL}/api/projects/update-status/${projectId}`, {
+                                    const updateRes = await fetch(`${BASE_URL}/api/projects/update/${projectId}`, {
                                         method: "PUT",
                                         headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ status: "To Review" }),
+                                        body: JSON.stringify({
+                                            status: "To Review",
+                                            privateDrive: finalDriveLink
+                                        }),
                                     });
 
                                     if (updateRes.ok) {
-                                        showToastMessage("Project marked as 'To Review'");
+                                        showToastMessage("Project marked as 'To Review' with final link");
+                                        setShowDriveLinkModal(false);
+                                        setFinalDriveLink("");
                                     } else {
-                                        showToastMessage("Failed to update status. Please try again.");
+                                        showToastMessage("Failed to update project. Please try again.");
                                     }
                                 } catch (err) {
-                                    console.error("Failed to update project status:", err);
-                                    showToastMessage("Failed to update status. Please try again.");
+                                    console.error("Error submitting final link:", err);
+                                    showToastMessage("Error occurred. Try again.");
                                 }
-                            }}
-
-                        >
-                            Project Completed (To Review)
-                        </button>
+                            }}>
+                                <div className="form-group">
+                                    <label>Final Google Drive Link:</label>
+                                    <input
+                                        type="url"
+                                        value={finalDriveLink}
+                                        onChange={(e) => setFinalDriveLink(e.target.value)}
+                                        placeholder="https://drive.google.com/..."
+                                        required
+                                    />
+                                </div>
+                                <div className="popup-buttons">
+                                    <button type="button" className="cancel-btn" onClick={() => setShowDriveLinkModal(false)}>Cancel</button>
+                                    <button type="submit" className="add-btn">Submit</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 )}
+
 
                 {showToast && (
                     <div className="custom-toast">{toastMessage}</div>

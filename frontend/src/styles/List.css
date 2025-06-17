@@ -599,6 +599,48 @@
     }
 }
 
+@media (max-width: 900px) {
+    .list-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .list-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-top: 10px;
+        gap: 10px;
+    }
+
+    .list-actions button {
+        flex: 1 1 calc(50% - 10px);
+        /* two buttons per row */
+        min-width: 120px;
+    }
+
+    .list-title {
+        font-size: 18px;
+        word-break: break-word;
+    }
+
+    .list-details p {
+        font-size: 14px;
+    }
+
+    .search-input,
+    .project-filter-dropdown {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+
 @keyframes fadeInOut {
     0% {
         opacity: 0;

@@ -336,3 +336,60 @@
         transform: rotate(360deg);
     }
 }
+
+@media (max-width: 1024px) {
+    .chat-layout-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .chat-list-panel {
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .chat-view-panel {
+        width: 100%;
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+
+    .chat-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-bottom: 55px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+
+    .taskboard-btn {
+        align-self: flex-end;
+        width: fit-content;
+        margin-top: 5px;
+    }
+
+
+    .chat-input {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .chat-input input[type="text"] {
+        width: 100%;
+    }
+
+    .chat-input button,
+    .file-label {
+        width: 100%;
+    }
+
+    .chat-message {
+        max-width: 90%;
+    }
+}

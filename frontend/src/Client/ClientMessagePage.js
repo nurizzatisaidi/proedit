@@ -48,7 +48,7 @@ function ClientMessagePage() {
     }, [userId, BASE_URL]);
 
     const fetchMessages = useCallback(async () => {
-        setIsMessageLoading(true);
+        // setIsMessageLoading(true);
         try {
             const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
@@ -131,7 +131,10 @@ function ClientMessagePage() {
                 body: JSON.stringify(payload),
             });
 
-            setTimeout(fetchMessages, 300);
+            setTimeout(() => {
+                fetchMessages(); // manually refresh, but...
+            }, 300);
+
         } catch (err) {
             console.error("Failed to send message:", err);
         } finally {

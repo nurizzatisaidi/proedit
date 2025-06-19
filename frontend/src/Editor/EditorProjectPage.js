@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FaHome, FaFolder, FaComments, FaBell, FaEye, FaTasks } from "react-icons/fa";
 import "../styles/List.css";
+import "../styles/ProjectPage.css";
 
 function EditorProjectsPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;

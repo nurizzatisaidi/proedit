@@ -65,7 +65,7 @@
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: none;
+    max-width: 800px;
 }
 
 
@@ -84,7 +84,7 @@
 }
 
 .form-group input {
-    width: 80%;
+    width: 100%;
     max-width: 650px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -111,5 +111,56 @@
     .profile-form {
         width: 100%;
         max-width: 100%;
+    }
+}
+
+/* Add this at the bottom of ProfilePage.css */
+@media screen and (max-width: 1024px) {
+    .profile-page {
+        flex-direction: column;
+        padding: 1rem;
+        align-items: center;
+    }
+
+    .profile-card,
+    .profile-form {
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
+
+    .form-group input {
+        /* width: 100%; */
+        max-width: 350px;
+    }
+
+    .profile-form {
+        padding: 1.5rem;
+    }
+
+    .save-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profile-card {
+        padding: 1.2rem;
+    }
+
+    .profile-form {
+        padding: 1.2rem;
+    }
+
+    .form-group input {
+        font-size: 14px;
+        padding: 8px;
+        max-width: 320px;
+    }
+
+    .save-btn {
+        font-size: 14px;
+        padding: 10px;
     }
 }

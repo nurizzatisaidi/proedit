@@ -45,7 +45,7 @@ function EditorMessagePage() {
 
     const fetchMessages = useCallback(async () => {
         if (!chatId) return;
-        setIsMessageLoading(true);
+        // setIsMessageLoading(true);
         try {
             const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
@@ -133,7 +133,10 @@ function EditorMessagePage() {
                 body: JSON.stringify(payload),
             });
 
-            setTimeout(fetchMessages, 300);
+            setTimeout(() => {
+                fetchMessages(); // manually refresh, but...
+            }, 300);
+
         } catch (error) {
             console.error("Error sending message:", error);
         } finally {
@@ -151,10 +154,18 @@ function EditorMessagePage() {
     };
 
 
-    const getOtherUserName = (chat) => {
-        const others = chat.participantUsernames?.filter(name => name !== username);
-        return others?.join(", ") || "Chat";
+    const getChatDisplayName = (chat) => {
+        if (!chat) return "Chat";
+
+        const participantCount = chat.participantUsernames?.length || 0;
+        // If group chat (3 or more), show project title
+        if (participantCount >= 3 && chat.projectTitle) {
+            return chat.projectTitle;
+        }
+        // Otherwise show other user's name
+        return chat.participantUsernames?.find(name => name !== username) || "Chat";
     };
+
 
 
     useEffect(() => {
@@ -196,7 +207,7 @@ function EditorMessagePage() {
                                 >
                                     <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
                                     <div className="chat-user-info">
-                                        <p className="chat-project-title">{getOtherUserName(chat)}</p>
+                                        <p className="chat-project-title">{getChatDisplayName(chat)}</p>
                                         <p className="chat-participants-preview">{chat.participantUsernames?.join(", ")}</p>
                                     </div>
                                 </div>
@@ -211,7 +222,7 @@ function EditorMessagePage() {
                                 <div className="spinner" />
                             ) : (
                                 <>
-                                    <h2>{getOtherUserName(activeChat)}</h2>
+                                    <h2>{getChatDisplayName(activeChat)}</h2>
                                     {activeChat?.projectId && (
                                         <button
                                             className="taskboard-btn"

@@ -18,7 +18,7 @@ function AdminMessagePage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [isChatListLoading, setIsChatListLoading] = useState(true);
-    const [isMessageLoading, setIsMessageLoading] = useState(true);
+    const [isMessageLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
@@ -42,7 +42,7 @@ function AdminMessagePage() {
 
 
     const fetchMessages = useCallback(async () => {
-        setIsMessageLoading(true);
+        // setIsMessageLoading(true);
         try {
             const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
@@ -50,7 +50,7 @@ function AdminMessagePage() {
         } catch (error) {
             console.error("Error fetching chat messages: ", error);
         } finally {
-            setIsMessageLoading(false);
+            // setIsMessageLoading(false);
         }
     }, [BASE_URL, chatId]);
 
@@ -96,7 +96,11 @@ function AdminMessagePage() {
                 body: JSON.stringify(payload),
             });
 
-            setTimeout(fetchMessages, 300);
+            setTimeout(() => {
+                fetchMessages(); // manually refresh, but...
+            }, 300);
+
+
         } catch (error) {
             console.error("Error sending message:", error);
         } finally {
@@ -140,9 +144,22 @@ function AdminMessagePage() {
         return content;
     };
 
-    const getOtherParticipantName = (chat) => {
-        if (!chat || !chat.participantUsernames) return "Chat";
-        return chat.participantUsernames.find(name => name !== username) || "Chat";
+    // const getOtherParticipantName = (chat) => {
+    //     if (!chat || !chat.participantUsernames) return "Chat";
+    //     return chat.participantUsernames.find(name => name !== username) || "Chat";
+    // };
+    const getChatDisplayName = (chat) => {
+        if (!chat) return "Chat";
+
+        const participantCount = chat.participantUsernames?.length || 0;
+
+        // If 3 or more participants, use project title
+        if (participantCount >= 3 && chat.projectTitle) {
+            return chat.projectTitle;
+        }
+
+        // Otherwise, return the other user's name
+        return chat.participantUsernames?.find(name => name !== username) || "Chat";
     };
 
     return (
@@ -166,7 +183,7 @@ function AdminMessagePage() {
                                 >
                                     <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
                                     <div className="chat-user-info">
-                                        <p className="chat-project-title">{getOtherParticipantName(chat)}</p>
+                                        <p className="chat-project-title">{getChatDisplayName(chat)}</p>
                                         <p className="chat-participants-preview">{chat.participantUsernames?.join(", ")}</p>
                                     </div>
                                 </div>
@@ -181,7 +198,7 @@ function AdminMessagePage() {
                                 <div className="spinner" />
                             ) : (
                                 <>
-                                    <h2>{getOtherParticipantName(activeChat)}</h2>
+                                    <h2>{getChatDisplayName(activeChat)}</h2>
                                     {activeChat?.projectId && (
                                         <button
                                             className="taskboard-btn"

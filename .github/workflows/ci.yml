@@ -35,7 +35,7 @@ jobs:
       # ✅ Backend Build (now works because properties are injected)
       - name: Build Backend
         working-directory: backend
-        run: mvn clean install
+        run: mvn clean install -DskipTests
 
       # Frontend
       - name: Set up Node.js

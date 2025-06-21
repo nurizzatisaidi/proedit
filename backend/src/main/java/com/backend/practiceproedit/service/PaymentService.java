@@ -1,5 +1,13 @@
 package com.backend.practiceproedit.service;
 
+import com.paypal.orders.*;
+import com.paypal.http.HttpResponse;
+import com.paypal.http.exceptions.HttpException;
+import com.paypal.http.serializer.Json;
+import org.springframework.http.HttpStatus;
+import com.paypal.core.PayPalHttpClient;
+import com.paypal.core.PayPalEnvironment;
+
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
@@ -29,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.cloud.firestore.Query;
 
@@ -38,13 +47,14 @@ public class PaymentService {
     @Autowired
     private NotificationService notificationService;
 
-    public String createPayment(Payment payment) throws Exception {
-        Firestore db = FirestoreClient.getFirestore();
+    @Autowired
+    private PayPalHttpClient payPalHttpClient;
 
+    public Map<String, String> createPayment(Payment payment) throws Exception {
+        Firestore db = FirestoreClient.getFirestore();
         CollectionReference paymentsRef = db.collection("projects")
                 .document(payment.getProjectId())
                 .collection("payments");
-
         DocumentReference newDoc = paymentsRef.document();
         String paymentId = newDoc.getId();
 
@@ -61,10 +71,9 @@ public class PaymentService {
         data.put("status", "pending_client_payment");
         data.put("createdAt", FieldValue.serverTimestamp());
         data.put("privateDrive", payment.getPrivateDrive());
-
         newDoc.set(data).get();
 
-        // 🔔 Create a notification for the client
+        // Create a notification for the client
         Notification notification = new Notification();
         notification.setUserId(payment.getClientId());
         notification.setType("payment");
@@ -74,7 +83,19 @@ public class PaymentService {
         notification.setTimestamp(Timestamp.now());
         notificationService.createNotification(notification);
 
-        return paymentId;
+        // Generate PayPal approval link
+        String currency = "MYR";
+        String approvalLink = createPayPalOrder(paymentId, payment.getAmount(), currency);
+
+        // Optional: store it in Firestore
+        newDoc.update("paypalApprovalUrl", approvalLink);
+
+        // Return both
+        Map<String, String> response = new HashMap<>();
+        response.put("paymentId", paymentId);
+        response.put("paypalApprovalUrl", approvalLink);
+
+        return response;
     }
 
     public Map<String, Object> getLatestPaymentForProject(String projectId) throws Exception {
@@ -260,6 +281,30 @@ public class PaymentService {
         }
 
         return total;
+    }
+
+    public String createPayPalOrder(String paymentId, double amount, String currency) throws Exception {
+        OrdersCreateRequest request = new OrdersCreateRequest();
+        request.header("prefer", "return=representation");
+        request.requestBody(new OrderRequest()
+                .checkoutPaymentIntent("CAPTURE")
+                .purchaseUnits(Arrays.asList(new PurchaseUnitRequest()
+                        .referenceId(paymentId)
+                        .amountWithBreakdown(new AmountWithBreakdown()
+                                .currencyCode(currency)
+                                .value(String.format("%.2f", amount))))));
+
+        HttpResponse<Order> response = payPalHttpClient.execute(request);
+
+        String approvalLink = null;
+        for (LinkDescription link : response.result().links()) {
+            if (link.rel().equals("approve")) {
+                approvalLink = link.href();
+                break;
+            }
+        }
+
+        return approvalLink; // You can return this to frontend to let client make the payment
     }
 
 }

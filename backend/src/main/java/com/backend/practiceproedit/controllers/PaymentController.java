@@ -1,5 +1,6 @@
 package com.backend.practiceproedit.controllers;
 
+import org.springframework.http.HttpStatus;
 import com.backend.practiceproedit.model.Payment;
 import com.backend.practiceproedit.service.PaymentService;
 import com.backend.practiceproedit.service.ProjectService;
@@ -34,13 +35,12 @@ public class PaymentController {
     private NotificationService notificationService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createPayment(@RequestBody Payment payment) {
+    public ResponseEntity<Map<String, String>> createPayment(@RequestBody Payment payment) {
         try {
-            String paymentId = paymentService.createPayment(payment);
-            return ResponseEntity.ok(paymentId);
+            Map<String, String> result = paymentService.createPayment(payment);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Failed to create payment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

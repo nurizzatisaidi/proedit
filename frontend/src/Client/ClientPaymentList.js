@@ -67,62 +67,61 @@ function ClientPaymentList() {
 
     useEffect(() => {
         if (showPayPal && selectedPayment) {
-            const interval = setInterval(() => {
-                if (window.paypal) {
+            const checkAndRenderButton = () => {
+                if (window.paypal && window.paypal.Buttons) {
                     const container = document.getElementById("paypal-button-container");
                     if (container) {
-                        container.innerHTML = "";
+                        container.innerHTML = ""; // Clear existing buttons
+                        window.paypal.Buttons({
+                            createOrder: (data, actions) => {
+                                return actions.order.create({
+                                    purchase_units: [{
+                                        description: selectedPayment.description || "Project Payment",
+                                        amount: {
+                                            currency_code: "MYR",
+                                            value: selectedPayment.amount.toFixed(2),
+                                        },
+                                    }],
+                                });
+                            },
+                            onApprove: async (data, actions) => {
+                                const order = await actions.order.capture();
+                                const transactionId = order.id;
+
+                                const res = await fetch(`${BASE_URL}/api/payments/confirm`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        paymentId: selectedPayment.paymentId,
+                                        projectId: selectedPayment.projectId,
+                                        paypalTransactionId: transactionId,
+                                    }),
+                                });
+
+                                if (res.ok) {
+                                    showToastMessage("Payment successful!");
+                                    setShowPayPal(false);
+                                    fetchClientPayments();
+                                } else {
+                                    showToastMessage("Failed to confirm payment.");
+                                }
+                            },
+                            onError: (err) => {
+                                console.error("PayPal error:", err);
+                                showToastMessage("There was an error processing the payment.");
+                            },
+                        }).render("#paypal-button-container");
                     }
-
-                    window.paypal.Buttons({
-                        createOrder: function (data, actions) {
-                            return actions.order.create({
-                                purchase_units: [{
-                                    description: selectedPayment.description || "Project Payment",
-                                    amount: {
-                                        currency_code: "MYR",
-                                        value: selectedPayment.amount.toFixed(2),
-                                    }
-                                }]
-                            });
-                        },
-                        onApprove: async function (data, actions) {
-                            const order = await actions.order.capture();
-                            const transactionId = order.id;
-
-                            const res = await fetch(`${BASE_URL}/api/payments/confirm`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    paymentId: selectedPayment.paymentId,
-                                    projectId: selectedPayment.projectId,
-                                    paypalTransactionId: transactionId,
-                                }),
-                            });
-
-                            if (res.ok) {
-                                showToastMessage("Payment successful!");
-                                setShowPayPal(false);
-                                fetchClientPayments();
-                            } else {
-                                showToastMessage("Failed to confirm payment.");
-                            }
-
-                        },
-                        onError: function (err) {
-                            console.error("PayPal error:", err);
-                            showToastMessage("There was an error processing the payment.");
-                        }
-
-                    }).render("#paypal-button-container");
-
-                    clearInterval(interval);
+                } else {
+                    setTimeout(checkAndRenderButton, 300); // Retry after 300ms
                 }
-            }, 300);
+            };
 
-            return () => clearInterval(interval);
+            checkAndRenderButton();
         }
     }, [showPayPal, selectedPayment, fetchClientPayments, BASE_URL]);
+
+
 
     const showToastMessage = (message) => {
         setToastMessage(message);

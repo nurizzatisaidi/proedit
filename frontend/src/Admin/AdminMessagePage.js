@@ -18,7 +18,7 @@ function AdminMessagePage() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [isChatListLoading, setIsChatListLoading] = useState(true);
-    const [isMessageLoading] = useState(true);
+    const [isMessageLoading, setIsMessageLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
@@ -42,7 +42,7 @@ function AdminMessagePage() {
 
 
     const fetchMessages = useCallback(async () => {
-        // setIsMessageLoading(true);
+        setIsMessageLoading(true);
         try {
             const response = await fetch(`${BASE_URL}/api/messages/chat/${chatId}`);
             const data = await response.json();
@@ -50,7 +50,7 @@ function AdminMessagePage() {
         } catch (error) {
             console.error("Error fetching chat messages: ", error);
         } finally {
-            // setIsMessageLoading(false);
+            setIsMessageLoading(false);
         }
     }, [BASE_URL, chatId]);
 

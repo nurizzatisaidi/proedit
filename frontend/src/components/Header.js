@@ -105,13 +105,13 @@ const Header = () => {
                                 <li onClick={() => navigate("/profile")}>
                                     <FaUser /> My Profile
                                 </li>
-                                <li onClick={() => navigate("/settings")}>
+                                <li onClick={() => navigate("/work-in-progress")}>
                                     <FaCog /> Settings
                                 </li>
-                                <li onClick={() => navigate("/change-password")}>
+                                <li onClick={() => navigate("/work-in-progress")}>
                                     <FaKey /> Change Password
                                 </li>
-                                <li onClick={() => navigate("/help")}>
+                                <li onClick={() => navigate("/work-in-progress")}>
                                     <FaQuestionCircle /> Help & Support
                                 </li>
                                 <li onClick={handleLogoutRequest} className="logout-option">

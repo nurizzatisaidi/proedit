@@ -9,7 +9,7 @@ const Sidebar = ({ isOpen, toggleSidebar, menuItems }) => {
 
     const completeMenuItems = [
         ...menuItems,
-        { name: 'Settings', icon: <FaCog className="menu-icon" />, path: '/settings' },
+        { name: 'Settings', icon: <FaCog className="menu-icon" />, path: '/work-in-progress' },
     ];
 
     return (

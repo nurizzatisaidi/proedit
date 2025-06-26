@@ -19,7 +19,7 @@ const TaskProgressBoard = () => {
     const [projectTitle, setProjectTitle] = useState("");
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
     const [projectDetails, setProjectDetails] = useState({});
-    const [privateDrive, setPrivateDrive] = useState("");
+    // const [privateDrive, setPrivateDrive] = useState("");
     const [paymentExists, setPaymentExists] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
@@ -142,16 +142,16 @@ const TaskProgressBoard = () => {
                             });
 
                             if (res.ok) {
-                                alert("Payment successful!");
                                 setShowPayPal(false);
+                                showToastWithTimeout("✅ Payment successful!");
                                 checkPaymentExists(); // refresh payment status
                             } else {
-                                alert("Failed to confirm payment.");
+                                showToastWithTimeout("❌ Failed to confirm payment.");
                             }
                         },
                         onError: (err) => {
                             console.error("PayPal error:", err);
-                            alert("Error processing PayPal payment.");
+                            showToastWithTimeout("❌ Error processing PayPal payment.");
                         }
                     }).render("#paypal-button-taskprogress");
 
@@ -197,7 +197,7 @@ const TaskProgressBoard = () => {
             editorUsername: projectDetails.editorUsername,
             amount: totalAmount,
             description: formattedDescription,
-            privateDrive: privateDrive
+            // privateDrive: privateDrive
         };
 
         try {
@@ -210,10 +210,10 @@ const TaskProgressBoard = () => {
             });
 
             if (res.ok) {
-                alert("Payment issued successfully!");
                 setShowPaymentPopup(false);
+                showToastWithTimeout("✅ Payment invoice issued successfully!");
             } else {
-                alert("Failed to issue payment.");
+                showToastWithTimeout("❌ Failed to issue payment.");
             }
         } catch (err) {
             console.error("Error creating payment:", err);
@@ -221,7 +221,7 @@ const TaskProgressBoard = () => {
         }
     }, [
         lineItems,
-        privateDrive,
+        // privateDrive,
         projectDetails.projectId,
         projectDetails.title,
         projectDetails.userId,
@@ -373,7 +373,7 @@ const TaskProgressBoard = () => {
 
                             <p style={{ marginTop: "10px", fontWeight: "bold" }}>Total: RM {totalAmount.toFixed(2)}</p>
 
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label>Final Drive Link:</label>
                                 <input
                                     type="text"
@@ -381,7 +381,7 @@ const TaskProgressBoard = () => {
                                     onChange={(e) => setPrivateDrive(e.target.value)}
                                     placeholder="https://drive.google.com/..."
                                 />
-                            </div>
+                            </div> */}
 
                             <div className="popup-buttons">
                                 <button className="cancel-btn" onClick={() => setShowPaymentPopup(false)}>Cancel</button>

@@ -36,7 +36,7 @@ function ClientPaymentList() {
             const allPayments = [];
 
             for (const project of projects) {
-                const paymentRes = await fetch(`${BASE_URL}/api/payments/project/${project.projectId}/all`);
+                const paymentRes = await fetch(`${BASE_URL}/api/payments/project/${project.projectId}`);
                 if (paymentRes.ok) {
                     const paymentsData = await paymentRes.json();
                     allPayments.push(...paymentsData);

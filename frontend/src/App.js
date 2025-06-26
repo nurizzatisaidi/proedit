@@ -28,6 +28,7 @@ import ClientNotificationList from './Client/ClientNotificationList';
 import AdminNotificationList from './Admin/AdminNotificationList';
 import EditorNotificationList from './Editor/EditorNotificationList';
 import ConnectionStatusBanner from './components/ConnectionStatusProvider';
+import WorkInProgressPage from './WorkInProgressPage';
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
         <Route path="/client-notifications" element={<ClientNotificationList />} />
         <Route path="/admin-notifications" element={<AdminNotificationList />} />
         <Route path="/editor-notifications" element={<EditorNotificationList />} />
+        <Route path="/work-in-progress" element={<WorkInProgressPage />} />
       </Routes>
     </Router>
   );

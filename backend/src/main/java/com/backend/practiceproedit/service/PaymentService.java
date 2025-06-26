@@ -307,4 +307,30 @@ public class PaymentService {
         return approvalLink; // You can return this to frontend to let client make the payment
     }
 
+    public List<Map<String, Object>> getPaymentsByProjectId(String projectId) throws Exception {
+        Firestore db = FirestoreClient.getFirestore();
+        List<Map<String, Object>> enrichedPayments = new ArrayList<>();
+
+        // Get project details
+        DocumentSnapshot projectSnapshot = db.collection("projects").document(projectId).get().get();
+        String privateDrive = projectSnapshot.contains("privateDrive") ? projectSnapshot.getString("privateDrive")
+                : null;
+        String projectTitle = projectSnapshot.contains("title") ? projectSnapshot.getString("title") : null;
+
+        // Get all payments
+        CollectionReference paymentsRef = db.collection("projects").document(projectId).collection("payments");
+        List<QueryDocumentSnapshot> paymentDocs = paymentsRef.get().get().getDocuments();
+
+        for (QueryDocumentSnapshot doc : paymentDocs) {
+            Map<String, Object> payment = doc.getData();
+            payment.put("paymentId", doc.getId());
+            payment.put("projectId", projectId);
+            payment.put("projectTitle", projectTitle); // optional
+            payment.put("privateDrive", privateDrive); // ✅ add this here
+            enrichedPayments.add(payment);
+        }
+
+        return enrichedPayments;
+    }
+
 }

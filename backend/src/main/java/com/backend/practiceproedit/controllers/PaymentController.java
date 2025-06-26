@@ -188,4 +188,14 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<List<Map<String, Object>>> getPaymentsByProject(@PathVariable String projectId) {
+        try {
+            List<Map<String, Object>> payments = paymentService.getPaymentsByProjectId(projectId);
+            return ResponseEntity.ok(payments);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

@@ -1,0 +1,43 @@
+.accept-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.accept-request-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.accept-request-form label {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.radio-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 4px;
+}
+
+.radio-options label {
+    font-weight: normal;
+}
+
+.accept-request-form textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.accept-request-form select {
+    height: 38px;
+    font-size: 15px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.basic-multi-select {
+    margin-top: 6px;
+    font-size: 15px;
+    width: 48.5%;
+}

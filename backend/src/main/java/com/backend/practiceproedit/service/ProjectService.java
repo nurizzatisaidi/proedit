@@ -59,7 +59,9 @@ public class ProjectService {
 
     // Method to get the Project by editor's Id
     public List<Project> getProjectsByEditorId(String editorId) throws ExecutionException, InterruptedException {
-        Query query = db.collection("projects").whereEqualTo("editorId", editorId);
+        // Query query = db.collection("projects").whereEqualTo("editorId", editorId);
+        Query query = db.collection("projects").whereArrayContains("editorIds", editorId);
+
         ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
@@ -120,8 +122,12 @@ public class ProjectService {
                 existingProject.setDuration(updatedProject.getDuration());
             if (updatedProject.getNotes() != null)
                 existingProject.setNotes(updatedProject.getNotes());
-            if (updatedProject.getEditorUsername() != null)
-                existingProject.setEditorUsername(updatedProject.getEditorUsername());
+            // if (updatedProject.getEditorUsername() != null)
+            // existingProject.setEditorUsername(updatedProject.getEditorUsername());
+            if (updatedProject.getEditorUsernames() != null)
+                existingProject.setEditorUsernames(updatedProject.getEditorUsernames());
+            if (updatedProject.getEditorIds() != null)
+                existingProject.setEditorIds(updatedProject.getEditorIds());
             if (updatedProject.getStatus() != null)
                 existingProject.setStatus(updatedProject.getStatus());
             if (updatedProject.getSharedDrive() != null)
@@ -149,20 +155,56 @@ public class ProjectService {
         return editorDoc.exists() ? editorDoc.getString("name") : null;
     }
 
+    // public Project createProject(Project newProject) throws ExecutionException,
+    // InterruptedException {
+    // String clientUsername = findUsernameByUserId(newProject.getUserId());
+    // String editorUsername = findUsernameByEditorId(newProject.getEditorId());
+
+    // System.out.println("Client Username: " + clientUsername + ", Editor Username:
+    // " + editorUsername);
+
+    // newProject.setUsername(clientUsername);
+    // newProject.setEditorUsername(editorUsername);
+    // newProject.setStatus("In Progress");
+
+    // DocumentReference docRef = db.collection("projects").document();
+    // newProject.setProjectId(docRef.getId());
+    // ApiFuture<WriteResult> result = docRef.set(newProject);
+    // result.get();
+    // return newProject;
+    // }
     public Project createProject(Project newProject) throws ExecutionException, InterruptedException {
+        // Get client's username
         String clientUsername = findUsernameByUserId(newProject.getUserId());
-        String editorUsername = findUsernameByEditorId(newProject.getEditorId());
-
-        System.out.println("Client Username: " + clientUsername + ", Editor Username: " + editorUsername);
-
         newProject.setUsername(clientUsername);
-        newProject.setEditorUsername(editorUsername);
+
+        // Prepare list of editor usernames
+        List<String> editorIds = newProject.getEditorIds(); // Must be set from frontend
+        List<String> editorUsernames = new ArrayList<>();
+
+        if (editorIds != null) {
+            for (String editorId : editorIds) {
+                String name = findUsernameByEditorId(editorId);
+                if (name != null) {
+                    editorUsernames.add(name);
+                } else {
+                    editorUsernames.add("Unknown Editor");
+                }
+            }
+        }
+
+        newProject.setEditorUsernames(editorUsernames);
+
+        // Set initial status and project ID
         newProject.setStatus("In Progress");
 
         DocumentReference docRef = db.collection("projects").document();
         newProject.setProjectId(docRef.getId());
+
+        // Save to Firestore
         ApiFuture<WriteResult> result = docRef.set(newProject);
         result.get();
+
         return newProject;
     }
 
@@ -182,12 +224,28 @@ public class ProjectService {
     }
 
     // Method to create chat when project is assigned
-    public String createChat(String projectId, String adminId, String editorId, String clientId) {
+    // public String createChat(String projectId, String adminId, String editorId,
+    // String clientId) {
+    // DocumentReference chatRef = db.collection("chats").document();
+    // Map<String, Object> chat = new HashMap<>();
+    // chat.put("chatId", chatRef.getId());
+    // chat.put("participants", Arrays.asList(adminId, editorId, clientId));
+    // chat.put("createdDate", Timestamp.now());
+    // chatRef.set(chat);
+    // return chatRef.getId();
+    // }
+    public String createChat(String projectId, String adminId, List<String> editorIds, String clientId) {
         DocumentReference chatRef = db.collection("chats").document();
         Map<String, Object> chat = new HashMap<>();
+
+        List<String> participants = new ArrayList<>(editorIds);
+        participants.add(adminId);
+        participants.add(clientId);
+
         chat.put("chatId", chatRef.getId());
-        chat.put("participants", Arrays.asList(adminId, editorId, clientId));
+        chat.put("participants", participants);
         chat.put("createdDate", Timestamp.now());
+
         chatRef.set(chat);
         return chatRef.getId();
     }

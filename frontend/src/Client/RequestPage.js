@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaPlus, FaEye, FaTrash, FaMoneyBillWave, FaRobot } from "react-icons/fa";
 import "../styles/RequestPage.css";
 import "../styles/List.css";
+import "../styles/createNewRequest.css";
 
 function RequestPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -343,7 +344,7 @@ function RequestPage() {
 
                                     <div className="form-group">
                                         <label className="form-label">Video Type:</label>
-                                        <select name="videoType" value={formData.videoType} onChange={handleChange} required>
+                                        <select className="form-select-large" name="videoType" value={formData.videoType} onChange={handleChange} required>
                                             <option value="">Select Video Type</option>
                                             {videoTypes.map((type) => (
                                                 <option key={type} value={type}>{type}</option>

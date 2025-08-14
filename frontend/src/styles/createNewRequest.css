@@ -1,0 +1,175 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    width: 600px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.popup-content h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 15px;
+    margin-top: 10px;
+}
+
+.form-group-title {
+    display: flex;
+    margin-left: 30px;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-right: 15px;
+}
+
+.form-group-title input {
+    flex: 1;
+    margin-left: 10px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    padding-right: 32px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.form-label {
+    font-weight: bold;
+    width: 180px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+.form-group label {
+    font-weight: bold;
+    width: 100px;
+    text-align: left;
+    padding-right: 15px;
+}
+
+
+.form-group-edit input,
+.form-group-edit textarea,
+.form-group-edit select {
+    width: 440px;
+    box-sizing: border-box;
+}
+
+.form-group-edit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-group-edit label {
+    font-weight: bold;
+    width: 100px;
+    text-align: left;
+}
+
+
+.form-nonedit span {
+    font-weight: bold;
+    margin-right: 10px;
+    width: 90px;
+    display: inline-block;
+}
+
+.form-select-large {
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+input,
+select,
+textarea {
+    width: 400px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+
+}
+
+.ai-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #007bff;
+    transition: color 0.3s;
+}
+
+.ai-icon:hover {
+    color: #0056b3;
+}
+
+.create-request-btn {
+    background-color: #2a6cff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.create-request-btn:hover {
+    background-color: #1d5ae6;
+}
+
+.suggestions-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 1px;
+    margin-left: 100px;
+    margin-bottom: 20px;
+    /* Align with input field start (same as label width) */
+    width: 400px;
+    /* Same as input field width */
+    border-radius: 6px;
+}
+
+.suggestion-list {
+    list-style: none;
+    padding-left: 10px;
+    margin: 0;
+}
+
+.suggestion-list li {
+    font-size: 15px;
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-list li:hover {
+    background-color: #e0f4ff;
+}

@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Select from 'react-select';
 import { FaHome, FaFileAlt, FaFolder, FaComments, FaBell, FaTrash, FaEye, FaUser, FaUsers, FaCheck, FaTimes, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/List.css";
-
+import '../styles/AcceptRequestForm.css';
 function AdminRequestPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -18,6 +19,8 @@ function AdminRequestPage() {
     const [showRejectPopup, setShowRejectPopup] = useState(false);
     const [adminComment, setAdminComment] = useState("");
     const [assignedEditor, setAssignedEditor] = useState("");
+    const [assignMode, setAssignMode] = useState("single");
+    const [assignedEditors, setAssignedEditors] = useState([]);
     const [rejectionReason, setRejectionReason] = useState("");
     const [editors, setEditors] = useState([]);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -87,19 +90,36 @@ function AdminRequestPage() {
         fetchEditors();
     }, [fetchRequests, fetchEditors]);
 
-    // Handling Accepted Request
     const handleAcceptRequest = async () => {
-        if (!adminComment.trim()) {
+        if (!adminComment.trimEnd()) {
             showToastMessage("Please enter an admin comment.");
             return;
         }
-        if (!assignedEditor) {
+        if (assignMode === "single" && !assignedEditor) {
             showToastMessage("Please select an editor.");
+            return;
+        }
+        if (assignMode === "multiple" && assignedEditors.length === 0) {
+            showToastMessage("Please select at least one editor.");
             return;
         }
 
         const adminUserId = localStorage.getItem("userId");
 
+        let editorIdsToSend = [];
+        let editorUsernamesToSend = [];
+
+        if (assignMode === "single") {
+            const selected = editors.find(e => e.userId === assignedEditor);
+            editorIdsToSend = [assignedEditor];
+            editorUsernamesToSend = [selected?.name || "Unknown"];
+        } else {
+            editorIdsToSend = assignedEditors;
+            editorUsernamesToSend = assignedEditors.map(id => {
+                const editor = editors.find(e => e.userId === id);
+                return editor?.name || "Unknown";
+            });
+        }
 
         try {
             const response = await fetch(`${BASE_URL}/api/requests/process/${selectedRequest.requestId}`, {
@@ -108,14 +128,14 @@ function AdminRequestPage() {
                 body: JSON.stringify({
                     status: "Accepted",
                     comment: adminComment,
-                    editorId: assignedEditor,
+                    assignedEditors: editorIdsToSend,
+                    assignedEditorUsernames: editorUsernamesToSend,
                     adminUserId: adminUserId
                 })
             });
 
             if (response.ok) {
                 showToastMessage("Request accepted successfully!");
-
                 setShowAcceptPopup(false);
                 fetchRequests();
             } else {
@@ -123,8 +143,9 @@ function AdminRequestPage() {
             }
         } catch (error) {
             console.error("Error processing request: ", error);
+            showToastMessage("An error occurred while processing the request.");
         }
-    };
+    }
 
     // Handling Rejected Request
     const handleRejectRequest = async () => {
@@ -194,6 +215,11 @@ function AdminRequestPage() {
         setSelectedRequest(request);
         setShowViewPopup(true);
     };
+
+    const editorOptions = editors.map((editor) => ({
+        value: editor.userId,
+        label: editor.name,
+    }));
 
     const filteredRequests = requests.filter((req) => {
         const matchesStatus = filterStatus === "All" || req.status === filterStatus;
@@ -363,15 +389,70 @@ function AdminRequestPage() {
                             <label>Admin Comment:</label>
                             <textarea value={adminComment} onChange={(e) => setAdminComment(e.target.value)} />
                         </div>
+                        {/* Assign Mode */}
                         <div className="form-group">
-                            <label>Assign Editor:</label>
-                            <select value={assignedEditor} onChange={(e) => setAssignedEditor(e.target.value)}>
-                                <option value="">Select Editor</option>
-                                {editors.map((editor) => (
-                                    <option key={editor.userId} value={editor.userId}>{editor.name}</option>
-                                ))}
-                            </select>
+                            <label className="form-label">Assign Mode:</label>
+                            <div className="radio-options">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="assignMode"
+                                        value="single"
+                                        checked={assignMode === "single"}
+                                        onChange={() => setAssignMode("single")}
+                                    />{" "}
+                                    Single Editor
+                                </label>
+                                <label style={{ marginLeft: "20px" }}>
+                                    <input
+                                        type="radio"
+                                        name="assignMode"
+                                        value="multiple"
+                                        checked={assignMode === "multiple"}
+                                        onChange={() => setAssignMode("multiple")}
+                                    />{" "}
+                                    Multiple Editors
+                                </label>
+                            </div>
                         </div>
+
+                        {/* Editor Selection */}
+                        <div className="form-group">
+                            <label className="form-label">
+                                {assignMode === "single" ? "Select Editor:" : "Select Editors:"}
+                            </label>
+
+                            {assignMode === "single" ? (
+                                <select
+                                    value={assignedEditor}
+                                    onChange={(e) => setAssignedEditor(e.target.value)}
+                                >
+                                    <option value="">Select Editor</option>
+                                    {editors.map((editor) => (
+                                        <option key={editor.userId} value={editor.userId}>
+                                            {editor.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <Select
+                                    isMulti
+                                    name="editors"
+                                    options={editorOptions}
+                                    className="basic-multi-select"
+                                    classNamePrefix="select"
+                                    value={editorOptions.filter((option) =>
+                                        assignedEditors.includes(option.value)
+                                    )}
+                                    onChange={(selectedOptions) =>
+                                        setAssignedEditors(selectedOptions.map((option) => option.value))
+                                    }
+                                />
+                            )}
+                        </div>
+
+
+
 
                         <div className="popup-buttons">
                             <button className="cancel-btn" onClick={() => setShowAcceptPopup(false)}>Cancel</button>
@@ -432,6 +513,8 @@ function AdminRequestPage() {
                     {toastMessage}
                 </div>
             )}
+
+
 
 
 

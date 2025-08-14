@@ -81,26 +81,64 @@ public class RequestController {
     }
 
     // Process a request (Accept or Reject)
-    @PostMapping("/process/{requestId}")
-    public ResponseEntity<String> processRequest(
-            @PathVariable String requestId,
-            @RequestBody Map<String, String> payload) {
+    // @PostMapping("/process/{requestId}")
+    // public ResponseEntity<String> processRequest(
+    // @PathVariable String requestId,
+    // @RequestBody Map<String, String> payload) {
 
+    // try {
+    // String status = payload.get("status");
+    // String comment = payload.get("comment");
+    // String editorId = payload.get("editorId"); // Might be null for rejection
+    // String adminUserId = payload.get("adminUserId"); // Retrieve the adminUserId
+    // from payload
+
+    // // Debugging logs
+    // System.out.println("Processing requestId: " + requestId);
+    // System.out.println("Status: " + status);
+    // System.out.println("Comment: " + comment);
+    // System.out.println("EditorId: " + editorId);
+    // System.out.println("AdminId: " + adminUserId);
+
+    // // Call RequestService to handle processing
+    // requestService.processRequest(requestId, status, comment, editorId,
+    // adminUserId);
+
+    // return ResponseEntity.ok("Request updated successfully");
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // return ResponseEntity.status(500).body("Error processing request: " +
+    // e.getMessage());
+    // }
+    // }
+
+    @PostMapping("/process/{requestId}")
+    public ResponseEntity<String> processRequest(@PathVariable String requestId,
+            @RequestBody Map<String, Object> payload) {
         try {
-            String status = payload.get("status");
-            String comment = payload.get("comment");
-            String editorId = payload.get("editorId"); // Might be null for rejection
-            String adminUserId = payload.get("adminUserId"); // Retrieve the adminUserId from payload
+            String status = (String) payload.get("status");
+            String comment = (String) payload.get("comment");
+            String adminUserId = (String) payload.get("adminUserId");
+
+            // Updated part: Extract lists
+            List<String> assignedEditors = (List<String>) payload.get("assignedEditors");
+            List<String> assignedEditorUsernames = (List<String>) payload.get("assignedEditorUsernames");
 
             // Debugging logs
             System.out.println("Processing requestId: " + requestId);
             System.out.println("Status: " + status);
             System.out.println("Comment: " + comment);
-            System.out.println("EditorId: " + editorId);
+            System.out.println("Editors: " + assignedEditors);
+            System.out.println("Usernames: " + assignedEditorUsernames);
             System.out.println("AdminId: " + adminUserId);
-
-            // Call RequestService to handle processing
-            requestService.processRequest(requestId, status, comment, editorId, adminUserId);
+            // Call service method
+            requestService.processRequest(
+                    requestId,
+                    status,
+                    comment,
+                    assignedEditors,
+                    // assignedEditorUsernames,
+                    adminUserId);
 
             return ResponseEntity.ok("Request updated successfully");
         } catch (Exception e) {

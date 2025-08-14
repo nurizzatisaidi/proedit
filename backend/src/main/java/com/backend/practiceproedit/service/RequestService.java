@@ -17,6 +17,7 @@ import java.util.List;
 import com.backend.practiceproedit.model.Notification;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import com.google.cloud.firestore.DocumentSnapshot;
 
 @Service
 public class RequestService {
@@ -45,8 +46,8 @@ public class RequestService {
         request.setUsername(username);
 
         request.setAdminComment(null);
-        request.setAssignedEditor(null);
-        request.setAssignedEditorUsername(null);
+        request.setAssignedEditors(null);
+        request.setAssignedEditorUsernames(null);
         request.setRejectionReason(null);
 
         // Validation to check duration is greater than 0
@@ -95,19 +96,41 @@ public class RequestService {
     }
 
     // Get All the requests
+    // public List<Request> getAllRequests() throws ExecutionException,
+    // InterruptedException {
+    // Firestore db = firebaseService.getFirestore();
+
+    // ApiFuture<QuerySnapshot> future = db.collection("requests").get();
+
+    // List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+    // List<Request> requests = new ArrayList<>();
+
+    // for (QueryDocumentSnapshot document : documents) {
+    // requests.add(document.toObject(Request.class));
+    // }
+
+    // return requests;
+    // }
     public List<Request> getAllRequests() throws ExecutionException, InterruptedException {
-        Firestore db = firebaseService.getFirestore();
-
         ApiFuture<QuerySnapshot> future = db.collection("requests").get();
-
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         List<Request> requests = new ArrayList<>();
-
         for (QueryDocumentSnapshot document : documents) {
-            requests.add(document.toObject(Request.class));
-        }
+            Request request = document.toObject(Request.class);
+            request.setRequestId(document.getId());
 
+            // Fetch and attach username if missing
+            if (request.getUserId() != null && request.getUsername() == null) {
+                DocumentSnapshot userDoc = db.collection("users").document(request.getUserId()).get().get();
+                if (userDoc.exists()) {
+                    request.setUsername(userDoc.getString("name"));
+                }
+            }
+
+            requests.add(request);
+        }
         return requests;
+
     }
 
     // Deleting a request
@@ -124,7 +147,8 @@ public class RequestService {
     }
 
     // Process the Request made by Admin
-    public void processRequest(String requestId, String status, String comment, String editorId, String adminUserId)
+    public void processRequest(String requestId, String status, String comment, List<String> editorIds,
+            String adminUserId)
             throws Exception {
         DocumentReference docRef = db.collection("requests").document(requestId);
         Request request = docRef.get().get().toObject(Request.class);
@@ -136,10 +160,14 @@ public class RequestService {
             if ("Accepted".equals(status)) {
                 String username = firebaseService.getUsernameById(request.getUserId());
                 request.setUsername(username);
-                request.setAssignedEditor(editorId);
-                String editorUsername = firebaseService.getUsernameById(editorId);
-                request.setAssignedEditorUsername(editorUsername);
-                request.setAdminUserId(adminUserId); // Set adminUserId in the Request object
+                request.setAssignedEditors(editorIds); // new field in Request model (List<String>)
+
+                List<String> editorUsernames = new ArrayList<>();
+                for (String editorId : editorIds) {
+                    editorUsernames.add(firebaseService.getUsernameById(editorId));
+                }
+                request.setAssignedEditorUsernames(editorUsernames); // new field (List<String>)
+                request.setAdminUserId(adminUserId);
             } else if ("Rejected".equals(status)) {
                 request.setRejectionReason(comment);
             }

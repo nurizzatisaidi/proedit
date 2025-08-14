@@ -9,11 +9,9 @@ public class User {
     private String photoUrl;
     private String phoneNumber;
 
-    // Default constructor
     public User() {
     }
 
-    // Constructor with parameters
     public User(String userId, String name, String email, String password, String role) {
         this.userId = userId;
         this.name = name;

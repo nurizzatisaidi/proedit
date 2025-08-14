@@ -3,6 +3,7 @@ package com.backend.practiceproedit.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.cloud.Timestamp;
+import java.util.List;
 
 public class Request {
     private String requestId;
@@ -15,9 +16,11 @@ public class Request {
     private String notes;
     private String status;
     private String adminComment; // Only for Accepted requests
-    private String assignedEditor; // Only for Accepted requests
+    // private String assignedEditor; // Only for Accepted requests
+    private List<String> assignedEditors;
     private String rejectionReason; // Only for Rejected requests
-    private String assignedEditorUsername; // Only for Accepted requests
+    // private String assignedEditorUsername; // Only for Accepted requests
+    private List<String> assignedEditorUsernames;
     private String adminUserId;
 
     @JsonProperty("createdAt")
@@ -123,13 +126,13 @@ public class Request {
         this.adminComment = adminComment;
     }
 
-    public String getAssignedEditor() {
-        return assignedEditor;
-    }
+    // public String getAssignedEditor() {
+    // return assignedEditor;
+    // }
 
-    public void setAssignedEditor(String assignedEditor) {
-        this.assignedEditor = assignedEditor;
-    }
+    // public void setAssignedEditor(String assignedEditor) {
+    // this.assignedEditor = assignedEditor;
+    // }
 
     public String getRejectionReason() {
         return rejectionReason;
@@ -147,13 +150,13 @@ public class Request {
         this.createdAt = createdAt;
     }
 
-    public String getAssignedEditorUsername() {
-        return assignedEditorUsername;
-    }
+    // public String getAssignedEditorUsername() {
+    // return assignedEditorUsername;
+    // }
 
-    public void setAssignedEditorUsername(String assignedEditorUsername) {
-        this.assignedEditorUsername = assignedEditorUsername;
-    }
+    // public void setAssignedEditorUsername(String assignedEditorUsername) {
+    // this.assignedEditorUsername = assignedEditorUsername;
+    // }
 
     public String getAdminUserId() {
         return adminUserId;
@@ -161,6 +164,22 @@ public class Request {
 
     public void setAdminUserId(String adminUserId) {
         this.adminUserId = adminUserId;
+    }
+
+    public List<String> getAssignedEditors() {
+        return assignedEditors;
+    }
+
+    public void setAssignedEditors(List<String> assignedEditors) {
+        this.assignedEditors = assignedEditors;
+    }
+
+    public List<String> getAssignedEditorUsernames() {
+        return assignedEditorUsernames;
+    }
+
+    public void setAssignedEditorUsernames(List<String> assignedEditorUsernames) {
+        this.assignedEditorUsernames = assignedEditorUsernames;
     }
 
 }

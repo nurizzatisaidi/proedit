@@ -1,5 +1,7 @@
 package com.backend.practiceproedit.model;
 
+import java.util.List;
+
 public class Project {
     private String projectId;
     private String title;
@@ -10,9 +12,12 @@ public class Project {
     private String notes;
     private String userId;
     private String username;
-    private String editorId;
-    private String editorUsername;
+    // private String editorId;
+    private List<String> editorIds;
+    // private String editorUsername;
+    private List<String> editorUsernames;
     private String privateDrive;
+    private String reuqestId;
 
     public Project() {
     }
@@ -81,21 +86,21 @@ public class Project {
         this.username = username;
     }
 
-    public String getEditorId() {
-        return editorId;
-    }
+    // public String getEditorId() {
+    // return editorId;
+    // }
 
-    public void setEditorId(String editorId) {
-        this.editorId = editorId;
-    }
+    // public void setEditorId(String editorId) {
+    // this.editorId = editorId;
+    // }
 
-    public String getEditorUsername() {
-        return editorUsername;
-    }
+    // public String getEditorUsername() {
+    // return editorUsername;
+    // }
 
-    public void setEditorUsername(String editorUsername) {
-        this.editorUsername = editorUsername;
-    }
+    // public void setEditorUsername(String editorUsername) {
+    // this.editorUsername = editorUsername;
+    // }
 
     public String getNotes() {
         return notes;
@@ -111,6 +116,30 @@ public class Project {
 
     public void setPrivateDrive(String privateDrive) {
         this.privateDrive = privateDrive;
+    }
+
+    public List<String> getEditorIds() {
+        return editorIds;
+    }
+
+    public void setEditorIds(List<String> editorIds) {
+        this.editorIds = editorIds;
+    }
+
+    public List<String> getEditorUsernames() {
+        return editorUsernames;
+    }
+
+    public void setEditorUsernames(List<String> editorUsernames) {
+        this.editorUsernames = editorUsernames;
+    }
+
+    public String getReuqestId() {
+        return reuqestId;
+    }
+
+    public void setReuqestId(String reuqestId) {
+        this.reuqestId = reuqestId;
     }
 
 }

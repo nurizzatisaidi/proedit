@@ -82,17 +82,149 @@
 }
 
 .form-group-title input {
-    flex: 1;
-    margin-left: 10px;
-    padding: 12px;
+    width: 113%;
+    margin-left: -40px;
+    padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
     outline: none;
-    padding-right: 32px;
+    padding-right: 35px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+
+
+.form-group label {
+    font-weight: bold;
+    width: 100px;
+    text-align: left;
+
+}
+
+.form-group textarea {
+    font-weight: bold;
+    margin-left: 15px;
+    text-align: left;
+
+}
+
+.form-group select {
+    color: black;
+    margin-left: 15px;
+    padding: 12px;
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+}
+
+.form-note {
+    width: 500px;
+    padding-left: 1px;
+    margin-left: 5%;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.form-group .basic-multi-select {
+    margin-left: 25px;
+    font-size: 16px;
+    color: black;
+}
+
+.basic-multi-select .select__control {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: none;
+    min-height: auto;
+    /* margin-left: 10px; */
+}
+
+.basic-multi-select .select__control--is-focused {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.basic-multi-select .select__control:hover {
+    border-color: #b5b5b5;
+}
+
+.basic-multi-select .select__value-container {
+    padding: 6px 12px;
+    /* similar to your native select padding */
+}
+
+/* Placeholder text */
+.basic-multi-select .select__placeholder {
+    color: #666;
+}
+
+/* Indicators (chevron/clear) */
+.basic-multi-select .select__indicators {
+    padding-right: 8px;
+}
+
+.basic-multi-select .select__indicator {
+    color: #6b7280;
+    padding: 8px;
+}
+
+.basic-multi-select .select__multi-value {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+}
+
+.basic-multi-select .select__multi-value__label {
+    color: #111827;
+    font-size: 14px;
+    padding: 2px 6px;
+}
+
+.basic-multi-select .select__multi-value__remove {
+    color: #6b7280;
+}
+
+.basic-multi-select .select__multi-value__remove:hover {
+    background: transparent;
+    color: #111827;
+}
+
+.basic-multi-select .select__menu {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.basic-multi-select .select__menu-list {
+    padding: 6px 0;
+}
+
+.basic-multi-select .select__option {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.basic-multi-select .select__option--is-focused {
+    background-color: #e0f4ff;
+}
+
+.basic-multi-select .select__option--is-selected {
+    background-color: #cfe8ff;
+    color: #111827;
+}
+
+.basic-multi-select,
+.basic-multi-select .select__control {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .suggestions-box {

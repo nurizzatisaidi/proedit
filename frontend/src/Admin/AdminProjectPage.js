@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Select from "react-select";
 import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave, FaRobot } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
@@ -30,6 +31,7 @@ function AdminProjectPage() {
     const [privateDrive] = useState("");
     const [aiSuggestions, setAiSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [editorMode, setEditorMode] = useState("single");
     const suggestionsRef = useRef(null);
 
 
@@ -40,6 +42,9 @@ function AdminProjectPage() {
         duration: "",
         sharedDrive: "",
         notes: "",
+        userId: "",
+        editorId: "",   // for single
+        editorIds: [],
     });
 
     const showToastMessage = (message) => {
@@ -190,12 +195,29 @@ function AdminProjectPage() {
     const handleCreateProject = async (e) => {
         e.preventDefault();
 
+        const payload = {
+            title: formData.title,
+            videoType: formData.videoType,
+            duration: formData.duration,
+            sharedDrive: formData.sharedDrive,
+            notes: formData.notes,
+            userId: formData.userId,
+            ...(editorMode === "single"
+                ? { editorIds: [formData.editorId] }       // <-- ensure array for backend
+                : { editorIds: formData.editorIds }),
+        };
+
+        const adminId = localStorage.getItem("userId");
+
         try {
-            const response = await fetch(`${BASE_URL}/api/projects/create`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
+            const response = await fetch(
+                `${BASE_URL}/api/projects/create?adminId=${encodeURIComponent(adminId)}`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }
+            );
 
             if (response.ok) {
                 showToastMessage("Project created successfully!");
@@ -206,7 +228,11 @@ function AdminProjectPage() {
                     duration: "",
                     sharedDrive: "",
                     notes: "",
+                    userId: "",
+                    editorId: "",
+                    editorIds: [],
                 });
+                setEditorMode("single");
                 fetchAllProjects();
             } else {
                 showToastMessage("Failed to create project.");
@@ -216,6 +242,8 @@ function AdminProjectPage() {
             alert("Error creating project.");
         }
     };
+
+
 
     const filteredProjects = projects.filter((project) => {
         const matchesStatus = filterStatus === "All" || project.status === filterStatus;
@@ -288,6 +316,17 @@ function AdminProjectPage() {
             console.error("Error:", error);
             alert("Error contacting AI service.");
         }
+    };
+
+    const editorOptions = editors.map(e => ({ value: e.userId, label: e.name }));
+
+    const handleEditorSingleChange = (e) => {
+        setFormData(prev => ({ ...prev, editorId: e.target.value }));
+    }
+
+    const handleEditorMultiChange = (selectedOptions) => {
+        const ids = (selectedOptions || []).map(opt => opt.value);
+        setFormData(prev => ({ ...prev, editorIds: ids }));
     };
 
 
@@ -415,7 +454,7 @@ function AdminProjectPage() {
                                     {selectedProject.notes}</p>
                             </div>
                             <div className="detail-row">
-                                <p><span>Duration:</span>
+                                <p><span>Duration:</span>l
                                     {selectedProject.duration} minutes</p>
                             </div>
                             <div className="detail-row">
@@ -534,14 +573,41 @@ function AdminProjectPage() {
                             </div>
 
                             <div className="form-group">
-                                <label>Editor:</label>
-                                <select name="editorId" value={formData.editorId} onChange={handleChange} required>
-                                    <option value="">Select Editor</option>
-                                    {editors.map((editor) => (
-                                        <option key={editor.userId} value={editor.userId}>{editor.name}</option>
-                                    ))}
-                                </select>
+                                <label className="form-label">Assign Mode:</label>
+                                <div className="radio-options">
+                                    <label>
+                                        <input
+                                            type="radio" name="editorMode" value="single" checked={editorMode === "single"} onChange={() => setEditorMode("single")} />
+                                        Single Editor
+                                    </label>
+                                    <label style={{ marginLeft: "20px" }}>
+                                        <input type="radio" name="editorMode" value="multiple" checked={editorMode === "multiple"} onChange={() => setEditorMode("multiple")} />
+                                        Multiple Editors
+                                    </label>
+                                </div>
                             </div>
+
+                            {editorMode === "single" ? (
+                                <div className="form-group">
+                                    <label>Editor:</label>
+                                    <select name="editorId" value={formData.editorId} onChange={handleEditorSingleChange} required>
+                                        <option value="">Select Editor</option>
+                                        {editors.map((editor) => (
+                                            <option key={editor.userId} value={editor.userId}>
+                                                {editor.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ) : (
+                                <div className="form-group">
+                                    <label>Editors:</label>
+                                    <Select isMulti name="editors" options={editorOptions} className="basic-multi-select" classNamePrefix="select" value={editorOptions.filter(opt => (formData.editorIds || []).includes(opt.value))}
+                                        onChange={handleEditorMultiChange} />
+                                </div>
+                            )}
+
+
 
                             <div className="popup-buttons">
                                 <button type="button" className="cancel-btn" onClick={() => setShowCreatePopup(false)}>Cancel</button>
@@ -696,16 +762,6 @@ function AdminProjectPage() {
                         </div>
 
                         <p style={{ marginTop: "10px", fontWeight: "bold" }}>Total: RM {totalAmount.toFixed(2)}</p>
-
-                        {/* <div className="form-group">
-                            <label>Final Drive Link:</label>
-                            <input
-                                type="text"
-                                value={privateDrive}
-                                onChange={(e) => setPrivateDrive(e.target.value)}
-                                placeholder="https://drive.google.com/..."
-                            />
-                        </div> */}
 
                         <div className="popup-buttons">
                             <button className="cancel-btn" onClick={() => setShowInvoicePopup(false)}>Cancel</button>

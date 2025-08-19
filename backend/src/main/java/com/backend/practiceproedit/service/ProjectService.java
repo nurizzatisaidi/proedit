@@ -208,6 +208,19 @@ public class ProjectService {
         return newProject;
     }
 
+    public Project createProjectAndChat(Project newProject, String adminId)
+            throws ExecutionException, InterruptedException {
+        // 1. Create the project from existing logic
+        Project created = createProject(newProject);
+
+        // 2. Create chat for this project
+        List<String> editorIds = created.getEditorIds() != null ? created.getEditorIds() : new ArrayList<>();
+        String clientId = created.getUserId();
+        createChat(created.getProjectId(), adminId, editorIds, clientId);
+
+        return created;
+    }
+
     // Method to get Projects by Client User Id
     public List<Project> getProjectsByClientId(String userId) throws ExecutionException, InterruptedException {
         Query query = db.collection("projects").whereEqualTo("userId", userId);
@@ -223,27 +236,21 @@ public class ProjectService {
         return projects;
     }
 
-    // Method to create chat when project is assigned
-    // public String createChat(String projectId, String adminId, String editorId,
-    // String clientId) {
-    // DocumentReference chatRef = db.collection("chats").document();
-    // Map<String, Object> chat = new HashMap<>();
-    // chat.put("chatId", chatRef.getId());
-    // chat.put("participants", Arrays.asList(adminId, editorId, clientId));
-    // chat.put("createdDate", Timestamp.now());
-    // chatRef.set(chat);
-    // return chatRef.getId();
-    // }
     public String createChat(String projectId, String adminId, List<String> editorIds, String clientId) {
         DocumentReference chatRef = db.collection("chats").document();
         Map<String, Object> chat = new HashMap<>();
 
-        List<String> participants = new ArrayList<>(editorIds);
+        List<String> participants = new ArrayList<>();
+
+        if (editorIds != null) {
+            participants.addAll(editorIds);
+        }
         participants.add(adminId);
         participants.add(clientId);
 
         chat.put("chatId", chatRef.getId());
-        chat.put("participants", participants);
+        chat.put("participantIds", participants);
+        chat.put("projectId", projectId);
         chat.put("createdDate", Timestamp.now());
 
         chatRef.set(chat);

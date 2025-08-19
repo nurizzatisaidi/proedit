@@ -71,9 +71,9 @@ public class ProjectController {
 
     // Create a new Project
     @PostMapping("/create")
-    public ResponseEntity<Project> createProject(@RequestBody Project newProject) {
+    public ResponseEntity<Project> createProject(@RequestBody Project newProject, @RequestParam String adminId) {
         try {
-            Project createdProject = projectService.createProject(newProject);
+            Project createdProject = projectService.createProjectAndChat(newProject, adminId);
             return ResponseEntity.ok(createdProject);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);

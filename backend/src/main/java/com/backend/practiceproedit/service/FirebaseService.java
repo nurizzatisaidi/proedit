@@ -30,6 +30,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Value;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class FirebaseService {
@@ -154,7 +159,37 @@ public class FirebaseService {
         }
     }
 
-    // Method to get the user By their ID
+    // Method to get many users by their IDs
+    public Map<String, Map<String, Object>> getUsersByIds(Collection<String> ids)
+            throws ExecutionException, InterruptedException {
+        Map<String, Map<String, Object>> result = new HashMap<>();
+
+        if (ids == null || ids.isEmpty()) {
+            return result;
+        }
+
+        Firestore db = getFirestore();
+        List<ApiFuture<DocumentSnapshot>> futures = new ArrayList<>();
+        for (String id : ids) {
+            futures.add(db.collection("users").document(id).get());
+        }
+        for (ApiFuture<DocumentSnapshot> f : futures) {
+            DocumentSnapshot doc = f.get();
+            if (doc.exists()) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("userId", doc.getId());
+                m.put("name", doc.getString("name"));
+                m.put("email", doc.getString("email"));
+                m.put("phoneNumber", doc.getString("phoneNumber"));
+                m.put("photoUrl", doc.getString("photoUrl"));
+                m.put("role", doc.getString("role"));
+                result.put(doc.getId(), m);
+            }
+        }
+        return result;
+    }
+
+    // Method to get a signle user By their ID
     public User getUserById(String userId) throws ExecutionException, InterruptedException {
         DocumentSnapshot document = db.collection("users").document(userId).get().get();
         if (document.exists()) {

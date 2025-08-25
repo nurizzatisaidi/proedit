@@ -6,6 +6,7 @@ import Select from "react-select";
 import { FaHome, FaFolder, FaFileAlt, FaUser, FaUsers, FaComments, FaBell, FaEye, FaEdit, FaTrash, FaMoneyBill, FaPlus, FaTasks, FaMoneyBillWave, FaRobot } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
+import { useNavigate } from "react-router-dom";
 
 function AdminProjectPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -33,6 +34,7 @@ function AdminProjectPage() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [editorMode, setEditorMode] = useState("single");
     const suggestionsRef = useRef(null);
+    const navigate = useNavigate();
 
 
     const [selectedInvoiceProject, setSelectedInvoiceProject] = useState(null);
@@ -329,6 +331,10 @@ function AdminProjectPage() {
         setFormData(prev => ({ ...prev, editorIds: ids }));
     };
 
+    const handleViewUsers = (projectId) => {
+        navigate(`/projects/${projectId}/users`);
+    }
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -393,7 +399,9 @@ function AdminProjectPage() {
                                 <p>Loading requests...</p>
                             </div>
                         ) : filteredProjects.map((project) => (
-                            <div className="list-card" key={project.projectId}>
+                            <div className="list-card" key={project.projectId}
+                                onClick={() => handleViewUsers(project.projectId)}
+                                style={{ cursor: "pointer" }}>
                                 <div className="list-details sleek-card-info">
                                     <h3 className="list-title">{project.title}</h3>
                                     <p>Client: {project.username || "Unknown"}</p>

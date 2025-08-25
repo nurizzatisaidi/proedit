@@ -326,22 +326,22 @@
     width: 150%;
 }
 
-.form-group label {
+/* .form-group label {
     font-weight: bold;
     width: 100px;
     text-align: left;
-}
+} */
 
 
 
-.form-group select {
+/* .form-group select {
     color: black;
     background-color: white;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 
-}
+} */
 
 .form-group input {
     flex: 1;
@@ -357,14 +357,14 @@
     color: black;
 }
 
-.form-note {
+/* .form-note {
     width: 500px;
     margin-left: 5%;
     margin-bottom: 20px;
     font-size: 0.88rem;
     color: #666;
     line-height: 1.5;
-}
+} */
 
 .button-group {
     display: flex;

@@ -29,6 +29,8 @@ import AdminNotificationList from './Admin/AdminNotificationList';
 import EditorNotificationList from './Editor/EditorNotificationList';
 import ConnectionStatusBanner from './components/ConnectionStatusProvider';
 import WorkInProgressPage from './WorkInProgressPage';
+import ProjectUsersList from './ProjectUsersList';
+
 
 function App() {
   return (
@@ -64,6 +66,7 @@ function App() {
         <Route path="/admin-notifications" element={<AdminNotificationList />} />
         <Route path="/editor-notifications" element={<EditorNotificationList />} />
         <Route path="/work-in-progress" element={<WorkInProgressPage />} />
+        <Route path="/projects/:projectId/users" element={<ProjectUsersList />} />
       </Routes>
     </Router>
   );

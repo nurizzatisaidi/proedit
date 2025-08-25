@@ -104,7 +104,19 @@ function EditorChatList() {
                                                 : chat.participantUsernames.filter(name => name !== username).join(", ") || "Untitled"}
                                         </h3>
 
-                                        <p className="chat-participants">{chat.participantUsernames.join(', ')}</p>
+                                        <p className="chat-last">
+                                            {chat.lastMessage
+                                                ? `${chat.lastMessageSender ? chat.lastMessageSender + ": " : ""}${chat.lastMessage}`
+                                                : "No messages yet"}
+                                        </p>
+
+                                        <p className="chat-participants">
+                                            {/* Users: {chat.participantUsernames.join(', ')} */}
+                                            {(() => {
+                                                const others = (chat.participantUsernames || []).filter(n => n !== username);
+                                                return others.length > 1 ? (<p className="chat-participants">Users: {others.join(", ")}</p>) : null
+                                            })()}
+                                        </p>
                                     </div>
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>

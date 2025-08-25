@@ -104,8 +104,11 @@ function ClientChatList() {
                             {filteredChats.map(chat => (
                                 <div key={chat.chatId} className="list-card">
                                     <div className="list-details sleek-card-info">
-                                        <h3 className="list-title">{chat.projectTitle}</h3>
-                                        <p className="chat-participants">{chat.participantUsernames.join(', ')}</p>
+                                        <h3 className="list-title">{chat.projectTitle && chat.projectTitle !== "Untitles Project" ? chat.projectTitle : (chat.participantsUsername || []).filter(n => n !== username).join(", ") || "Untitled"}</h3>
+                                        {/* <p className="chat-participants">{chat.participantUsernames.join(', ')}</p> */}
+                                        <p className="chat-last">{chat.lastMessage ? `${chat.lastMessageSender ? chat.lastMessageSender + ":" : " "} ${chat.lastMessage}` : "No messages yet"}</p>
+
+                                        <p className="chat-participants">Users: {(chat.participantUsernames || []).filter(n => n !== username).join(", ") || "Unnamed Participants"}</p>
                                     </div>
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>

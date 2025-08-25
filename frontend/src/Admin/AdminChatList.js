@@ -101,13 +101,24 @@ function AdminChatList() {
                                                 : chat.participantUsernames.filter(name => name !== username).join(", ") || "Untitled"}
                                         </h3>
 
-                                        <p className="chat-participants">
-                                            {
-                                                chat.participantUsernames
-                                                    .filter(name => name !== username) // remove self
-                                                    .join(", ") || "Unnamed"
-                                            }
+                                        {/* Last Message Preview */}
+                                        <p className="chat-last">
+                                            {chat.lastMessage
+                                                ? `${chat.lastMessageSender ? chat.lastMessageSender + ": " : ""}${chat.lastMessage}`
+                                                : "No messages yet"}
                                         </p>
+                                        {/* Participants Excluding Self */}
+                                        <p className="chat-participants">
+                                            {/* Users: {(chat.participantUsernames || []).filter(name => name !== username).join(", ") || "Unnamed participants"} */}
+                                            {(() => {
+                                                const others = (chat.participantUsernames || []).filter(n => n !== username);
+                                                return others.length > 1 ? (
+                                                    <p className="chat-participants"> Users : {others.join(", ")} </p>
+                                                ) : null;
+                                            })()}
+                                        </p>
+
+
                                     </div>
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>

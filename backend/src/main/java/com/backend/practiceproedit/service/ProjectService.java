@@ -15,6 +15,9 @@ import java.util.Date;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.Timestamp;
+import java.util.Collection;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
 
 @Service
 public class ProjectService {
@@ -155,24 +158,6 @@ public class ProjectService {
         return editorDoc.exists() ? editorDoc.getString("name") : null;
     }
 
-    // public Project createProject(Project newProject) throws ExecutionException,
-    // InterruptedException {
-    // String clientUsername = findUsernameByUserId(newProject.getUserId());
-    // String editorUsername = findUsernameByEditorId(newProject.getEditorId());
-
-    // System.out.println("Client Username: " + clientUsername + ", Editor Username:
-    // " + editorUsername);
-
-    // newProject.setUsername(clientUsername);
-    // newProject.setEditorUsername(editorUsername);
-    // newProject.setStatus("In Progress");
-
-    // DocumentReference docRef = db.collection("projects").document();
-    // newProject.setProjectId(docRef.getId());
-    // ApiFuture<WriteResult> result = docRef.set(newProject);
-    // result.get();
-    // return newProject;
-    // }
     public Project createProject(Project newProject) throws ExecutionException, InterruptedException {
         // Get client's username
         String clientUsername = findUsernameByUserId(newProject.getUserId());
@@ -399,6 +384,15 @@ public class ProjectService {
         }
 
         return null;
+    }
+
+    public Map<String, Map<String, Object>> getUsersByIds(Collection<String> ids)
+            throws ExecutionException, InterruptedException {
+        return firebaseService.getUsersByIds(ids);
+    }
+
+    public List<String> getAllAdminIds() throws ExecutionException, InterruptedException {
+        return firebaseService.getAllUserIdsByRole("admin");
     }
 
 }

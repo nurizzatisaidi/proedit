@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -146,6 +149,38 @@ public class ProjectController {
                 return ResponseEntity.status(404).body(null);
             }
         } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    // Get all users within the project
+    @GetMapping("/{projectId}/users")
+    public ResponseEntity<List<Map<String, Object>>> getProjectUsers(@PathVariable String projectId) {
+        try {
+            // 1. Load the project
+            Project p = projectService.getProjectById(projectId);
+            if (p == null) {
+                return ResponseEntity.status(404).body(null);
+            }
+
+            // 2. Collect the participants IDs : client + editors
+            Set<String> ids = new HashSet<>();
+            if (p.getUserId() != null) {
+                ids.add(p.getUserId());
+            }
+            if (p.getEditorIds() != null) {
+                ids.addAll(p.getEditorIds());
+            }
+
+            // Include admins contact for editors to contact
+            ids.addAll(projectService.getAllAdminIds());
+
+            // 3. Fetch user profiles
+            Map<String, Map<String, Object>> profiles = projectService.getUsersByIds(ids);
+            return ResponseEntity.ok(new ArrayList<>(profiles.values()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
     }

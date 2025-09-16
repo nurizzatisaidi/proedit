@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { FaFileAlt, FaFolder, FaComments, FaBell, FaHome, FaEye, FaTasks, FaMoneyBill, FaMoneyBillWave } from "react-icons/fa";
 import "../styles/ProjectPage.css";
 import "../styles/List.css";
+import { useNavigate } from "react-router-dom";
 
 function ClientProjectPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -22,6 +23,7 @@ function ClientProjectPage() {
     const [paymentDetails, setPaymentDetails] = useState(null);
     const [paymentMap, setPaymentMap] = useState({});
     const hasShownNoProjectsAlert = useRef(false);
+    const navigate = useNavigate();
 
     const fetchProjects = useCallback(async () => {
         setIsLoading(true);
@@ -90,6 +92,10 @@ function ClientProjectPage() {
         }
     };
 
+    const handleViewUsers = (projectId) => {
+        navigate(`/client-projects/${projectId}/users`);
+    }
+
     const filteredProjects = projects.filter((project) => {
         const matchesTitle = project.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === "All" || project.status === statusFilter;
@@ -157,7 +163,9 @@ function ClientProjectPage() {
                         ) : filteredProjects.length > 0 ? (
                             filteredProjects.map((project) => (
                                 <div className="list-card" key={project.projectId}>
-                                    <div className="list-details sleek-card-info">
+                                    <div className="list-details sleek-card-info"
+                                        onClick={() => handleViewUsers(project.projectId)} style={{ cursor: "pointer" }}>
+
                                         <h3 className="list-title">{project.title}</h3>
                                         <p>Video Type: {project.videoType}</p>
                                         <p>

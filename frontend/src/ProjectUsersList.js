@@ -11,12 +11,17 @@ import "./styles/UsersList.css"; // create minimal styles or reuse
 export default function ProjectUsersList() {
     const { projectId } = useParams();
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [username, setUsername] = useState(localStorage.getItem("username") || "User");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
+
+    // declaring current user
+    const role = (localStorage.getItem("role") || "").toLowerCase();
+    const currentUserId = localStorage.getItem("userId") || "";
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
@@ -38,9 +43,6 @@ export default function ProjectUsersList() {
         fetchUsers();
     }, [fetchUsers]);
 
-    // exclude self from the list
-    const currentUserId = localStorage.getItem("userId");
-
     const visibleUsers = users.filter(u => u.userId !== currentUserId);
 
     const filtered = visibleUsers.filter(u => {
@@ -52,30 +54,74 @@ export default function ProjectUsersList() {
         );
     });
 
-    const handleOpenChat = async (userId) => {
-        // If you want to jump to the chat for this project, reuse your existing endpoint
-        // /api/chats/project/{projectId} to get chatId, then navigate:
-        try {
-            const res = await fetch(`${BASE_URL}/api/chats/project/${projectId}`);
-            if (!res.ok) throw new Error("No chat for this project");
-            const data = await res.json(); // { chatId, ... }
-            navigate(`/editor-chat/${data.chatId}`); // or /admin-chat or /user-chat depending on role
-        } catch (e) {
-            console.error(e);
-            // Optionally: show toast
+    // const chatRouterForRole = (chatId) => {
+    //     if (role === "editor") {
+    //         return `/editor-chat/${chatId}`;
+    //     }
+    //     if (role === "user") {
+    //         return `/client-projects/${chatId}`;
+    //     } else {
+    //         return `/admin-chat/${chatId}`;
+    //     }
+    // };
+
+    const chatPathForRole = (chatId) => {
+        switch (role) {
+            case "editor": return `/editor-chat/${chatId}`;
+            case "user": return `/user-chat/${chatId}`;
+            case "admin":
+            default: return `/admin-chat/${chatId}`;
         }
     };
 
-    const menuItems = [
-        { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
-        { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
-        { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
-        { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
-        { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
-        { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
-        { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
-        { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
-    ];
+    const handleOpenChat = async (otherUserId) => {
+        // If you want to jump to the chat for this project, reuse your existing endpoint
+        // /api/chats/project/{projectId} to get chatId, then navigate:
+        try {
+            const res = await fetch(`${BASE_URL}/api/chats/direct`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userA: currentUserId, // me
+                    userB: otherUserId // selected user
+                })
+            });
+            if (!res.ok) {
+                console.error(await res.text());
+                return;
+            }
+            const { chatId } = await res.json();
+            navigate(chatPathForRole(chatId), { state: { otherUserId } });
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+
+    const menuItems = role === "user"
+        ? [
+            { name: "Dashboard", icon: <FaHome />, path: "/user-dashboard" },
+            { name: "Requests", icon: <FaFileAlt />, path: "/user-requests" },
+            { name: "Projects", icon: <FaFolder />, path: "/user-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/user-chat-list" },
+            { name: "Payments", icon: <FaMoneyBillWave />, path: "/user-payments" },
+            { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
+        ]
+        : role === "editor" ? [
+            { name: "Dashboard", icon: <FaHome />, path: "/editor-dashboard" },
+            { name: "Projects", icon: <FaFolder />, path: "/editor-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/editor-chat-list" },
+            { name: "Notifications", icon: <FaBell />, path: "/editor-notifications" },
+        ] : [
+            { name: "Dashboard", icon: <FaHome />, path: "/admin-dashboard" },
+            { name: "Requests", icon: <FaFileAlt />, path: "/admin-requests" },
+            { name: "Projects", icon: <FaFolder />, path: "/admin-projects" },
+            { name: "Chat", icon: <FaComments />, path: "/admin-chat-list" },
+            { name: "Notifications", icon: <FaBell />, path: "/admin-notifications" },
+            { name: "Editors", icon: <FaUser />, path: "/admin-editors-list" },
+            { name: "Clients", icon: <FaUsers />, path: "/admin-clients-list" },
+            { name: "Payments", icon: <FaMoneyBillWave />, path: "/admin-payments" }
+        ];
 
     return (
         <div className="dashboard-container">

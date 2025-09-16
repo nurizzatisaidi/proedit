@@ -57,13 +57,11 @@ function EditorChatList() {
     ];
 
     const filteredChats = chats.filter(chat => {
-        const lowerSearch = searchQuery.toLowerCase();
-
-        const titleMatch = (chat.projectTitle || "").toLowerCase().includes(lowerSearch);
-        const userMatch = chat.participantUsernames?.some(name =>
-            name.toLowerCase().includes(lowerSearch) && name !== username
+        const q = searchQuery.toLowerCase();
+        const titleMatch = (chat.title || "").toLowerCase().includes(q);
+        const userMatch = (chat.participantUsernames || {}).some(
+            n => n.toLowerCase().includes(q) && n !== username
         );
-
         return titleMatch || userMatch;
     });
 
@@ -95,42 +93,41 @@ function EditorChatList() {
                         <p>You have no chats yet.</p>
                     ) : (
                         <div className="list">
-                            {filteredChats.map(chat => (
-                                <div key={chat.chatId} className="list-card">
-                                    <div className="list-details sleek-card-info">
-                                        <h3 className="list-title">
-                                            {chat.projectTitle && chat.projectTitle !== "Untitled Project"
-                                                ? chat.projectTitle
-                                                : chat.participantUsernames.filter(name => name !== username).join(", ") || "Untitled"}
-                                        </h3>
+                            {filteredChats.map(chat => {
+                                const others = (chat.participantUsernames || []).filter(n => n !== username);
+                                const derivedDmTitle = others[0] || "Direct Message";
+                                const safeTitle = chat.title || (chat.type === "dm" || !chat.projectId ? derivedDmTitle : chat.projectTitle || "Untitles Project");
 
-                                        <p className="chat-last">
-                                            {chat.lastMessage
-                                                ? `${chat.lastMessageSender ? chat.lastMessageSender + ": " : ""}${chat.lastMessage}`
-                                                : "No messages yet"}
-                                        </p>
-
-                                        <p className="chat-participants">
-                                            {/* Users: {chat.participantUsernames.join(', ')} */}
-                                            {(() => {
-                                                const others = (chat.participantUsernames || []).filter(n => n !== username);
-                                                return others.length > 1 ? (<p className="chat-participants">Users: {others.join(", ")}</p>) : null
-                                            })()}
-                                        </p>
-                                    </div>
-                                    <div className="list-actions">
-                                        <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
-                                            <FaComments /> Chat
-                                        </button>
-                                        {chat.projectId ? (
-                                            <button className="board-btn" onClick={() => handleTaskBoard(chat.projectId)}>
-                                                <FaTasks /> Board
-                                            </button>
-                                        ) : null}
-
-                                    </div>
-                                </div>
-                            ))}
+                                return (
+                                    <React.Fragment key={chat.chatId}>
+                                        <div className="list-card">
+                                            <div className="list-details sleek-card-info">
+                                                <h3 className="chat-title">{safeTitle}</h3>
+                                                <p className="chat-last">
+                                                    {chat.lastMessage
+                                                        ? `${chat.lastMessageSender ? chat.lastMessageSender + ": " : ""}${chat.lastMessage}`
+                                                        : "No messages yet"}
+                                                </p>
+                                                {(chat.type !== "dm" && chat.projectId) && (
+                                                    <p className="chat-participants">
+                                                        Users: {(chat.participantUsernames || []).filter(n => n !== username).join(", ") || "Unnames Participants"}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="list-actions">
+                                                <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>
+                                                    <FaComments /> Chat
+                                                </button>
+                                                {chat.projectId && (
+                                                    <button className="board-btn" onClick={() => handleTaskBoard(chat.projectId)}>
+                                                        <FaTasks /> Board
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </React.Fragment>
+                                );
+                            })}
                         </div>
                     )}
                 </section>

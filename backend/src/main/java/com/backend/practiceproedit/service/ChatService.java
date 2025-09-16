@@ -6,9 +6,16 @@ import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Service;
 import com.google.firebase.cloud.FirestoreClient;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import com.google.cloud.Timestamp;
 
 @Service
 public class ChatService {
@@ -70,6 +77,44 @@ public class ChatService {
         }
 
         return null;
+    }
+
+    // Get or Create a Direct chat between two users for a specific project
+    public String getOrCreateDirectChat(String userA, String userB) throws ExecutionException, InterruptedException {
+
+        // Defensive Programming to ensure valid innput and prevent illogical scenarios
+        if (userA == null || userB == null || userA.isEmpty() || userB.isEmpty()) {
+            throw new IllegalArgumentException("Both user ID must be provided");
+        } else if (userA.equals(userB)) {
+            throw new IllegalArgumentException("User cannot have a chat with themselves");
+        }
+
+        // To avoid duplicate chats between the two uers, example (abc-xyz & xyz-abc)
+        String a = userA.compareTo(userB) < 0 ? userA : userB;
+        String b = userA.compareTo(userB) < 0 ? userB : userA;
+        String dmKey = a + "-" + b;
+
+        // 1. Check for any existing DM chat between the two users
+        QuerySnapshot existing = db.collection("chats").whereEqualTo("type", "dm").whereEqualTo("dmKey", dmKey).limit(1)
+                .get().get();
+
+        if (!existing.isEmpty()) {
+            return existing.getDocuments().get(0).getId();
+        }
+
+        // 2. Create a new chat Document
+        DocumentReference chatRef = db.collection("chats").document();
+        Map<String, Object> chat = new HashMap<>();
+        chat.put("chatId", chatRef.getId());
+        chat.put("type", "dm");
+        chat.put("dmKey", dmKey);
+        chat.put("participantIds", Arrays.asList(a, b));
+        chat.put("createdDate", Timestamp.now());
+        // no projectId for DM chats
+
+        chatRef.set(chat).get();
+        return chatRef.getId();
+
     }
 
 }

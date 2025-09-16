@@ -11,6 +11,7 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Firestore;
+import org.springframework.http.HttpStatus;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -52,7 +53,7 @@ public class ChatController {
             for (Chat chat : chats) {
                 Map<String, Object> chatMap = new HashMap<>();
                 chatMap.put("chatId", chat.getChatId());
-                chatMap.put("projectId", chat.getProjectId());
+                // chatMap.put("projectId", chat.getProjectId());
                 chatMap.put("participantIds", chat.getParticipantIds());
 
                 // usernames
@@ -62,10 +63,48 @@ public class ChatController {
                 }
                 chatMap.put("participantUsernames", usernames);
 
-                // project title
-                chatMap.put("projectTitle", projectTitlesMap.getOrDefault(chat.getProjectId(), "Untitled Project"));
+                // type of chat
+                String type = null;
+                try {
+                    // get the row doc to read type
+                    DocumentSnapshot raw = firebaseService.getFirestore().collection("chats").document(chat.getChatId())
+                            .get().get();
+                    type = raw.getString("type");
+                } catch (Exception ignore) {
+                }
+                chatMap.put("type", type);
 
-                // Last messages (content + senderUsername + timestamp)
+                // compute the title
+                if ("dm".equalsIgnoreCase(type)) {
+                    // if DM, the title is the username
+                    String meId = userId;
+                    String myName = usernamesMap.getOrDefault(meId, "");
+                    List<String> others = new ArrayList<>(usernames);
+                    others.clear();
+                    for (String pid : chat.getParticipantIds()) {
+                        if (!pid.equals(meId)) {
+                            others.add(usernamesMap.getOrDefault(pid, "Unknown"));
+                        }
+                    }
+                    chatMap.put("title", others.isEmpty() ? "Direct Message" : others.get(0));
+
+                    // to have return the other user id, helpful in the UI
+                    String otherUserId = chat.getParticipantIds().stream().filter(pid -> !pid.equals(meId)).findFirst()
+                            .orElse(null);
+                    chatMap.put("otherUserId", otherUserId);
+
+                } else {
+                    // Group/Project chat : keep the project title
+                    String projectTitle = projectTitlesMap.getOrDefault(chat.getProjectId(), "Untitles Project");
+                    chatMap.put("title", projectTitle);
+                    chatMap.put("projectId", chat.getProjectId());
+                }
+
+                // // project title
+                // chatMap.put("projectTitle",
+                // projectTitlesMap.getOrDefault(chat.getProjectId(), "Untitled Project"));
+
+                // // Last messages (content + senderUsername + timestamp)
                 QuerySnapshot lastMsgSnap = fs.collection("chats").document(chat.getChatId()).collection("messages")
                         .orderBy("timestamp", Query.Direction.DESCENDING).limit(1).get().get();
 
@@ -201,4 +240,18 @@ public class ChatController {
         }
     }
 
+    @PostMapping("direct")
+    public ResponseEntity<Map<String, Object>> gotOrCreateDirectChat(@RequestBody Map<String, String> body) {
+        try {
+            String me = body.get("userA");
+            String other = body.get("userB");
+            String chatId = chatService.getOrCreateDirectChat(me, other);
+            return ResponseEntity.ok(Map.of("chatId", chatId));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", illegalArgumentException.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to create or fetch direct chat"));
+        }
+    }
 }

@@ -177,6 +177,9 @@ function ClientMessagePage() {
         [chatList, chatId]
     );
 
+    const headerTitle =
+        activeChat?.title || activeChat?.projectTitle || "Chat";
+
     return (
         <div className="dashboard-container">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} menuItems={menuItems} />
@@ -186,23 +189,35 @@ function ClientMessagePage() {
 
                     {/* Left Chat List */}
                     <div className="chat-list-panel">
-                        <h3>Group Chats</h3>
+                        <h3>Chats</h3>
                         {isChatListLoading ? (
                             <div className="spinner" />
                         ) : (
-                            chatList.map((chat) => (
-                                <div
-                                    key={chat.chatId}
-                                    className={`chat-list-item ${chat.chatId === chatId ? 'active' : ''}`}
-                                    onClick={() => navigate(`/user-chat/${chat.chatId}`)}
-                                >
-                                    <div className="chat-user-avatar">{chat.projectTitle?.charAt(0)}</div>
-                                    <div className="chat-user-info">
-                                        <p className="chat-project-title">{chat.projectTitle}</p>
-                                        <p className="chat-participants-preview">{chat.participantUsernames?.join(", ")}</p>
+                            chatList.map((chat) => {
+                                const isDM = chat.type === "dm";
+                                const displayTitle = chat.title || chat.projectTitle || "Chat";
+                                const avatarLetter = (displayTitle || "C").charAt(0);
+
+                                return (
+                                    <div
+                                        key={chat.chatId}
+                                        className={`chat-list-item ${chat.chatId === chatId ? 'active' : ''}`}
+                                        onClick={() => navigate(`/user-chat/${chat.chatId}`)}
+                                    >
+                                        <div className="chat-user-avatar">{avatarLetter}</div>
+                                        <div className="chat-user-info">
+                                            <p className="chat-project-title">{displayTitle}</p>
+
+                                            {/* Show participants only for group chats */}
+                                            {!isDM && (
+                                                <p className="chat-participants-preview">
+                                                    {chat.participantUsernames?.join(", ")}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 
@@ -213,8 +228,8 @@ function ClientMessagePage() {
                                 <div className="spinner" />
                             ) : (
                                 <>
-                                    <h2>{activeChat?.projectTitle || "Chat"}</h2>
-                                    {activeChat?.projectId && (
+                                    <h2>{headerTitle}</h2>
+                                    {activeChat?.projectId && activeChat?.type !== "dm" && (
                                         <button
                                             className="taskboard-btn"
                                             onClick={() => navigate(`/client-projects/${activeChat.projectId}/progress`)}

@@ -66,7 +66,9 @@ function App() {
         <Route path="/admin-notifications" element={<AdminNotificationList />} />
         <Route path="/editor-notifications" element={<EditorNotificationList />} />
         <Route path="/work-in-progress" element={<WorkInProgressPage />} />
-        <Route path="/projects/:projectId/users" element={<ProjectUsersList />} />
+        <Route path="/admin-projects/:projectId/users" element={<ProjectUsersList />} />
+        <Route path="/editor-projects/:projectId/users" element={<ProjectUsersList />} />
+        <Route path="/client-projects/:projectId/users" element={<ProjectUsersList />} />
       </Routes>
     </Router>
   );

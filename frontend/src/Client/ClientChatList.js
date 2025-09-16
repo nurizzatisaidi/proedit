@@ -67,9 +67,14 @@ function ClientChatList() {
         { name: "Notifications", icon: <FaBell />, path: "/client-notifications" },
     ];
 
-    const filteredChats = chats.filter(chat =>
-        chat.projectTitle?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // const filteredChats = chats.filter(chat =>
+    //     chat.projectTitle?.toLowerCase().includes(searchQuery.toLowerCase())
+    // );
+
+    const filteredChats = chats.filter(chat => {
+        const t = (chat.title || "").toLowerCase();
+        return t.includes(searchQuery.toLowerCase());
+    });
 
     return (
         <div className="dashboard-container">
@@ -104,11 +109,11 @@ function ClientChatList() {
                             {filteredChats.map(chat => (
                                 <div key={chat.chatId} className="list-card">
                                     <div className="list-details sleek-card-info">
-                                        <h3 className="list-title">{chat.projectTitle && chat.projectTitle !== "Untitles Project" ? chat.projectTitle : (chat.participantsUsername || []).filter(n => n !== username).join(", ") || "Untitled"}</h3>
+                                        <h3 className="list-title">{chat.title || "Untitles"}</h3>
                                         {/* <p className="chat-participants">{chat.participantUsernames.join(', ')}</p> */}
-                                        <p className="chat-last">{chat.lastMessage ? `${chat.lastMessageSender ? chat.lastMessageSender + ":" : " "} ${chat.lastMessage}` : "No messages yet"}</p>
+                                        <p className="chat-last">{chat.lastMessage ? `${chat.lastMessageSender ? chat.lastMessageSender + ": " : ""}${chat.lastMessage}` : "No messages yet"}</p>
 
-                                        <p className="chat-participants">Users: {(chat.participantUsernames || []).filter(n => n !== username).join(", ") || "Unnamed Participants"}</p>
+                                        {chat.type !== 'dm' && (<p className="chat-participants"> Users: {(chat.participantUsernames || []).filter(n => n !== username).join(", ") || "Unnamed Participants"}</p>)}
                                     </div>
                                     <div className="list-actions">
                                         <button className="chat-btn" onClick={() => handleChat(chat.chatId)}>

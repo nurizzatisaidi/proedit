@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { FaHome, FaFolder, FaComments, FaBell, FaEye, FaTasks } from "react-icons/fa";
 import "../styles/List.css";
 import "../styles/ProjectPage.css";
+import { useNavigate } from "react-router-dom";
 
 function EditorProjectsPage() {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -16,6 +17,7 @@ function EditorProjectsPage() {
     const [selectedProject, setSelectedProject] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
+    const navigate = useNavigate();
 
     const fetchProjects = useCallback(async (editorId) => {
         setIsLoading(true);
@@ -44,6 +46,10 @@ function EditorProjectsPage() {
         setSelectedProject(project);
         setShowViewPopup(true);
     };
+
+    const handleViewUsers = (projectId) => {
+        navigate(`/editor-projects/${projectId}/users`);
+    }
 
     const handleProjectBoard = (projectId) => {
         window.location.href = `/editor-project-board/${projectId}`;
@@ -128,7 +134,7 @@ function EditorProjectsPage() {
                                 })
                                 .map((project) => (
                                     <div className="list-card" key={project.projectId}>
-                                        <div className="list-details sleek-card-info">
+                                        <div className="list-details sleek-card-info" onClick={() => handleViewUsers(project.projectId)} style={{ cursor: "pointer" }}>
                                             <h3 className="list-title">{project.title}</h3>
                                             <p>Client: {project.username || "Unknown"}</p>
                                             <p>
